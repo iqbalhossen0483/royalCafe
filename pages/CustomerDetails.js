@@ -1,11 +1,11 @@
 import React from "react";
-import { Image, Text, View, FlatList } from "react-native";
+import { Image, Text, View, FlatList, Pressable } from "react-native";
 import { Common } from "../App";
 import BDT from "../components/utilitise/BDT";
 import { color } from "../components/utilitise/colors";
 import { orderdata } from "../data";
 import { styles } from "../css/customer";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, Feather } from "@expo/vector-icons";
 
 const CustomerDetails = ({ route, navigation }) => {
   const data = route.params;
@@ -39,15 +39,34 @@ const CustomerDetails = ({ route, navigation }) => {
                   style={{ width: 50, height: 50, borderRadius: 50 }}
                 />
                 <View>
-                  <Text
+                  <View
                     style={{
-                      textAlign: "center",
-                      fontSize: 19,
-                      fontWeight: 500,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      columnGap: 5,
                     }}
                   >
-                    {data.shopName}
-                  </Text>
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        fontSize: 19,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {data.shopName}
+                    </Text>
+                    <Pressable
+                      onPress={() =>
+                        navigation.navigate("addshop", {
+                          edit: true,
+                          customerId: data.id,
+                        })
+                      }
+                    >
+                      <Feather name='edit' size={18} color={color.darkGray} />
+                    </Pressable>
+                  </View>
+
                   <Text style={{ textAlign: "center", color: color.darkGray }}>
                     {data.address}
                   </Text>
@@ -104,10 +123,15 @@ const CustomerDetails = ({ route, navigation }) => {
                 <View style={{ marginLeft: 6 }}>
                   <Text style={{ fontSize: 16, fontWeight: 500 }}>
                     {item.shopName}
-                    {item.id}
                   </Text>
-                  <Text>{item.address}</Text>
-                  <Text style={{ fontSize: 13, marginTop: 3 }}>
+                  <Text style={{ color: color.darkGray }}>{item.address}</Text>
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginTop: 3,
+                      color: color.darkGray,
+                    }}
+                  >
                     {item.date}
                   </Text>
                 </View>
@@ -122,20 +146,23 @@ const CustomerDetails = ({ route, navigation }) => {
                   <BDT ammount={item.totalSale} />
                 </View>
               </View>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View
+                onTouchStart={() => navigation.navigate("orderDetails", item)}
+                style={{ flexDirection: "row", alignItems: "center" }}
+              >
                 <View
                   style={{
                     height: 8,
                     width: 8,
                     backgroundColor: item.due ? "#dc2626" : "#22c55e",
                     borderRadius: 50,
-                    marginRight: -7,
+                    marginRight: -5,
                   }}
                 />
                 <MaterialIcons
-                  onTouchStart={() => navigation.navigate("orderDetails", item)}
+                  style={{ color: color.darkGray }}
                   name='keyboard-arrow-right'
-                  size={24}
+                  size={20}
                   color='black'
                 />
               </View>

@@ -1,12 +1,12 @@
 import React from "react";
 import { Text, View } from "react-native";
 
-const ManageMan = () => {
+const Report = () => {
   return (
     <View>
-      <Text>manage man</Text>
+      <Text>Report</Text>
     </View>
   );
 };
 
-export default ManageMan;
+export default Report;

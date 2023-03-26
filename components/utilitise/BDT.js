@@ -22,7 +22,7 @@ const BDT = ({ ammount, style }) => {
         taka.slice(5, taka.length)
       : taka;
 
-  return <Text style={{ ...style, fontWeight: 500 }}>{formated}৳</Text>;
+  return <Text style={{ fontWeight: 500, ...style }}>{formated}৳</Text>;
 };
 
 export default BDT;

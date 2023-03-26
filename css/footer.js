@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
     color: "#4b5563",
     fontSize: 35,
     marginTop: -15,
-    zIndex: 0.4,
+    zIndex: 1,
   },
   highlight: {
     backgroundColor: "#2fbd55",
@@ -39,7 +39,6 @@ export const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    zIndex: 1,
   },
   closeIcon: {
     color: "#57534e",

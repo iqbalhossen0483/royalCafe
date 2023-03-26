@@ -17,8 +17,8 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 const Footer = () => {
   const [createModal, setCreateModal] = useState(false);
   const [moreOption, setMoreOption] = useState(false);
-  const navigation = useNavigation();
   const route = useRoute();
+  const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
@@ -123,7 +123,7 @@ const Footer = () => {
           </View>
           <View
             onTouchStart={() => {
-              navigation.navigate("/addshop");
+              navigation.navigate("addshop");
               setCreateModal(false);
             }}
             style={{
@@ -146,7 +146,7 @@ const Footer = () => {
 
           <View
             onTouchStart={() => {
-              navigation.navigate("/createOrder");
+              navigation.navigate("createOrder");
               setCreateModal(false);
             }}
             style={{
@@ -169,7 +169,7 @@ const Footer = () => {
 
           <View
             onTouchStart={() => {
-              navigation.navigate("/createNote");
+              navigation.navigate("createNote");
               setCreateModal(false);
             }}
             style={{
@@ -212,7 +212,7 @@ const Footer = () => {
 
           <View
             onTouchStart={() => {
-              navigation.navigate("/addProduct");
+              navigation.navigate("manageProduct");
               setMoreOption(false);
             }}
             style={{
@@ -235,7 +235,7 @@ const Footer = () => {
 
           <View
             onTouchStart={() => {
-              navigation.navigate("/manageMan");
+              navigation.navigate("manageUsers");
               setMoreOption(false);
             }}
             style={{
@@ -253,7 +253,7 @@ const Footer = () => {
             >
               <Ionicons name='md-man' size={24} color='#0284c7' />
             </View>
-            <Text style={{ fontSize: 18, marginLeft: 5 }}>Manage Men</Text>
+            <Text style={{ fontSize: 18, marginLeft: 5 }}>Manage Users</Text>
           </View>
         </View>
       </Modal>

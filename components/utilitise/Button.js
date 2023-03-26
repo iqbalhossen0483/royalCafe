@@ -12,7 +12,6 @@ const Button = ({ title, style, onPress, disabled }) => {
         paddingHorizontal: 9,
         paddingVertical: 7,
         borderRadius: 4,
-
         ...style,
       }}
     >

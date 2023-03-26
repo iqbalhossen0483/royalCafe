@@ -28,7 +28,8 @@ const OrderDetails = ({ route }) => {
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
-            marginVertical: 5,
+            marginBottom: 5,
+            marginTop: 10,
           }}
         >
           <Text>
@@ -45,7 +46,7 @@ const OrderDetails = ({ route }) => {
           <Text
             style={{
               fontSize: 16,
-              borderBottomWidth: 1,
+              borderBottomWidth: 0.7,
               borderBottomColor: "#cbd5e1",
             }}
           >
@@ -57,7 +58,7 @@ const OrderDetails = ({ route }) => {
           <Text
             style={{
               fontSize: 16,
-              borderBottomWidth: 1,
+              borderBottomWidth: 0.7,
               borderBottomColor: "#cbd5e1",
             }}
           >
@@ -78,7 +79,7 @@ const OrderDetails = ({ route }) => {
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
-              borderBottomWidth: 1,
+              borderBottomWidth: 0.7,
               borderBottomColor: "#cbd5e1",
               paddingBottom: 4,
               marginBottom: 4,
@@ -95,7 +96,7 @@ const OrderDetails = ({ route }) => {
             ItemSeparatorComponent={() => (
               <View
                 style={{
-                  borderBottomWidth: 1,
+                  borderBottomWidth: 0.7,
                   borderBottomColor: "#cbd5e1",
                   marginBottom: 4,
                   paddingBottom: 4,
@@ -113,10 +114,7 @@ const OrderDetails = ({ route }) => {
                 <Text>{item.name}</Text>
                 <Text>{item.qty}</Text>
                 <Text>{item.price}</Text>
-                <BDT
-                  style={{ marginRight: i !== 0 ? 6 : 0 }}
-                  ammount={item.total}
-                />
+                <BDT ammount={item.total} />
               </View>
             )}
           />
@@ -264,12 +262,13 @@ function Account({ name, ammount, width, style }) {
     <View
       style={{
         borderTopColor: "#cbd5e1",
-        borderTopWidth: 1,
+        borderTopWidth: 0.7,
         flexDirection: "row",
         justifyContent: "flex-end",
         paddingLeft: 10,
         paddingTop: 3,
         width: width || 110,
+        paddingBottom: 4,
       }}
     >
       <Text style={{ fontWeight: 500, marginRight: 4, ...style }}>{name}:</Text>

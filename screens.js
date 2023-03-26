@@ -7,7 +7,7 @@ import CustomerDetails from "./pages/CustomerDetails";
 import Customers from "./pages/Customers";
 import EditOrder from "./pages/EditOrder";
 import Home from "./pages/Home";
-import ManageMan from "./pages/ManageMan";
+import ManageUsers from "./pages/ManageUsers";
 import Notifications from "./pages/Notifications";
 import OrderDetails from "./pages/OrderDetails";
 import Orders from "./pages/Orders";
@@ -23,7 +23,7 @@ export {
   CreateOrder,
   CustomerDetails,
   EditOrder,
-  ManageMan,
+  ManageUsers as ManageMan,
   Notifications,
   OrderDetails,
   Orders,

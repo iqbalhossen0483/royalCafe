@@ -5,6 +5,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { orderdata } from "../data";
 import { Common } from "../App";
 import SearchFilter from "../components/SearchFilter";
+import { color } from "../components/utilitise/colors";
 
 const Orders = ({ navigation }) => {
   return (
@@ -32,26 +33,35 @@ const Orders = ({ navigation }) => {
                   <Text style={{ fontSize: 16, fontWeight: 500 }}>
                     {item.shopName}
                   </Text>
-                  <Text>{item.address}</Text>
-                  <Text style={{ fontSize: 13, marginTop: 3 }}>
+                  <Text style={{ color: color.darkGray }}>{item.address}</Text>
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginTop: 3,
+                      color: color.darkGray,
+                    }}
+                  >
                     {item.date}
                   </Text>
                 </View>
               </View>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View
+                onTouchStart={() => navigation.navigate("orderDetails", item)}
+                style={{ flexDirection: "row", alignItems: "center" }}
+              >
                 <View
                   style={{
                     height: 8,
                     width: 8,
                     backgroundColor: item.due ? "#dc2626" : "#22c55e",
                     borderRadius: 50,
-                    marginRight: -7,
+                    marginRight: -5,
                   }}
                 />
                 <MaterialIcons
-                  onTouchStart={() => navigation.navigate("orderDetails", item)}
+                  style={{ color: color.darkGray }}
                   name='keyboard-arrow-right'
-                  size={24}
+                  size={20}
                   color='black'
                 />
               </View>

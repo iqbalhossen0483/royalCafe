@@ -21,6 +21,8 @@ import {
   Orders,
   Profile,
 } from "./screens";
+import ManageProduct from "./pages/ManageProduct";
+import Report from "./pages/Report";
 
 const Stack = createNativeStackNavigator();
 
@@ -49,13 +51,15 @@ export default function App() {
           <Stack.Screen name='createOrder' component={CreateOrder} />
           <Stack.Screen name='createNote' component={CreateNote} />
           <Stack.Screen name='addProduct' component={AddProduct} />
-          <Stack.Screen name='manageMan' component={ManageMan} />
+          <Stack.Screen name='manageUsers' component={ManageMan} />
           <Stack.Screen name='notification' component={Notifications} />
           <Stack.Screen name='profile' component={Profile} />
           <Stack.Screen name='orderDetails' component={OrderDetails} />
           <Stack.Screen name='completeOrder' component={CompleteOrder} />
           <Stack.Screen name='editOrder' component={EditOrder} />
           <Stack.Screen name='customerDetails' component={CustomerDetails} />
+          <Stack.Screen name='manageProduct' component={ManageProduct} />
+          <Stack.Screen name='report' component={Report} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

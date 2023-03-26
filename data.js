@@ -639,3 +639,20 @@ export const customerData = [
     phone: "01853860483",
   },
 ];
+
+export const products = [
+  {
+    id: 1,
+    name: "Original Coffee",
+    stock: 56,
+    totalSold: 689,
+    price: 515,
+  },
+  {
+    id: 2,
+    name: "Regular Coffee",
+    stock: 64,
+    totalSold: 489,
+    price: 465,
+  },
+];
