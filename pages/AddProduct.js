@@ -38,7 +38,9 @@ const AddProduct = ({ route }) => {
   return (
     <Common>
       <View style={commonStyles.formContainer}>
-        <Text style={commonStyles.formHeader}>Add Product</Text>
+        <Text style={commonStyles.formHeader}>
+          {route.params?.edit ? "Edit" : "Add"} Product
+        </Text>
 
         <View style={{ rowGap: 9 }}>
           <TextInput

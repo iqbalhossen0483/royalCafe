@@ -17,12 +17,16 @@ const Select = (props) => {
     options,
     header,
     title,
+    defaultValue,
   } = props;
 
   useEffect(() => {
+    if (defaultValue) {
+      setValue(defaultValue);
+    }
     if (value.length >= 3 && value !== headerValue) setShow(true);
     else setShow(false);
-  }, [value]);
+  }, [value, defaultValue]);
 
   function handleTuch(info) {
     Keyboard.dismiss();
@@ -36,6 +40,7 @@ const Select = (props) => {
       <TextInput
         value={value}
         editable={editable}
+        defaultValue={defaultValue || ""}
         onChangeText={(value) => setValue(value)}
         placeholder={placeholder}
         style={commonStyles.input}
@@ -62,7 +67,7 @@ const Select = (props) => {
                 style={{
                   borderBottomWidth: 0.5,
                   borderBottomColor: color.gray,
-                  marginVertical: 5,
+                  marginVertical: 7,
                 }}
               />
             )}

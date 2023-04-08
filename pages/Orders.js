@@ -10,7 +10,7 @@ import { color } from "../components/utilitise/colors";
 const Orders = ({ navigation }) => {
   return (
     <Common>
-      <View style={{ paddingBottom: 55 }}>
+      <View style={{ paddingBottom: 75 }}>
         <FlatList
           data={orderdata}
           keyExtractor={(item) => item.id}

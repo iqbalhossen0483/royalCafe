@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import { Common } from "../App";
 import Button from "../components/utilitise/Button";
 import Select from "../components/utilitise/Select";
@@ -8,27 +8,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { customerData, products } from "../data";
 import { color } from "../components/utilitise/colors";
 import BDT from "../components/utilitise/BDT";
+import { styles } from "../css/createOrder";
+import { Alert } from "react-native";
 
-const productContainer = {
-  position: "absolute",
-  top: 80,
-  left: 100,
-  backgroundColor: "#fff",
-  padding: 15,
-  borderRadius: 5,
-  width: 200,
-  shadowColor: "#000",
-  shadowOffset: {
-    width: 0,
-    height: 1,
-  },
-  shadowOpacity: 0.22,
-  shadowRadius: 2.22,
-  elevation: 3,
-  gap: 6,
-};
-
-const CreateOrder = () => {
+const CreateOrder = ({ route }) => {
+  const [showDelete, setShowDelete] = useState(-1);
   const [product, setProduct] = useState({});
   const [show, setShow] = useState(false);
   const [form, setForm] = useState({
@@ -38,33 +22,78 @@ const CreateOrder = () => {
     billno: "",
   });
 
-  function onSubmit() {
-    const data = form;
-    delete data.shopInfo;
-    data.shopId = form.shopInfo.id;
-    data.status = "Undelivered";
-    const date = new Date();
-    data.date = date.toISOString();
-    data.time = date.getTime();
-    console.log(data);
+  useEffect(() => {
+    const order = route.params?.order;
+    if (!order) return;
+    setForm({
+      shopInfo: {
+        shopName: order.shopName,
+        address: order.address,
+        phone: order.phone,
+      },
+      products: order.products,
+      totalSale: order.totalSale,
+      billno: order.billno,
+    });
+  }, [route.params]);
+
+  function addToListProduct() {
+    const exist = form.products.find((p) => p.id === product.id);
+    if (exist) return Alert.alert("Alrady added");
+    setForm((prev) => {
+      if (!product.qty) product.qty = 1;
+      product.total = product.qty * product.price;
+      prev.totalSale += product.total;
+      prev.products.push(product);
+      return { ...prev };
+    });
+    setProduct({});
+    setShow(false);
   }
 
-  console.log(product);
+  function deleteProductFromList(id) {
+    setForm((prev) => {
+      const filtered = prev.products.filter((p) => p.id !== id);
+      prev.products = filtered;
+      return { ...prev };
+    });
+    setShowDelete(-1);
+  }
+
+  function onSubmit() {
+    const data = form;
+    data.status = "Undelivered";
+    const date = new Date();
+    data.date = date.toISOString().slice(0, 10);
+    data.time = date.getTime();
+    console.log(JSON.stringify(data, undefined, 4));
+  }
 
   return (
     <Common>
       <View style={{ ...commonStyles.formContainer, zIndex: 0 }}>
-        <Text style={commonStyles.formHeader}>Create Order</Text>
-        <View style={{ rowGap: 5 }}>
+        <Text style={commonStyles.formHeader}>
+          {route.params?.edit ? "Edit" : "Create"} Order
+        </Text>
+        <View style={{ rowGap: 5, overflow: "visible" }}>
           <Select
             name='shopInfo'
             placeholder='Shop name'
             url=''
+            defaultValue={route.params?.edit && form.shopInfo?.shopName}
             header='shopName'
             title='address'
             handler={(_, info) =>
               setForm((prev) => {
-                return { ...prev, shopInfo: info };
+                return {
+                  ...prev,
+                  shopInfo: {
+                    id: info.id,
+                    shopName: info.shopName,
+                    address: info.address,
+                    phone: info.phone,
+                  },
+                };
               })
             }
             options={customerData}
@@ -76,11 +105,12 @@ const CreateOrder = () => {
               })
             }
             keyboardType='numeric'
+            defaultValue={form.billno?.toString()}
             style={commonStyles.input}
             placeholder='Bill no.'
           />
 
-          {form.shopInfo.address && (
+          {form.shopInfo?.address && (
             <>
               <TextInput
                 style={commonStyles.input}
@@ -97,38 +127,41 @@ const CreateOrder = () => {
 
           {form.products.length ? (
             <>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  borderBottomColor: color.gray,
-                  borderBottomWidth: 0.5,
-                  paddingBottom: 4,
-                  marginTop: 7,
-                }}
-              >
+              <View style={styles.productTableHeader}>
                 <Text style={{ width: 95 }}>Name</Text>
                 <Text>Qty</Text>
                 <Text>Price</Text>
                 <Text>Total</Text>
               </View>
-              {form.products.map((item, i) => (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    borderBottomColor: color.gray,
-                    borderBottomWidth: 0.5,
-                    paddingBottom: 4,
-                  }}
-                  key={i}
-                >
-                  <Text style={{ width: 95 }}>{item.name}</Text>
-                  <Text>{item.qty}</Text>
-                  <Text>{item.price}</Text>
-                  <BDT style={{ fontWeight: "normal" }} ammount={item.total} />
-                </View>
-              ))}
+              <FlatList
+                keyExtractor={(_, i) => i}
+                data={form.products}
+                renderItem={({ item, index }) => (
+                  <Pressable
+                    onLongPress={() => setShowDelete(index)}
+                    onPress={() => setShowDelete(-1)}
+                    style={styles.productTableItem}
+                  >
+                    <Text style={{ width: 95 }}>{item.name}</Text>
+                    <Text>{item.qty}</Text>
+                    <Text>{item.price}</Text>
+                    <BDT
+                      style={{ fontWeight: "normal" }}
+                      ammount={item.total}
+                    />
+
+                    {showDelete === index ? (
+                      <View style={styles.deleteBtn}>
+                        <Pressable
+                          onPress={() => deleteProductFromList(item.id)}
+                        >
+                          <Text style={styles.deleteBtnText}>Delete</Text>
+                        </Pressable>
+                      </View>
+                    ) : null}
+                  </Pressable>
+                )}
+              />
 
               <View
                 style={{ flexDirection: "row", justifyContent: "flex-end" }}
@@ -139,12 +172,10 @@ const CreateOrder = () => {
             </>
           ) : null}
 
-          <View
-            onTouchStart={() => setShow((prev) => !prev)}
-            style={{ alignItems: "flex-end" }}
-          >
+          <View style={{ alignItems: "flex-end" }}>
             <Button
-              disabled={!form.shopInfo.shopName}
+              onPress={() => setShow((prev) => !prev)}
+              disabled={!form.shopInfo.id}
               style={{ width: 40, height: 40, borderRadius: 100 }}
               title={
                 <Ionicons name='ios-add-circle-sharp' size={24} color='#fff' />
@@ -154,15 +185,16 @@ const CreateOrder = () => {
 
           <Button
             disabled={
-              !form.shopInfo.shopName || !form.products.length || !form.billno
+              !form.shopInfo.id || !form.products.length || !form.billno
             }
             onPress={onSubmit}
             title='Submit'
           />
         </View>
 
+        {/* add product form */}
         {show ? (
-          <View style={productContainer}>
+          <View style={styles.productContainer}>
             <Text
               style={{
                 textAlign: "center",
@@ -176,7 +208,9 @@ const CreateOrder = () => {
               placeholder='Select Product'
               header='name'
               options={products}
-              handler={(_, info) => setProduct(info)}
+              handler={(_, info) =>
+                setProduct({ id: info.id, name: info.name, price: info.price })
+              }
             />
             {product.name ? (
               <>
@@ -210,17 +244,7 @@ const CreateOrder = () => {
               style={{ marginTop: 5 }}
               disabled={!product.name}
               title='Add'
-              onPress={() => {
-                setForm((prev) => {
-                  if (!product.qty) product.qty = 1;
-                  product.total = product.qty * product.price;
-                  prev.totalSale += product.total;
-                  prev.products.push(product);
-                  return { ...prev };
-                });
-                setProduct({});
-                setShow(false);
-              }}
+              onPress={addToListProduct}
             />
           </View>
         ) : null}

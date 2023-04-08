@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { styles } from "../../css/footer";
 import {
   Ionicons,
@@ -10,253 +10,146 @@ import {
   Fontisto,
 } from "@expo/vector-icons";
 import { useState } from "react";
-import Modal from "react-native-modal";
-import { commonStyles } from "../../css/common";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
+import Menu from "./Menu";
+import { color } from "../utilitise/colors";
+import Drawar from "../Drawar";
+import SubMenu from "./SubMenu";
 
 const Footer = () => {
   const [createModal, setCreateModal] = useState(false);
   const [moreOption, setMoreOption] = useState(false);
   const route = useRoute();
-  const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
       {/* home */}
-      <View
-        onTouchEnd={() => navigation.navigate("home")}
-        style={[styles.iconWrapper, route.name === "home" && styles.highlight]}
-      >
-        <Ionicons
-          style={[
-            route.name === "home" ? { color: "#fff" } : { color: "#4b5563" },
-            { fontSize: 20 },
-          ]}
-          name='md-home'
-          size={24}
-          color='black'
-        />
-        <Text style={[route.name === "home" && { color: "#fff" }]}>Home</Text>
-      </View>
-
+      <Menu
+        name='home'
+        Icon={
+          <Ionicons
+            style={[
+              route.name === "home"
+                ? { color: color.green }
+                : { color: "#4b5563" },
+              { fontSize: 20 },
+            ]}
+            name='md-home'
+            size={24}
+            color='black'
+          />
+        }
+      />
       {/* customer */}
-      <View
-        onTouchEnd={() => navigation.navigate("customer")}
-        style={[
-          styles.iconWrapper,
-          route.name === "customer" && styles.highlight,
-        ]}
-      >
-        <FontAwesome5
-          style={[
-            route.name === "customer"
-              ? { color: "#fff" }
-              : { color: "#4b5563" },
-            { fontSize: 20 },
-          ]}
-          name='users'
-          size={24}
-          color='black'
-        />
-        <Text style={[route.name === "customer" && { color: "#fff" }]}>
-          Customers
-        </Text>
-      </View>
+      <Menu
+        name='customer'
+        Icon={
+          <FontAwesome5
+            style={[
+              route.name === "customer"
+                ? { color: color.green }
+                : { color: "#4b5563" },
+              { fontSize: 20 },
+            ]}
+            name='users'
+            size={24}
+            color='black'
+          />
+        }
+      />
 
       {/* plus */}
-      <View>
-        <Ionicons
-          style={styles.plusIcon}
-          onTouchStart={() => setCreateModal(true)}
-          name='ios-add-circle-sharp'
-          size={24}
-          color='black'
-        />
-      </View>
+      <Menu
+        name=''
+        navigate={false}
+        showModal={setCreateModal}
+        Icon={
+          <Ionicons
+            style={{ color: "#4b5563" }}
+            name='ios-add-circle-sharp'
+            size={40}
+            color='black'
+          />
+        }
+      />
 
       {/* order */}
-      <View
-        onTouchEnd={() => navigation.navigate("order")}
-        style={[styles.iconWrapper, route.name === "order" && styles.highlight]}
-      >
-        <Foundation
-          style={[
-            route.name === "order" ? { color: "#fff" } : { color: "#4b5563" },
-            { fontSize: 20 },
-          ]}
-          name='shopping-cart'
-          size={24}
-          color='black'
-        />
-        <Text style={[route.name === "order" && { color: "#fff" }]}>
-          Orders
-        </Text>
-      </View>
+      <Menu
+        name='order'
+        Icon={
+          <Foundation
+            style={[
+              route.name === "order"
+                ? { color: color.green }
+                : { color: "#4b5563" },
+              { fontSize: 20 },
+            ]}
+            name='shopping-cart'
+            size={24}
+            color='black'
+          />
+        }
+      />
 
       {/* more */}
-      <View onTouchStart={() => setMoreOption(true)} style={styles.iconWrapper}>
-        <MaterialIcons
-          style={{ color: "#4b5563", fontSize: 20 }}
-          name='more'
-          size={24}
-          color='black'
-        />
-        <Text>More</Text>
-      </View>
+      <Menu
+        name='more'
+        showModal={setMoreOption}
+        navigate={false}
+        Icon={
+          <MaterialIcons
+            style={{ color: "#4b5563", fontSize: 20 }}
+            name='more'
+            size={24}
+            color='black'
+          />
+        }
+      />
 
       {/* add menu modals */}
-      <Modal
-        onBackButtonPress={() => setCreateModal(false)}
-        isVisible={createModal}
-        coverScreen={false}
-        style={styles.modal}
-      >
-        <View style={{ flex: 1 }}>
-          <View style={styles.closeIconWrapper}>
-            <Ionicons
-              style={styles.closeIcon}
-              onTouchStart={() => setCreateModal(false)}
-              name='close-sharp'
-              size={24}
-              color='black'
-            />
-          </View>
-          <View
-            onTouchStart={() => {
-              navigation.navigate("addshop");
-              setCreateModal(false);
-            }}
-            style={{
-              marginTop: 30,
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                ...commonStyles.iconWrapper,
-                backgroundColor: "#d1fae5",
-              }}
-            >
-              <Entypo name='shop' size={20} color='#10b981' />
-            </View>
-            <Text style={{ fontSize: 18, marginLeft: 5 }}>Add Shop</Text>
-          </View>
-
-          <View
-            onTouchStart={() => {
-              navigation.navigate("createOrder");
-              setCreateModal(false);
-            }}
-            style={{
-              marginTop: 15,
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                ...commonStyles.iconWrapper,
-                backgroundColor: "#cffafe",
-              }}
-            >
-              <FontAwesome name='shopping-basket' size={18} color='#06b6d4' />
-            </View>
-            <Text style={{ fontSize: 18, marginLeft: 5 }}>Create Order</Text>
-          </View>
-
-          <View
-            onTouchStart={() => {
-              navigation.navigate("createNote");
-              setCreateModal(false);
-            }}
-            style={{
-              marginTop: 15,
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                ...commonStyles.iconWrapper,
-                backgroundColor: "#ecfccb",
-              }}
-            >
-              <MaterialIcons name='note-add' size={24} color='#84cc16' />
-            </View>
-            <Text style={{ fontSize: 18, marginLeft: 5 }}>Create Note</Text>
-          </View>
-        </View>
-      </Modal>
+      <Drawar setShowModal={setCreateModal} show={createModal}>
+        <SubMenu
+          name='Add Shop'
+          url='addshop'
+          bgColor='#d1fae5'
+          showModal={setCreateModal}
+          icon={<Entypo name='shop' size={20} color='#10b981' />}
+        />
+        <SubMenu
+          name='Create Order'
+          url='createOrder'
+          bgColor='#cffafe'
+          showModal={setCreateModal}
+          icon={
+            <FontAwesome name='shopping-basket' size={18} color='#06b6d4' />
+          }
+        />
+        <SubMenu
+          name='Create Note'
+          url='createNote'
+          bgColor='#ecfccb'
+          showModal={setCreateModal}
+          icon={<MaterialIcons name='note-add' size={24} color='#84cc16' />}
+        />
+      </Drawar>
 
       {/* more modal */}
-      <Modal
-        onBackButtonPress={() => setMoreOption(false)}
-        isVisible={moreOption}
-        coverScreen={false}
-        style={styles.modal}
-      >
-        <View style={{ flex: 1 }}>
-          <View style={styles.closeIconWrapper}>
-            <Ionicons
-              style={styles.closeIcon}
-              onTouchStart={() => setMoreOption(false)}
-              name='close-sharp'
-              size={24}
-              color='black'
-            />
-          </View>
-
-          <View
-            onTouchStart={() => {
-              navigation.navigate("manageProduct");
-              setMoreOption(false);
-            }}
-            style={{
-              marginTop: 30,
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                ...commonStyles.iconWrapper,
-                backgroundColor: "#ecfccb",
-              }}
-            >
-              <Fontisto name='shopping-store' size={18} color='#84cc16' />
-            </View>
-            <Text style={{ fontSize: 18, marginLeft: 5 }}>Manage Product</Text>
-          </View>
-
-          <View
-            onTouchStart={() => {
-              navigation.navigate("manageUsers");
-              setMoreOption(false);
-            }}
-            style={{
-              marginTop: 10,
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                ...commonStyles.iconWrapper,
-                backgroundColor: "#e0f2fe",
-              }}
-            >
-              <Ionicons name='md-man' size={24} color='#0284c7' />
-            </View>
-            <Text style={{ fontSize: 18, marginLeft: 5 }}>Manage Users</Text>
-          </View>
-        </View>
-      </Modal>
+      <Drawar setShowModal={setMoreOption} show={moreOption}>
+        <SubMenu
+          name='Manage Product'
+          url='manageProduct'
+          bgColor='#ecfccb'
+          showModal={setMoreOption}
+          icon={<Fontisto name='shopping-store' size={18} color='#84cc16' />}
+        />
+        <SubMenu
+          name='Manage Users'
+          url='manageUsers'
+          bgColor='#e0f2fe'
+          showModal={setMoreOption}
+          icon={<Ionicons name='md-man' size={24} color='#0284c7' />}
+        />
+      </Drawar>
     </View>
   );
 };

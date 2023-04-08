@@ -103,7 +103,7 @@ const OrderDetails = ({ route }) => {
                 }}
               />
             )}
-            renderItem={({ item, i }) => (
+            renderItem={({ item }) => (
               <View
                 key={item.id}
                 style={{

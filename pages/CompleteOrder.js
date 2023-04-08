@@ -63,7 +63,13 @@ const CompleteOrder = ({ route, navigation }) => {
               marginBottom: 6,
             }}
           >
-            <View
+            <Pressable
+              onPress={() =>
+                navigation.navigate("createOrder", {
+                  edit: true,
+                  order: data,
+                })
+              }
               style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
             >
               <View style={{ flexDirection: "row", gap: 3 }}>
@@ -71,10 +77,8 @@ const CompleteOrder = ({ route, navigation }) => {
                 <BDT ammount={data.totalSale} />
               </View>
 
-              <Pressable onPress={() => navigation.navigate("editOrder")}>
-                <FontAwesome5 name='edit' size={16} color={color.orange} />
-              </Pressable>
-            </View>
+              <FontAwesome5 name='edit' size={16} color={color.orange} />
+            </Pressable>
             {payment ? (
               <Text>Due Amount: {data.totalSale - payment}৳</Text>
             ) : null}
