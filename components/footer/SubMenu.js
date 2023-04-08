@@ -5,15 +5,27 @@ import { Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { commonStyles } from "../../css/common";
 
-const SubMenu = ({ showModal, name, url, icon, bgColor }) => {
+const SubMenu = (props) => {
   const navigation = useNavigation();
+  const {
+    showModal,
+    name,
+    url,
+    icon,
+    bgColor,
+    navigate = true,
+    onPress,
+  } = props;
+
+  function handler() {
+    showModal(false);
+    if (navigate) navigation.navigate(url);
+    else onPress();
+  }
 
   return (
     <Pressable
-      onPress={() => {
-        navigation.navigate(url);
-        showModal(false);
-      }}
+      onPress={handler}
       style={{
         display: "flex",
         flexDirection: "row",

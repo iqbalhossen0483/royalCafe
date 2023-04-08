@@ -4,13 +4,21 @@ import { styles } from "../css/footer";
 import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-const Drawar = ({ setShowModal, show, coverScreen = false, children }) => {
+const Drawar = (props) => {
+  const {
+    setShowModal,
+    show,
+    coverScreen = false,
+    children,
+    bottom = 35,
+  } = props;
+
   return (
     <Modal
       onBackButtonPress={() => setShowModal(false)}
       isVisible={show}
       coverScreen={coverScreen}
-      style={styles.modal}
+      style={{ ...styles.modal, bottom: bottom }}
     >
       <View style={{ flex: 1, alignItems: "center" }}>
         <View style={styles.closeIconWrapper}>

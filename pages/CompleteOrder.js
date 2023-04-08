@@ -31,9 +31,11 @@ const CompleteOrder = ({ route, navigation }) => {
         >
           <View>
             <Text style={{ fontSize: 16, fontWeight: 500 }}>
-              {data.shopName}
+              {data.shopInfo.shopName}
             </Text>
-            <Text style={{ color: color.darkGray }}>{data.address}</Text>
+            <Text style={{ color: color.darkGray }}>
+              {data.shopInfo.address}
+            </Text>
           </View>
           <View>
             <View style={{ flexDirection: "row", gap: 5 }}>

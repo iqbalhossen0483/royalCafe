@@ -6,7 +6,6 @@ import Select from "../components/utilitise/Select";
 import { commonStyles } from "../css/common";
 import { Ionicons } from "@expo/vector-icons";
 import { customerData, products } from "../data";
-import { color } from "../components/utilitise/colors";
 import BDT from "../components/utilitise/BDT";
 import { styles } from "../css/createOrder";
 import { Alert } from "react-native";
@@ -65,8 +64,19 @@ const CreateOrder = ({ route }) => {
     data.status = "Undelivered";
     const date = new Date();
     data.date = date.toISOString().slice(0, 10);
-    data.time = date.getTime();
+    data.time = formatAMPM(date);
     console.log(JSON.stringify(data, undefined, 4));
+  }
+
+  function formatAMPM(date) {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "pm" : "am";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    const strTime = hours + ":" + minutes + " " + ampm;
+    return strTime;
   }
 
   return (

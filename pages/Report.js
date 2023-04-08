@@ -1,11 +1,14 @@
 import React from "react";
 import { Text, View } from "react-native";
+import { Common } from "../App";
 
 const Report = () => {
   return (
-    <View>
-      <Text>Report</Text>
-    </View>
+    <Common>
+      <View>
+        <Text>Report</Text>
+      </View>
+    </Common>
   );
 };
 

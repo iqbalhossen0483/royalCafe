@@ -23,8 +23,7 @@ const Select = (props) => {
   useEffect(() => {
     if (defaultValue) {
       setValue(defaultValue);
-    }
-    if (value.length >= 3 && value !== headerValue) setShow(true);
+    } else if (value.length >= 3 && value !== headerValue) setShow(true);
     else setShow(false);
   }, [value, defaultValue]);
 

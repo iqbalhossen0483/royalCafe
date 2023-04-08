@@ -16,7 +16,8 @@ const Customers = ({ navigation }) => {
           keyExtractor={(item) => item.id}
           ListHeaderComponent={() => <SearchFilter />}
           renderItem={({ item }) => (
-            <View
+            <Pressable
+              onPress={() => navigation.navigate("customerDetails", item)}
               style={{
                 ...styles.container,
                 flexDirection: "row",
@@ -45,17 +46,15 @@ const Customers = ({ navigation }) => {
                   </Text>
                 </View>
               </View>
-              <Pressable
-                onPress={() => navigation.navigate("customerDetails", item)}
-              >
+              <View>
                 <MaterialIcons
                   style={{ color: color.darkGray }}
                   name='keyboard-arrow-right'
                   size={24}
                   color='black'
                 />
-              </Pressable>
-            </View>
+              </View>
+            </Pressable>
           )}
         />
       </View>

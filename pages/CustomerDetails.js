@@ -12,54 +12,27 @@ const CustomerDetails = ({ route, navigation }) => {
 
   return (
     <Common>
-      <View style={{ marginBottom: 60 }}>
+      <View style={{ marginBottom: 75 }}>
         <FlatList
           data={orderdata}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{
-            backgroundColor: "#fff",
-            borderRadius: 5,
-            paddingVertical: 20,
-            paddingHorizontal: 10,
-            marginVertical: 10,
-          }}
+          contentContainerStyle={styles.detailsContentContainer}
           ListHeaderComponent={() => (
             <>
-              <View
-                style={{
-                  alignItems: "center",
-                  borderBottomColor: color.gray,
-                  borderBottomWidth: 0.6,
-                  paddingBottom: 9,
-                }}
-              >
+              <View style={styles.customerProfile}>
                 <Image
                   source={require("../assets/no-photo.png")}
                   alt=''
                   style={{ width: 50, height: 50, borderRadius: 50 }}
                 />
                 <View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      columnGap: 5,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        textAlign: "center",
-                        fontSize: 19,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {data.shopName}
-                    </Text>
+                  <View style={styles.nameWrapper}>
+                    <Text style={styles.shopName}>{data.shopName}</Text>
                     <Pressable
                       onPress={() =>
                         navigation.navigate("addshop", {
                           edit: true,
-                          customerId: data.id,
+                          data,
                         })
                       }
                     >
@@ -67,22 +40,11 @@ const CustomerDetails = ({ route, navigation }) => {
                     </Pressable>
                   </View>
 
-                  <Text style={{ textAlign: "center", color: color.darkGray }}>
-                    {data.address}
-                  </Text>
+                  <Text style={styles.address}>{data.address}</Text>
                   <Text style={{ textAlign: "center" }}>{data.phone}</Text>
                 </View>
               </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginTop: 10,
-                  borderBottomColor: color.gray,
-                  borderBottomWidth: 0.6,
-                  paddingBottom: 13,
-                }}
-              >
+              <View style={styles.ammountContainer}>
                 <Ammount
                   name='Total Sale'
                   colors={color.green}
@@ -102,38 +64,21 @@ const CustomerDetails = ({ route, navigation }) => {
               </View>
             </>
           )}
-          ItemSeparatorComponent={() => (
-            <View
-              style={{
-                borderBottomColor: color.gray,
-                borderBottomWidth: 0.9,
-              }}
-            />
-          )}
+          ItemSeparatorComponent={() => <View style={styles.itemSeperator} />}
           renderItem={({ item }) => (
-            <View
-              style={{
-                ...styles.container,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
+            <Pressable
+              onPress={() => navigation.navigate("orderDetails", item)}
+              style={{ ...styles.itemContainer, ...styles.container }}
             >
               <View>
                 <View style={{ marginLeft: 6 }}>
                   <Text style={{ fontSize: 16, fontWeight: 500 }}>
-                    {item.shopName}
+                    {item.shopInfo.shopName}
                   </Text>
-                  <Text style={{ color: color.darkGray }}>{item.address}</Text>
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      marginTop: 3,
-                      color: color.darkGray,
-                    }}
-                  >
-                    {item.date}
+                  <Text style={{ color: color.darkGray }}>
+                    {item.shopInfo.address}
                   </Text>
+                  <Text style={styles.date}>{item.date}</Text>
                 </View>
               </View>
               <View>
@@ -146,17 +91,11 @@ const CustomerDetails = ({ route, navigation }) => {
                   <BDT ammount={item.totalSale} />
                 </View>
               </View>
-              <View
-                onTouchStart={() => navigation.navigate("orderDetails", item)}
-                style={{ flexDirection: "row", alignItems: "center" }}
-              >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <View
                   style={{
-                    height: 8,
-                    width: 8,
+                    ...styles.sign,
                     backgroundColor: item.due ? "#dc2626" : "#22c55e",
-                    borderRadius: 50,
-                    marginRight: -5,
                   }}
                 />
                 <MaterialIcons
@@ -166,7 +105,7 @@ const CustomerDetails = ({ route, navigation }) => {
                   color='black'
                 />
               </View>
-            </View>
+            </Pressable>
           )}
         />
       </View>
@@ -178,21 +117,9 @@ export default CustomerDetails;
 
 function Ammount({ name, ammount, colors }) {
   return (
-    <View
-      style={{
-        backgroundColor: colors,
-        paddingHorizontal: 8,
-        paddingVertical: 5,
-        borderRadius: 4,
-      }}
-    >
-      <Text style={{ fontWeight: 500, textAlign: "center", color: "#fff" }}>
-        {name}
-      </Text>
-      <BDT
-        style={{ textAlign: "center", color: "#fff", marginTop: 5 }}
-        ammount={ammount}
-      />
+    <View style={{ ...styles.ammountWrapper, backgroundColor: colors }}>
+      <Text style={styles.ammountName}>{name}</Text>
+      <BDT style={styles.ammount} ammount={ammount} />
     </View>
   );
 }

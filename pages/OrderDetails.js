@@ -50,7 +50,7 @@ const OrderDetails = ({ route }) => {
               borderBottomColor: "#cbd5e1",
             }}
           >
-            {data.shopName}
+            {data.shopInfo.shopName}
           </Text>
         </View>
         <View style={{ flexDirection: "row", columnGap: 5 }}>
@@ -62,7 +62,7 @@ const OrderDetails = ({ route }) => {
               borderBottomColor: "#cbd5e1",
             }}
           >
-            {data.address}
+            {data.shopInfo.address}
           </Text>
         </View>
 

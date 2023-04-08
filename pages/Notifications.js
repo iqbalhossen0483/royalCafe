@@ -7,6 +7,7 @@ import Button from "../components/utilitise/Button";
 import { Common } from "../App";
 import { color } from "../components/utilitise/colors";
 import BDT from "../components/utilitise/BDT";
+import { style } from "../css/notification";
 
 const Notifications = ({ navigation }) => {
   const [showDetails, setShowDetails] = useState(-1);
@@ -20,13 +21,7 @@ const Notifications = ({ navigation }) => {
           contentContainerStyle={{ padding: 5 }}
           renderItem={({ item, index: i }) => (
             <View style={styles.container}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
+              <View style={style.constainer}>
                 <View
                   onTouchStart={() =>
                     setShowDetails((prev) => (i === prev ? -1 : i))
@@ -42,7 +37,7 @@ const Notifications = ({ navigation }) => {
                       style={{ flexDirection: "row", alignItems: "center" }}
                     >
                       <Text style={{ fontSize: 16, fontWeight: 500 }}>
-                        {item.shopName}
+                        {item.shopInfo.shopName}
                       </Text>
                       {showDetails === i ? (
                         <MaterialIcons
@@ -59,7 +54,7 @@ const Notifications = ({ navigation }) => {
                       )}
                     </View>
                     <Text style={{ color: color.darkGray }}>
-                      {item.address}
+                      {item.shopInfo.address}
                     </Text>
                   </View>
                 </View>
@@ -82,44 +77,15 @@ const Notifications = ({ navigation }) => {
               </View>
 
               {showDetails === i && (
-                <View
-                  style={{
-                    marginLeft: 50,
-                    marginTop: 10,
-                    backgroundColor: "#f1f5f9",
-                    paddingHorizontal: 8,
-                    paddingVertical: 10,
-                    borderRadius: 6,
-                    width: 280,
-                  }}
-                >
-                  <View
-                    key={item.id}
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      width: 250,
-                      borderBottomWidth: 1,
-                      borderBottomColor: "#cbd5e1",
-                      paddingBottom: 3,
-                      marginBottom: 3,
-                    }}
-                  >
+                <View style={style.detailsContainer}>
+                  <View key={item.id} style={style.detailsTableHeader}>
                     <Text>Name</Text>
                     <Text>Qty</Text>
                     <Text>Price</Text>
                     <Text>Total</Text>
                   </View>
                   {item.products.map((item, i) => (
-                    <View
-                      key={item.id}
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        marginVertical: 2,
-                        width: 250,
-                      }}
-                    >
+                    <View key={item.id} style={style.detailsItem}>
                       <Text>{item.name}</Text>
                       <Text>{item.qty}</Text>
                       <Text>{item.price}</Text>
@@ -130,37 +96,10 @@ const Notifications = ({ navigation }) => {
                     </View>
                   ))}
 
-                  <View
-                    style={{
-                      marginTop: 4,
-                      alignItems: "flex-end",
-                    }}
-                  >
-                    <View
-                      style={{
-                        borderTopColor: "#cbd5e1",
-                        borderTopWidth: 1,
-                        paddingLeft: 10,
-                        paddingTop: 3,
-                        width: 100,
-
-                        marginTop: 5,
-                      }}
-                    >
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "flex-end",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontWeight: 500,
-                            marginRight: 4,
-                          }}
-                        >
-                          Total:
-                        </Text>
+                  <View style={style.bottomContainer}>
+                    <View style={style.bottomItem}>
+                      <View style={style.totalWrapper}>
+                        <Text style={style.totalText}>Total:</Text>
                         <BDT ammount={item.totalSale} />
                       </View>
                       <View>

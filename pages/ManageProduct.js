@@ -11,12 +11,14 @@ import {
   MaterialCommunityIcons,
   Octicons,
 } from "@expo/vector-icons";
-import { commonStyles } from "../css/common";
 import { alert } from "../components/utilitise/Alert";
 import { products } from "../data";
+import { styles } from "../css/manageProduct";
+import Drawar from "../components/Drawar";
+import SubMenu from "../components/footer/SubMenu";
 
 const ManageProduct = ({ navigation }) => {
-  const [showForm, setShowFrom] = useState(0);
+  const [showForm, setShowFrom] = useState(null);
 
   function removeProduct(id) {
     alert("Are you sure to remove?", () => {
@@ -26,14 +28,7 @@ const ManageProduct = ({ navigation }) => {
 
   return (
     <Common>
-      <View
-        style={{
-          position: "absolute",
-          bottom: 70,
-          right: 15,
-          zIndex: 1,
-        }}
-      >
+      <View style={styles.addBtn}>
         <Button
           style={{ width: 40, height: 40, borderRadius: 100 }}
           title={
@@ -50,31 +45,17 @@ const ManageProduct = ({ navigation }) => {
       <FlatList
         data={products}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{
-          backgroundColor: "#fff",
-          marginVertical: 7,
-          marginHorizontal: 10,
-          padding: 10,
-          borderRadius: 5,
-        }}
+        contentContainerStyle={styles.contentContainer}
         ItemSeparatorComponent={() => <View style={{ marginBottom: 6 }} />}
         renderItem={({ item }) => (
           <Pressable
-            onLongPress={() =>
+            onPress={() =>
               setShowFrom((prev) => {
                 if (prev === item.id) return 0;
                 else return item.id;
               })
             }
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 7,
-              backgroundColor: color.lightGray,
-              borderRadius: 5,
-              paddingHorizontal: 7,
-              justifyContent: "space-between",
-            }}
+            style={styles.itemContainer}
           >
             <View style={{ flexDirection: "row", gap: 7 }}>
               <Image
@@ -93,68 +74,41 @@ const ManageProduct = ({ navigation }) => {
           </Pressable>
         )}
       />
-      {showForm ? (
-        <View
-          style={{
-            gap: 12,
-            position: "absolute",
-            top: 100,
-            right: 160,
-            backgroundColor: "#fff",
-            paddingBottom: 15,
-            paddingTop: 40,
-            paddingHorizontal: 25,
-            borderRadius: 5,
-          }}
-        >
-          <Pressable
-            onPress={() => setShowFrom(0)}
-            style={commonStyles.closeIconWrapper}
-          >
-            <Ionicons name='close' size={20} color={color.darkGray} />
-          </Pressable>
-
-          <Pressable
-            onPress={() =>
-              navigation.navigate("addProduct", {
-                edit: true,
-                productId: showForm,
-              })
-            }
-            style={{ flexDirection: "row", gap: 3, alignItems: "center" }}
-          >
-            <Feather name='edit' size={16} color={color.darkGray} />
-            <Text style={{ fontWeight: 500, color: color.darkGray }}>Edit</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => removeProduct(showForm)}
-            style={{
-              flexDirection: "row",
-              gap: 3,
-              marginLeft: -2,
-              alignItems: "center",
-            }}
-          >
+      <Drawar
+        setShowModal={setShowFrom}
+        show={showForm ? true : false}
+        bottom={300}
+      >
+        <SubMenu
+          name='Edit'
+          url='addProduct'
+          bgColor='#f7d5f6'
+          showModal={setShowFrom}
+          icon={<Feather name='edit' size={16} color='#d638d2' />}
+        />
+        <SubMenu
+          name='Remove'
+          bgColor={color.lightOrange}
+          navigate={false}
+          showModal={setShowFrom}
+          onPress={() => removeProduct(showForm)}
+          icon={
             <MaterialCommunityIcons
               name='archive-remove'
               size={18}
-              color={color.darkGray}
+              color={color.orange}
             />
-            <Text style={{ fontWeight: 500, color: color.darkGray }}>
-              Remove
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => navigation.navigate("report")}
-            style={{ flexDirection: "row", gap: 3, alignItems: "center" }}
-          >
-            <Octicons name='report' size={16} color={color.darkGray} />
-            <Text style={{ fontWeight: 500, color: color.darkGray }}>
-              Report
-            </Text>
-          </Pressable>
-        </View>
-      ) : null}
+          }
+        />
+
+        <SubMenu
+          name='Report'
+          url='report'
+          bgColor='#d7e5f5'
+          showModal={setShowFrom}
+          icon={<Octicons name='report' size={16} color='#3b83db' />}
+        />
+      </Drawar>
     </Common>
   );
 };

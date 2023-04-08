@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Image, Text, TextInput, View } from "react-native";
+import { Image, Text, TextInput, View } from "react-native";
 import { Common } from "../App";
 import Button from "../components/utilitise/Button";
 import FileInput from "../components/utilitise/FileInput";
@@ -22,17 +22,20 @@ const AddShop = ({ route }) => {
 
   useEffect(() => {
     if (route.params?.edit) {
-      console.log("edit shop");
+      setForm(route.params.data);
+      setProfile(route.params.data.profile);
     }
   }, [route.params]);
 
   function onSubmit() {
-    const uri = profile.uri.split(".");
-    form.profile = {
-      name: `${form.owner}.${uri[uri.length - 1]}`,
-      type: "image",
-      uri: profile.uri,
-    };
+    if (typeof profile !== "string") {
+      const uri = profile.uri.split(".");
+      form.profile = {
+        name: `${form.owner}.${uri[uri.length - 1]}`,
+        type: "image",
+        uri: profile.uri,
+      };
+    }
     console.log(form);
   }
 
@@ -45,21 +48,25 @@ const AddShop = ({ route }) => {
 
         <View style={{ rowGap: 9 }}>
           <TextInput
+            defaultValue={form.owner}
             onChangeText={(value) => handleChange("owner", value)}
             style={commonStyles.input}
             placeholder='Shop owner name'
           />
           <TextInput
+            defaultValue={form.shopName}
             onChangeText={(value) => handleChange("shopName", value)}
             style={commonStyles.input}
             placeholder='Shop name'
           />
           <TextInput
+            defaultValue={form.address}
             onChangeText={(value) => handleChange("address", value)}
             style={commonStyles.input}
             placeholder='Address'
           />
           <TextInput
+            defaultValue={form.phone?.toString()}
             onChangeText={(value) => handleChange("phone", parseInt(value))}
             style={commonStyles.input}
             placeholder='Phone number'

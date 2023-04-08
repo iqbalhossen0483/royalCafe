@@ -6,6 +6,7 @@ import { orderdata } from "../data";
 import { Common } from "../App";
 import SearchFilter from "../components/SearchFilter";
 import { color } from "../components/utilitise/colors";
+import { Pressable } from "react-native";
 
 const Orders = ({ navigation }) => {
   return (
@@ -16,7 +17,8 @@ const Orders = ({ navigation }) => {
           keyExtractor={(item) => item.id}
           ListHeaderComponent={() => <SearchFilter />}
           renderItem={({ item }) => (
-            <View
+            <Pressable
+              onPress={() => navigation.navigate("orderDetails", item)}
               style={{
                 ...styles.container,
                 flexDirection: "row",
@@ -31,9 +33,11 @@ const Orders = ({ navigation }) => {
                 />
                 <View style={{ marginLeft: 6 }}>
                   <Text style={{ fontSize: 16, fontWeight: 500 }}>
-                    {item.shopName}
+                    {item.shopInfo.shopName}
                   </Text>
-                  <Text style={{ color: color.darkGray }}>{item.address}</Text>
+                  <Text style={{ color: color.darkGray }}>
+                    {item.shopInfo.address}
+                  </Text>
                   <Text
                     style={{
                       fontSize: 13,
@@ -45,10 +49,7 @@ const Orders = ({ navigation }) => {
                   </Text>
                 </View>
               </View>
-              <View
-                onTouchStart={() => navigation.navigate("orderDetails", item)}
-                style={{ flexDirection: "row", alignItems: "center" }}
-              >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <View
                   style={{
                     height: 8,
@@ -65,7 +66,7 @@ const Orders = ({ navigation }) => {
                   color='black'
                 />
               </View>
-            </View>
+            </Pressable>
           )}
         />
       </View>
