@@ -266,6 +266,9 @@ export const users = [
     address: "Kandirpar",
     phone: "01988784928",
     designation: "Sales man",
+    delivered: 40,
+    average: 4,
+    responseTime: 1,
   },
   {
     id: 2,
@@ -273,5 +276,8 @@ export const users = [
     address: "Kasimpur",
     phone: "01988784928",
     designation: "Manager",
+    delivered: 35,
+    average: 3,
+    responseTime: 1.5,
   },
 ];

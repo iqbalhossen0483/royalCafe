@@ -103,7 +103,10 @@ const ManageUsers = ({ navigation }) => {
 
         <SubMenu
           name='Report'
-          url='profile'
+          navigate={false}
+          onPress={() =>
+            navigation.navigate("profile", { data: showForm, edit: false })
+          }
           bgColor='#d7e5f5'
           showModal={setShowFrom}
           icon={<Octicons name='report' size={16} color='#3b83db' />}

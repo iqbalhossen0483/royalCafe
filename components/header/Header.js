@@ -7,20 +7,30 @@ import { color } from "../utilitise/colors";
 
 const Header = () => {
   const navigation = useNavigation();
+  const data = {
+    id: 1,
+    name: "Mohammad Kamal",
+    address: "Kandirpar",
+    phone: "01988784928",
+    designation: "Sales man",
+    delivered: 40,
+    average: 4,
+    responseTime: 1,
+  };
 
   return (
     <View style={styles.container}>
       <Pressable
         style={styles.profileWrapper}
-        onPress={() => navigation.navigate("editProfile")}
+        onPress={() => navigation.navigate("profile", { data, edit: true })}
       >
         <Image
           style={{ width: 40, height: 40, borderRadius: 100 }}
           source={require("../../assets/no-photo.png")}
         />
         <View style={{ marginLeft: 5 }}>
-          <Text style={styles.name}>Mohammad Kamal</Text>
-          <Text>Admin</Text>
+          <Text style={styles.name}>{data.name}</Text>
+          <Text>{data.designation}</Text>
         </View>
       </Pressable>
       <View

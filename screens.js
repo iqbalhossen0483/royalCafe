@@ -11,7 +11,6 @@ import ManageUsers from "./pages/ManageUsers";
 import Notifications from "./pages/Notifications";
 import OrderDetails from "./pages/OrderDetails";
 import Orders from "./pages/Orders";
-import Profile from "./pages/Profile";
 
 export {
   Home,
@@ -27,5 +26,4 @@ export {
   Notifications,
   OrderDetails,
   Orders,
-  Profile,
 };

@@ -4,8 +4,10 @@ import { Common } from "../App";
 import Button from "../components/utilitise/Button";
 import { commonStyles } from "../css/common";
 import Select from "../components/utilitise/Select";
+import FileInput from "../components/utilitise/FileInput";
 
 const AddUser = ({ route }) => {
+  const [profile, setProfile] = useState(null);
   const [form, setForm] = useState({
     name: "",
     address: "",
@@ -22,10 +24,21 @@ const AddUser = ({ route }) => {
   useEffect(() => {
     if (route.params?.edit) {
       setForm(route.params?.data);
+      if (route.params.user) {
+        setProfile(route.params.data.profile);
+      }
     }
   }, [route.params]);
 
   function onSubmit() {
+    if (route.params?.user && typeof profile !== "string") {
+      const uri = profile.uri.split(".");
+      form.profile = {
+        name: `${form.owner}.${uri[uri.length - 1]}`,
+        type: "image",
+        uri: profile.uri,
+      };
+    }
     console.log(form);
   }
 
@@ -62,22 +75,44 @@ const AddUser = ({ route }) => {
             placeholder='Phone number'
             keyboardType='numeric'
           />
-          <Select
-            name='designation'
-            placeholder='Give a designation'
-            defaultValue={route.params?.edit ? form.designation : ""}
-            url=''
-            header='value'
-            handler={(_, info) =>
-              setForm((prev) => {
-                return {
-                  ...prev,
-                  designation: info.value,
-                };
-              })
-            }
-            options={data}
-          />
+          {!route.params?.user ? (
+            <Select
+              name='designation'
+              placeholder='Give a designation'
+              defaultValue={route.params?.edit ? form.designation : ""}
+              url=''
+              header='value'
+              handler={(_, info) =>
+                setForm((prev) => {
+                  return {
+                    ...prev,
+                    designation: info.value,
+                  };
+                })
+              }
+              options={data}
+            />
+          ) : (
+            <View
+              style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
+            >
+              <View>
+                <FileInput setImage={setProfile} />
+              </View>
+              {profile && (
+                <Image
+                  source={{ uri: profile.uri }}
+                  style={{
+                    width: 50,
+                    height: 50,
+                    borderRadius: 100,
+                    resizeMode: "center",
+                  }}
+                />
+              )}
+            </View>
+          )}
+
           <Button
             disabled={
               !form.name || !form.address || !form.designation || !form.phone
