@@ -5,17 +5,16 @@ import { Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { commonStyles } from "../../css/common";
 
-const SubMenu = (props) => {
+const SubMenu = ({
+  showModal,
+  name,
+  url,
+  icon,
+  bgColor,
+  navigate = true,
+  onPress,
+}) => {
   const navigation = useNavigation();
-  const {
-    showModal,
-    name,
-    url,
-    icon,
-    bgColor,
-    navigate = true,
-    onPress,
-  } = props;
 
   function handler() {
     showModal(false);
@@ -23,24 +22,23 @@ const SubMenu = (props) => {
     else onPress();
   }
 
+  const style = {
+    container: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    icon: {
+      ...commonStyles.iconWrapper,
+      backgroundColor: bgColor,
+    },
+    name: { fontSize: 18, marginLeft: 5 },
+  };
+
   return (
-    <Pressable
-      onPress={handler}
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-      }}
-    >
-      <View
-        style={{
-          ...commonStyles.iconWrapper,
-          backgroundColor: bgColor,
-        }}
-      >
-        {icon}
-      </View>
-      <Text style={{ fontSize: 18, marginLeft: 5 }}>{name}</Text>
+    <Pressable onPress={handler} style={style.container}>
+      <View style={style.icon}>{icon}</View>
+      <Text style={style.name}>{name}</Text>
     </Pressable>
   );
 };

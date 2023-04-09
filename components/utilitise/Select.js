@@ -1,24 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, Keyboard, Text, TextInput, View } from "react-native";
+import {
+  FlatList,
+  Keyboard,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { commonStyles } from "../../css/common";
 import { MaterialIcons } from "@expo/vector-icons";
 import { color } from "./colors";
 
-const Select = (props) => {
+const Select = ({
+  placeholder,
+  name,
+  editable = true,
+  url,
+  handler,
+  options,
+  header,
+  title,
+  defaultValue,
+}) => {
   const [show, setShow] = useState(false);
   const [value, setValue] = useState("");
   const [headerValue, setHeaderValue] = useState("");
-  const {
-    placeholder,
-    name,
-    editable = true,
-    url,
-    handler,
-    options,
-    header,
-    title,
-    defaultValue,
-  } = props;
 
   useEffect(() => {
     if (defaultValue) {
@@ -44,16 +50,16 @@ const Select = (props) => {
         placeholder={placeholder}
         style={commonStyles.input}
       />
-      <MaterialIcons
-        style={{
-          position: "absolute",
-          top: 8,
-          right: 5,
-        }}
-        name={show ? "keyboard-arrow-up" : "keyboard-arrow-down"}
-        size={24}
-        color={color.darkGray}
-      />
+      <Pressable
+        onPress={() => setShow((prev) => !prev)}
+        style={{ position: "absolute", top: 8, right: 5 }}
+      >
+        <MaterialIcons
+          name={show ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+          size={24}
+          color={color.darkGray}
+        />
+      </Pressable>
 
       {show && (
         <View style={commonStyles.selectView}>
@@ -71,14 +77,14 @@ const Select = (props) => {
               />
             )}
             renderItem={({ item }) => (
-              <View onTouchStart={() => handleTuch(item)}>
+              <Pressable onPress={() => handleTuch(item)}>
                 <Text style={{ fontSize: 16 }}>{item[header]}</Text>
                 {title ? (
                   <Text style={{ color: color.darkGray, marginTop: -3 }}>
                     {item[title]}
                   </Text>
                 ) : null}
-              </View>
+              </Pressable>
             )}
           />
         </View>

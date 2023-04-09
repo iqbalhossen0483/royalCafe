@@ -8,6 +8,7 @@ import {
   Entypo,
   FontAwesome,
   Fontisto,
+  AntDesign,
 } from "@expo/vector-icons";
 import { useState } from "react";
 import { useRoute } from "@react-navigation/native";
@@ -140,7 +141,7 @@ const Footer = () => {
           url='manageProduct'
           bgColor='#ecfccb'
           showModal={setMoreOption}
-          icon={<Fontisto name='shopping-store' size={18} color='#84cc16' />}
+          icon={<Fontisto name='shopping-store' size={16} color='#84cc16' />}
         />
         <SubMenu
           name='Manage Users'
@@ -148,6 +149,13 @@ const Footer = () => {
           bgColor='#e0f2fe'
           showModal={setMoreOption}
           icon={<Ionicons name='md-man' size={24} color='#0284c7' />}
+        />
+        <SubMenu
+          name='Add User'
+          url='addUser'
+          bgColor='#eddaf5'
+          showModal={setMoreOption}
+          icon={<AntDesign name='adduser' size={21} color='#af3ae0' />}
         />
       </Drawar>
     </View>

@@ -1,15 +1,15 @@
 import React from "react";
-import { Text, View } from "react-native";
 import { Common } from "../App";
+import { Text, View } from "react-native";
 
-const Profile = () => {
+const EditProfile = () => {
   return (
     <Common>
       <View>
-        <Text>Profile</Text>
+        <Text>edit profile</Text>
       </View>
     </Common>
   );
 };
 
-export default Profile;
+export default EditProfile;

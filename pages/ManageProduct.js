@@ -49,13 +49,8 @@ const ManageProduct = ({ navigation }) => {
         ItemSeparatorComponent={() => <View style={{ marginBottom: 6 }} />}
         renderItem={({ item }) => (
           <Pressable
-            onPress={() =>
-              setShowFrom((prev) => {
-                if (prev === item.id) return 0;
-                else return item.id;
-              })
-            }
             style={styles.itemContainer}
+            onPress={() => setShowFrom(item)}
           >
             <View style={{ flexDirection: "row", gap: 7 }}>
               <Image
@@ -67,8 +62,8 @@ const ManageProduct = ({ navigation }) => {
                 <Text style={{ fontSize: 15, fontWeight: 500 }}>
                   {item.name}
                 </Text>
-                <Text>Stock: {item.stock}</Text>
-                <Text>Total Sold: {item.totalSold}</Text>
+                <Text>Stock: {item.stock}/-</Text>
+                <Text>Total Sold: {item.totalSold}/-</Text>
               </View>
             </View>
           </Pressable>
@@ -81,7 +76,10 @@ const ManageProduct = ({ navigation }) => {
       >
         <SubMenu
           name='Edit'
-          url='addProduct'
+          navigate={false}
+          onPress={() =>
+            navigation.navigate("addProduct", { edit: true, data: showForm })
+          }
           bgColor='#f7d5f6'
           showModal={setShowFrom}
           icon={<Feather name='edit' size={16} color='#d638d2' />}
@@ -91,7 +89,7 @@ const ManageProduct = ({ navigation }) => {
           bgColor={color.lightOrange}
           navigate={false}
           showModal={setShowFrom}
-          onPress={() => removeProduct(showForm)}
+          onPress={() => removeProduct(showForm.id)}
           icon={
             <MaterialCommunityIcons
               name='archive-remove'

@@ -1,4 +1,4 @@
-import { Image, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import { styles } from "../../css/header";
 import { Ionicons } from "@expo/vector-icons";
 import { commonStyles } from "../../css/common";
@@ -10,9 +10,9 @@ const Header = () => {
 
   return (
     <View style={styles.container}>
-      <View
-        onTouchStart={() => navigation.navigate("profile")}
+      <Pressable
         style={styles.profileWrapper}
+        onPress={() => navigation.navigate("editProfile")}
       >
         <Image
           style={{ width: 40, height: 40, borderRadius: 100 }}
@@ -22,7 +22,7 @@ const Header = () => {
           <Text style={styles.name}>Mohammad Kamal</Text>
           <Text>Admin</Text>
         </View>
-      </View>
+      </Pressable>
       <View
         onTouchStart={() => navigation.navigate("notification")}
         style={{ marginRight: 13, position: "relative" }}

@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-import { color } from "../components/utilitise/colors";
 
 export const styles = StyleSheet.create({
   addBtn: {
@@ -18,10 +17,18 @@ export const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 7,
-    backgroundColor: color.lightGray,
+    paddingVertical: 10,
+    backgroundColor: "#eaf0e9",
     borderRadius: 5,
-    paddingHorizontal: 7,
+    paddingHorizontal: 13,
     justifyContent: "space-between",
+    shadowColor: "#011",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });

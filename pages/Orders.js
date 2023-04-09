@@ -16,58 +16,61 @@ const Orders = ({ navigation }) => {
           data={orderdata}
           keyExtractor={(item) => item.id}
           ListHeaderComponent={() => <SearchFilter />}
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() => navigation.navigate("orderDetails", item)}
-              style={{
-                ...styles.container,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Image
-                  style={styles.profile}
-                  source={require("../assets/no-photo.png")}
-                />
-                <View style={{ marginLeft: 6 }}>
-                  <Text style={{ fontSize: 16, fontWeight: 500 }}>
-                    {item.shopInfo.shopName}
-                  </Text>
-                  <Text style={{ color: color.darkGray }}>
-                    {item.shopInfo.address}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      marginTop: 3,
-                      color: color.darkGray,
-                    }}
-                  >
-                    {item.date}
-                  </Text>
+          renderItem={({ item }) => {
+            console.log(`../assets/${item.shopInfo.profile}`);
+            return (
+              <Pressable
+                onPress={() => navigation.navigate("orderDetails", item)}
+                style={{
+                  ...styles.container,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Image
+                    style={styles.profile}
+                    source={require(`../assets/no-photo.png`)}
+                  />
+                  <View style={{ marginLeft: 6 }}>
+                    <Text style={{ fontSize: 16, fontWeight: 500 }}>
+                      {item.shopInfo.shopName}
+                    </Text>
+                    <Text style={{ color: color.darkGray }}>
+                      {item.shopInfo.address}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        marginTop: 3,
+                        color: color.darkGray,
+                      }}
+                    >
+                      {item.date}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <View
-                  style={{
-                    height: 8,
-                    width: 8,
-                    backgroundColor: item.due ? "#dc2626" : "#22c55e",
-                    borderRadius: 50,
-                    marginRight: -5,
-                  }}
-                />
-                <MaterialIcons
-                  style={{ color: color.darkGray }}
-                  name='keyboard-arrow-right'
-                  size={20}
-                  color='black'
-                />
-              </View>
-            </Pressable>
-          )}
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <View
+                    style={{
+                      height: 8,
+                      width: 8,
+                      backgroundColor: item.due ? "#dc2626" : "#22c55e",
+                      borderRadius: 50,
+                      marginRight: -5,
+                    }}
+                  />
+                  <MaterialIcons
+                    style={{ color: color.darkGray }}
+                    name='keyboard-arrow-right'
+                    size={20}
+                    color='black'
+                  />
+                </View>
+              </Pressable>
+            );
+          }}
         />
       </View>
     </Common>

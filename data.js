@@ -5,7 +5,7 @@ export const orderdata = [
       shopName: "Foysal Store",
       address: "Kandir par, cumilla",
       phone: "01853860483",
-      profile: "../assets/no-photo.png",
+      profile: "no-photo.png",
     },
     products: [
       {
@@ -29,7 +29,7 @@ export const orderdata = [
   {
     shopInfo: {
       id: 2,
-      profile: "../assets/no-photo.png",
+      profile: "no-photo.png",
       shopName: "Foysal Store",
       address: "Kandir par, cumilla",
       phone: "01853860483",
@@ -84,7 +84,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
     lastOrder: "02-03-2023",
   },
@@ -93,7 +93,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
     lastOrder: "02-03-2023",
   },
@@ -102,7 +102,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
     lastOrder: "02-03-2023",
   },
@@ -111,7 +111,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
     lastOrder: "02-03-2023",
   },
@@ -120,7 +120,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
     lastOrder: "02-03-2023",
   },
@@ -129,7 +129,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
     lastOrder: "02-03-2023",
   },
@@ -138,7 +138,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
     lastOrder: "02-03-2023",
   },
@@ -147,7 +147,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
   },
   {
@@ -155,7 +155,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
   },
   {
@@ -163,7 +163,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
   },
   {
@@ -171,7 +171,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
   },
   {
@@ -179,7 +179,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
   },
   {
@@ -187,7 +187,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
   },
   {
@@ -195,7 +195,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
   },
   {
@@ -203,7 +203,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
   },
   {
@@ -211,7 +211,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
   },
   {
@@ -219,7 +219,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
   },
   {
@@ -227,7 +227,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
   },
   {
@@ -235,7 +235,7 @@ export const customerData = [
     owner: "Foysal Ahmed",
     shopName: "Foysal Store",
     address: "Kandir par, cumilla",
-    profile: "../assets/no-photo.png",
+    profile: "no-photo.png",
     phone: "01853860483",
   },
 ];
@@ -247,6 +247,7 @@ export const products = [
     stock: 56,
     totalSold: 689,
     price: 515,
+    profile: "../assets/no-photo.png",
   },
   {
     id: 2,
@@ -254,5 +255,23 @@ export const products = [
     stock: 64,
     totalSold: 489,
     price: 465,
+    profile: "../assets/no-photo.png",
+  },
+];
+
+export const users = [
+  {
+    id: 1,
+    name: "Karim",
+    address: "Kandirpar",
+    phone: "01988784928",
+    designation: "Sales man",
+  },
+  {
+    id: 2,
+    name: "Habib",
+    address: "Kasimpur",
+    phone: "01988784928",
+    designation: "Manager",
   },
 ];

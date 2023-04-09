@@ -10,7 +10,7 @@ const AddProduct = ({ route }) => {
   const [form, setForm] = useState({
     name: "",
     price: 0,
-    qty: 0,
+    stock: 0,
   });
 
   function handleChange(name, value) {
@@ -21,7 +21,8 @@ const AddProduct = ({ route }) => {
 
   useEffect(() => {
     if (route.params?.edit) {
-      console.log("edit product");
+      setForm(route.params.data);
+      setImage(route.params.data.profile);
     }
   }, [route.params]);
 
@@ -44,20 +45,23 @@ const AddProduct = ({ route }) => {
 
         <View style={{ rowGap: 9 }}>
           <TextInput
+            defaultValue={form.name}
             onChangeText={(value) => handleChange("name", value)}
             style={commonStyles.input}
             placeholder='Product name'
           />
           <TextInput
+            defaultValue={form.price?.toString()}
             onChangeText={(value) => handleChange("price", parseInt(value))}
             style={commonStyles.input}
             placeholder='Unit price৳'
             keyboardType='numeric'
           />
           <TextInput
-            onChangeText={(value) => handleChange("qty", parseInt(value))}
+            defaultValue={form.stock?.toString()}
+            onChangeText={(value) => handleChange("stock", parseInt(value))}
             style={commonStyles.input}
-            placeholder='Product quantity'
+            placeholder='Product stock'
             keyboardType='numeric'
           />
 
@@ -78,7 +82,7 @@ const AddProduct = ({ route }) => {
             )}
           </View>
           <Button
-            disabled={!form.name || !form.price || !form.qty || !image}
+            disabled={!form.name || !form.price || !form.stock || !image}
             onPress={onSubmit}
             title='Submit'
           />
