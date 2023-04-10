@@ -23,12 +23,12 @@ const CreateOrder = ({ route }) => {
 
   useEffect(() => {
     const order = route.params?.order;
-    if (!order) return;
+    if (!route.params.edit) return;
     setForm({
       shopInfo: {
-        shopName: order.shopName,
-        address: order.address,
-        phone: order.phone,
+        shopName: order.shopInfo.shopName,
+        address: order.shopInfo.address,
+        phone: order.shopInfo.phone,
       },
       products: order.products,
       totalSale: order.totalSale,

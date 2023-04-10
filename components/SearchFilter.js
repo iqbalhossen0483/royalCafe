@@ -8,7 +8,7 @@ import { color } from "./utilitise/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 
 const SearchFilter = () => {
-  const [date, setDate] = useState(new Date(1598051730000));
+  const [date, setDate] = useState(new Date());
   const [value, setValue] = useState("");
   const inputRef = createRef();
 

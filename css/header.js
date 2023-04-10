@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { color } from "../components/utilitise/colors";
 
 export const styles = StyleSheet.create({
   profileWrapper: {
@@ -9,11 +10,11 @@ export const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: "500",
-    color: "#333",
+    color: "#fff",
   },
   container: {
-    backgroundColor: "#fff",
-    paddingVertical: 5,
+    backgroundColor: color.green,
+    paddingVertical: 7,
     paddingHorizontal: 7,
     display: "flex",
     flexDirection: "row",

@@ -101,7 +101,8 @@ const ManageProduct = ({ navigation }) => {
 
         <SubMenu
           name='Report'
-          url='report'
+          navigate={false}
+          onPress={() => navigation.navigate("report", showForm)}
           bgColor='#d7e5f5'
           showModal={setShowFrom}
           icon={<Octicons name='report' size={16} color='#3b83db' />}

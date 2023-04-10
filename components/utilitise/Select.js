@@ -27,11 +27,17 @@ const Select = ({
   const [headerValue, setHeaderValue] = useState("");
 
   useEffect(() => {
+    if (value.length >= 3 && value !== headerValue) setShow(true);
+    else setShow(false);
+  }, [value]);
+
+  useEffect(() => {
     if (defaultValue) {
       setValue(defaultValue);
-    } else if (value.length >= 3 && value !== headerValue) setShow(true);
-    else setShow(false);
-  }, [value, defaultValue]);
+      setHeaderValue(defaultValue);
+      setShow(false);
+    }
+  }, [defaultValue]);
 
   function handleTuch(info) {
     Keyboard.dismiss();

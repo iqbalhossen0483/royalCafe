@@ -24,6 +24,7 @@ import ManageProduct from "./pages/ManageProduct";
 import Report from "./pages/Report";
 import AddUser from "./pages/AddUser";
 import Profile from "./pages/Profile";
+import { color } from "./components/utilitise/colors";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,7 +40,7 @@ export default function App() {
   return (
     <SafeAreaView style={body}>
       <NavigationContainer>
-        <StatusBar style='auto' backgroundColor='#fff' />
+        <StatusBar style='auto' backgroundColor={color.green} />
         <Header />
         <Stack.Navigator
           initialRouteName='home'

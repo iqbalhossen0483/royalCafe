@@ -248,6 +248,9 @@ export const products = [
     totalSold: 689,
     price: 515,
     profile: "../assets/no-photo.png",
+    totalSold: 47,
+    thisMonthSold: 22,
+    previousDaysSold: 5,
   },
   {
     id: 2,
@@ -256,6 +259,9 @@ export const products = [
     totalSold: 489,
     price: 465,
     profile: "../assets/no-photo.png",
+    totalSold: 47,
+    thisMonthSold: 22,
+    previousDaySold: 5,
   },
 ];
 

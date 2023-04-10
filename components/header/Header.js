@@ -30,7 +30,7 @@ const Header = () => {
         />
         <View style={{ marginLeft: 5 }}>
           <Text style={styles.name}>{data.name}</Text>
-          <Text>{data.designation}</Text>
+          <Text style={{ color: "#fff" }}>{data.designation}</Text>
         </View>
       </Pressable>
       <View

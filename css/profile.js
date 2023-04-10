@@ -44,6 +44,7 @@ export const styles = StyleSheet.create({
     paddingLeft: 20,
   },
   workText: {
-    fontSize: 15,
+    fontWeight: 500,
+    color: color.darkGray,
   },
 });

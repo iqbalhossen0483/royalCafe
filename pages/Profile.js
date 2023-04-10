@@ -37,9 +37,7 @@ const Profile = ({ route, navigation }) => {
           ) : null}
         </View>
 
-        <View style={{ alignItems: "center" }}>
-          <Text style={commonStyles.heading}>Work Report</Text>
-        </View>
+        <Text style={commonStyles.heading}>Work Report</Text>
 
         <View style={styles.workContainer}>
           <Text style={styles.workText}>Dilivered Order: {data.delivered}</Text>

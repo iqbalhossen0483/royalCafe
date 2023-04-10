@@ -82,5 +82,6 @@ export const commonStyles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 3,
     elevation: 5,
+    alignSelf: "center",
   },
 });
