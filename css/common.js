@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { color } from "../components/utilitise/colors";
 
 export const commonStyles = StyleSheet.create({
@@ -49,7 +49,6 @@ export const commonStyles = StyleSheet.create({
   },
   selectView: {
     position: "absolute",
-    top: "100%",
     left: 0,
     backgroundColor: "#fff",
     width: "100%",
@@ -64,6 +63,9 @@ export const commonStyles = StyleSheet.create({
     shadowRadius: 2.22,
     elevation: 3,
     borderRadius: 5,
+    zIndex: 15,
+    maxHeight: 434,
+    overflow: "scroll",
   },
   heading: {
     fontSize: 18,
@@ -83,5 +85,30 @@ export const commonStyles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 5,
     alignSelf: "center",
+    paddingBottom: 3,
+  },
+  tableRow: {
+    flexDirection: "row",
+    columnGap: 15,
+    justifyContent: "center",
+    borderBottomColor: color.gray,
+    borderBottomWidth: 1,
+    paddingVertical: 5,
+  },
+  sip: {
+    borderRadius: 15,
+    borderWidth: 0.6,
+    borderColor: color.gray,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    columnGap: 10,
+    alignItems: "center",
+  },
+  sipContainer: {
+    flexDirection: "row",
+    columnGap: 10,
+    flexWrap: "wrap",
   },
 });

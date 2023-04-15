@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, TextInput, View } from "react-native";
 import { Common } from "../App";
 import Button from "../components/utilitise/Button";
 import { commonStyles } from "../css/common";
 
-const CreateNote = () => {
+const CreateNote = ({ route }) => {
   const [notes, setNotes] = useState({
     heading: "",
     description: "",
@@ -14,10 +14,18 @@ const CreateNote = () => {
     console.log(notes);
   }
 
+  useEffect(() => {
+    if (route.params?.edit) {
+      setNotes(route.params.data);
+    }
+  }, [route.params]);
+
   return (
     <Common>
       <View style={commonStyles.formContainer}>
-        <Text style={commonStyles.formHeader}>Create Note</Text>
+        <Text style={commonStyles.formHeader}>
+          {route.params?.edit ? "Edit" : "Create"} Note
+        </Text>
         <View style={{ rowGap: 8 }}>
           <TextInput
             onChangeText={(value) =>
@@ -27,6 +35,7 @@ const CreateNote = () => {
             }
             style={commonStyles.input}
             placeholder='Heading'
+            defaultValue={notes.heading}
           />
           <TextInput
             multiline
@@ -43,6 +52,7 @@ const CreateNote = () => {
               })
             }
             placeholder='Description'
+            defaultValue={notes.description}
           />
         </View>
         <Button

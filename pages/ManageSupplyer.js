@@ -12,15 +12,15 @@ import {
   Octicons,
 } from "@expo/vector-icons";
 import { alert } from "../components/utilitise/Alert";
-import { products } from "../data";
+import { supplyers, users } from "../data";
 import { styles } from "../css/manageProduct";
 import Drawar from "../components/Drawar";
 import SubMenu from "../components/footer/SubMenu";
 
-const ManageProduct = ({ navigation }) => {
+const ManageSupplyer = ({ navigation }) => {
   const [showForm, setShowFrom] = useState(null);
 
-  function removeProduct(id) {
+  function removeSupplyer(id) {
     alert("Are you sure to remove?", () => {
       console.log(id);
     });
@@ -33,7 +33,7 @@ const ManageProduct = ({ navigation }) => {
           style={{ width: 40, height: 40, borderRadius: 100 }}
           title={
             <Ionicons
-              onPress={() => navigation.navigate("addProduct")}
+              onPress={() => navigation.navigate("addSupplyer")}
               name='ios-add-circle-sharp'
               size={24}
               color='#fff'
@@ -43,7 +43,7 @@ const ManageProduct = ({ navigation }) => {
       </View>
 
       <FlatList
-        data={products}
+        data={supplyers}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.contentContainer}
         ItemSeparatorComponent={() => <View style={{ marginBottom: 6 }} />}
@@ -59,11 +59,13 @@ const ManageProduct = ({ navigation }) => {
                 alt=''
               />
               <View>
-                <Text style={{ fontSize: 15, fontWeight: 500 }}>
+                <Text style={{ fontSize: 16, fontWeight: 500 }}>
                   {item.name}
                 </Text>
-                <Text>Stock: {item.stock}/-</Text>
-                <Text>Total Sold: {item.totalSold}/-</Text>
+                <Text style={{ color: color.darkGray, fontWeight: 500 }}>
+                  {item.address}
+                </Text>
+                <Text style={{ color: color.darkGray }}>{item.phone}</Text>
               </View>
             </View>
           </Pressable>
@@ -78,7 +80,7 @@ const ManageProduct = ({ navigation }) => {
           name='Edit'
           navigate={false}
           onPress={() =>
-            navigation.navigate("addProduct", { edit: true, data: showForm })
+            navigation.navigate("addSupplyer", { edit: true, data: showForm })
           }
           bgColor='#f7d5f6'
           showModal={setShowFrom}
@@ -89,7 +91,7 @@ const ManageProduct = ({ navigation }) => {
           bgColor={color.lightOrange}
           navigate={false}
           showModal={setShowFrom}
-          onPress={() => removeProduct(showForm.id)}
+          onPress={() => removeSupplyer(showForm.id)}
           icon={
             <MaterialCommunityIcons
               name='archive-remove'
@@ -102,7 +104,7 @@ const ManageProduct = ({ navigation }) => {
         <SubMenu
           name='Report'
           navigate={false}
-          onPress={() => navigation.navigate("productReport", showForm)}
+          onPress={() => navigation.navigate("supplyer", { data: showForm })}
           bgColor='#d7e5f5'
           showModal={setShowFrom}
           icon={<Octicons name='report' size={16} color='#3b83db' />}
@@ -112,4 +114,4 @@ const ManageProduct = ({ navigation }) => {
   );
 };
 
-export default ManageProduct;
+export default ManageSupplyer;

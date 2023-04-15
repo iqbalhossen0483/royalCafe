@@ -114,7 +114,7 @@ const OrderDetails = ({ route }) => {
                 <Text>{item.name}</Text>
                 <Text>{item.qty}</Text>
                 <Text>{item.price}</Text>
-                <BDT ammount={item.total} />
+                <BDT amount={item.total} />
               </View>
             )}
           />
@@ -124,8 +124,8 @@ const OrderDetails = ({ route }) => {
               alignItems: "flex-end",
             }}
           >
-            <Account name='Total' ammount={data.totalSale} width='100%' />
-            <Account name='Payment' ammount={data.payment} />
+            <Account name='Total' amount={data.totalSale} width='100%' />
+            <Account name='Payment' amount={data.payment} />
 
             {data.collection && (
               <FlatList
@@ -141,7 +141,7 @@ const OrderDetails = ({ route }) => {
                         })
                       }
                     >
-                      <Account name={item.collectedBy} ammount={item.ammount} />
+                      <Account name={item.collectedBy} amount={item.amount} />
                     </Pressable>
                     {showCollectionInfo === item.id ? (
                       <Text
@@ -156,13 +156,13 @@ const OrderDetails = ({ route }) => {
             )}
 
             {data.discount ? (
-              <Account name='Discount' ammount={data.discount} />
+              <Account name='Discount' amount={data.discount} />
             ) : null}
 
             <Account
               style={{ color: data.due ? "#dc2626" : "#000" }}
               name='Due'
-              ammount={data.due}
+              amount={data.due}
             />
 
             <View>
@@ -257,7 +257,7 @@ const OrderDetails = ({ route }) => {
 
 export default OrderDetails;
 
-function Account({ name, ammount, width, style }) {
+function Account({ name, amount, width, style }) {
   return (
     <View
       style={{
@@ -272,7 +272,7 @@ function Account({ name, ammount, width, style }) {
       }}
     >
       <Text style={{ fontWeight: 500, marginRight: 4, ...style }}>{name}:</Text>
-      <BDT style={style} ammount={ammount} />
+      <BDT style={style} amount={amount} />
     </View>
   );
 }

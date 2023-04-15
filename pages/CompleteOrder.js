@@ -76,7 +76,7 @@ const CompleteOrder = ({ route, navigation }) => {
             >
               <View style={{ flexDirection: "row", gap: 3 }}>
                 <Text>Total Amount:</Text>
-                <BDT ammount={data.totalSale} />
+                <BDT amount={data.totalSale} />
               </View>
 
               <FontAwesome5 name='edit' size={16} color={color.orange} />

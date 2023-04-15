@@ -21,13 +21,13 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 3,
   },
-  ammountWrapper: {
+  amountWrapper: {
     paddingHorizontal: 8,
     paddingVertical: 5,
     borderRadius: 4,
   },
-  ammountName: { fontWeight: 500, textAlign: "center", color: "#fff" },
-  ammount: { textAlign: "center", color: "#fff", marginTop: 5 },
+  amountName: { fontWeight: 500, textAlign: "center", color: "#fff" },
+  amount: { textAlign: "center", color: "#fff", marginTop: 5 },
   detailsContentContainer: {
     backgroundColor: "#fff",
     borderRadius: 5,
@@ -52,7 +52,7 @@ export const styles = StyleSheet.create({
     fontWeight: 500,
   },
   address: { textAlign: "center", color: color.darkGray },
-  ammountContainer: {
+  amountContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10,

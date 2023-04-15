@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  FlatList,
-  Keyboard,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Keyboard, Pressable, Text, TextInput, View } from "react-native";
 import { commonStyles } from "../../css/common";
 import { MaterialIcons } from "@expo/vector-icons";
 import { color } from "./colors";
@@ -21,6 +14,7 @@ const Select = ({
   header,
   title,
   defaultValue,
+  top = false,
 }) => {
   const [show, setShow] = useState(false);
   const [value, setValue] = useState("");
@@ -47,7 +41,7 @@ const Select = ({
   }
 
   return (
-    <View style={{ zIndex: 1 }}>
+    <View style={{ zIndex: 100 }}>
       <TextInput
         value={value}
         editable={editable}
@@ -68,31 +62,27 @@ const Select = ({
       </Pressable>
 
       {show && (
-        <View style={commonStyles.selectView}>
-          <FlatList
-            data={options}
-            style={{ maxHeight: 434 }}
-            keyExtractor={(_, i) => i}
-            ItemSeparatorComponent={() => (
-              <View
-                style={{
-                  borderBottomWidth: 0.5,
-                  borderBottomColor: color.gray,
-                  marginVertical: 7,
-                }}
-              />
-            )}
-            renderItem={({ item }) => (
-              <Pressable onPress={() => handleTuch(item)}>
-                <Text style={{ fontSize: 16 }}>{item[header]}</Text>
-                {title ? (
-                  <Text style={{ color: color.darkGray, marginTop: -3 }}>
-                    {item[title]}
-                  </Text>
-                ) : null}
-              </Pressable>
-            )}
-          />
+        <View
+          style={{ ...commonStyles.selectView, top: !top ? "100%" : "-400%" }}
+        >
+          {options.map((item, i) => (
+            <Pressable
+              onPress={() => handleTuch(item)}
+              key={i}
+              style={{
+                borderBottomWidth: 0.5,
+                borderBottomColor: color.gray,
+                paddingVertical: 7,
+              }}
+            >
+              <Text style={{ fontSize: 16 }}>{item[header]}</Text>
+              {title ? (
+                <Text style={{ color: color.darkGray, marginTop: -3 }}>
+                  {item[title]}
+                </Text>
+              ) : null}
+            </Pressable>
+          ))}
         </View>
       )}
     </View>

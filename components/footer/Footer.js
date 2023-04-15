@@ -9,6 +9,7 @@ import {
   FontAwesome,
   Fontisto,
   AntDesign,
+  Octicons,
 } from "@expo/vector-icons";
 import { useState } from "react";
 import { useRoute } from "@react-navigation/native";
@@ -108,7 +109,7 @@ const Footer = () => {
       />
 
       {/* add menu modals */}
-      <Drawar setShowModal={setCreateModal} show={createModal}>
+      <Drawar setShowModal={() => setCreateModal(false)} show={createModal}>
         <SubMenu
           name='Add Shop'
           url='addshop'
@@ -116,6 +117,7 @@ const Footer = () => {
           showModal={setCreateModal}
           icon={<Entypo name='shop' size={20} color='#10b981' />}
         />
+
         <SubMenu
           name='Create Order'
           url='createOrder'
@@ -135,7 +137,7 @@ const Footer = () => {
       </Drawar>
 
       {/* more modal */}
-      <Drawar setShowModal={setMoreOption} show={moreOption}>
+      <Drawar setShowModal={() => setMoreOption(false)} show={moreOption}>
         <SubMenu
           name='Manage Product'
           url='manageProduct'
@@ -148,14 +150,28 @@ const Footer = () => {
           url='manageUsers'
           bgColor='#e0f2fe'
           showModal={setMoreOption}
-          icon={<Ionicons name='md-man' size={24} color='#0284c7' />}
+          icon={<FontAwesome5 name='users' size={16} color='#0284c7' />}
         />
         <SubMenu
-          name='Add User'
-          url='addUser'
+          name='Manage Supplyer'
+          url='manageSupplyer'
+          bgColor='#f0d8ef'
+          showModal={setMoreOption}
+          icon={<Entypo name='users' size={18} color='#d620cd' />}
+        />
+        <SubMenu
+          name='Transition History'
+          url='transitions'
           bgColor='#eddaf5'
           showModal={setMoreOption}
-          icon={<AntDesign name='adduser' size={21} color='#af3ae0' />}
+          icon={<Octicons name='history' size={16} color='#af3ae0' />}
+        />
+        <SubMenu
+          name='Your Notes'
+          url='notes'
+          bgColor='#e3c0ed'
+          showModal={setMoreOption}
+          icon={<Foundation name='clipboard-notes' size={20} color='#b51fde' />}
         />
       </Drawar>
     </View>

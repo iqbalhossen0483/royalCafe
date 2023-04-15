@@ -44,23 +44,15 @@ const CustomerDetails = ({ route, navigation }) => {
                   <Text style={{ textAlign: "center" }}>{data.phone}</Text>
                 </View>
               </View>
-              <View style={styles.ammountContainer}>
-                <Ammount
-                  name='Total Sale'
-                  colors={color.green}
-                  ammount={88500}
-                />
-                <Ammount
-                  name='Due Sale'
-                  colors={color.orange}
-                  ammount={88500}
-                />
-                <Ammount
+              <View style={styles.amountContainer}>
+                <Amount name='Total Sale' colors={color.green} amount={88500} />
+                <Amount name='Due Sale' colors={color.orange} amount={88500} />
+                <Amount
                   name='Due Collection'
                   colors={color.green}
-                  ammount={88500}
+                  amount={88500}
                 />
-                <Ammount name='Due' colors={color.orange} ammount={88500} />
+                <Amount name='Due' colors={color.orange} amount={88500} />
               </View>
             </>
           )}
@@ -88,7 +80,7 @@ const CustomerDetails = ({ route, navigation }) => {
                 </View>
                 <View style={{ flexDirection: "row" }}>
                   <Text>Sale: </Text>
-                  <BDT ammount={item.totalSale} />
+                  <BDT amount={item.totalSale} />
                 </View>
               </View>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -115,11 +107,11 @@ const CustomerDetails = ({ route, navigation }) => {
 
 export default CustomerDetails;
 
-function Ammount({ name, ammount, colors }) {
+function Amount({ name, amount, colors }) {
   return (
-    <View style={{ ...styles.ammountWrapper, backgroundColor: colors }}>
-      <Text style={styles.ammountName}>{name}</Text>
-      <BDT style={styles.ammount} ammount={ammount} />
+    <View style={{ ...styles.amountWrapper, backgroundColor: colors }}>
+      <Text style={styles.amountName}>{name}</Text>
+      <BDT style={styles.amount} amount={amount} />
     </View>
   );
 }

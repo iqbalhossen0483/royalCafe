@@ -1,8 +1,8 @@
 import React from "react";
 import { Text } from "react-native";
 
-const BDT = ({ ammount, style }) => {
-  const taka = ammount.toString();
+const BDT = ({ amount, style, bdtSign = true }) => {
+  const taka = amount.toString();
   const formated =
     taka.length === 4
       ? taka.slice(0, 1) + "," + taka.slice(1, 4)
@@ -22,7 +22,12 @@ const BDT = ({ ammount, style }) => {
         taka.slice(5, taka.length)
       : taka;
 
-  return <Text style={{ fontWeight: 500, ...style }}>{formated}৳</Text>;
+  return (
+    <Text style={{ fontWeight: 500, ...style }}>
+      {formated}
+      {bdtSign && "৳"}
+    </Text>
+  );
 };
 
 export default BDT;

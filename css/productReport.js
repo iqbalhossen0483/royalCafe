@@ -37,13 +37,20 @@ export const style = StyleSheet.create({
     fontSize: 13,
     fontWeight: 500,
     marginTop: 15,
-    textAlign: "center",
     color: color.green,
   },
-  subHeaderWrapper: {},
+  subHeaderWrapper: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   icon: {
     position: "absolute",
-    right: 0,
-    top: 14,
+    right: 10,
+    top: 20,
+  },
+  monthName: {
+    fontWeight: 500,
+    color: color.darkGray,
   },
 });

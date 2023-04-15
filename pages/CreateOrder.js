@@ -23,7 +23,7 @@ const CreateOrder = ({ route }) => {
 
   useEffect(() => {
     const order = route.params?.order;
-    if (!route.params.edit) return;
+    if (!route.params?.edit) return;
     setForm({
       shopInfo: {
         shopName: order.shopInfo.shopName,
@@ -155,10 +155,7 @@ const CreateOrder = ({ route }) => {
                     <Text style={{ width: 95 }}>{item.name}</Text>
                     <Text>{item.qty}</Text>
                     <Text>{item.price}</Text>
-                    <BDT
-                      style={{ fontWeight: "normal" }}
-                      ammount={item.total}
-                    />
+                    <BDT style={{ fontWeight: "normal" }} amount={item.total} />
 
                     {showDelete === index ? (
                       <View style={styles.deleteBtn}>
@@ -177,7 +174,7 @@ const CreateOrder = ({ route }) => {
                 style={{ flexDirection: "row", justifyContent: "flex-end" }}
               >
                 <Text>Total:</Text>
-                <BDT ammount={form.totalSale} />
+                <BDT amount={form.totalSale} />
               </View>
             </>
           ) : null}

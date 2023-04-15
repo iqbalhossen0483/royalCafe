@@ -72,7 +72,7 @@ const ManageUsers = ({ navigation }) => {
         )}
       />
       <Drawar
-        setShowModal={setShowFrom}
+        setShowModal={() => setShowFrom(null)}
         show={showForm ? true : false}
         bottom={300}
       >

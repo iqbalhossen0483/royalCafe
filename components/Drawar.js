@@ -4,18 +4,18 @@ import { styles } from "../css/footer";
 import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-const Drawar = (props) => {
-  const {
-    setShowModal,
-    show,
-    coverScreen = false,
-    children,
-    bottom = 35,
-  } = props;
-
+const Drawar = ({
+  setShowModal,
+  show,
+  coverScreen = false,
+  children,
+  bottom = 35,
+  width = "50%",
+  rowGap = 10,
+}) => {
   return (
     <Modal
-      onBackButtonPress={() => setShowModal(false)}
+      onBackButtonPress={setShowModal}
       isVisible={show}
       coverScreen={coverScreen}
       style={{ ...styles.modal, bottom: bottom }}
@@ -24,15 +24,13 @@ const Drawar = (props) => {
         <View style={styles.closeIconWrapper}>
           <Ionicons
             style={styles.closeIcon}
-            onTouchStart={() => setShowModal(false)}
+            onTouchStart={setShowModal}
             name='close-sharp'
             size={24}
             color='black'
           />
         </View>
-        <View style={{ width: "50%", rowGap: 10, marginTop: 30 }}>
-          {children}
-        </View>
+        <View style={{ width, rowGap, marginTop: 30 }}>{children}</View>
       </View>
     </Modal>
   );

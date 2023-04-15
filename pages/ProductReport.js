@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import { Common } from "../App";
-import { style } from "../css/report";
+import { style } from "../css/productReport";
 import { commonStyles } from "../css/common";
 import { BarChart } from "react-native-chart-kit";
 import { MaterialIcons } from "@expo/vector-icons";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import { color } from "../components/utilitise/colors";
 
-const Report = ({ route }) => {
+const ProductReport = ({ route }) => {
   const [date, setDate] = useState(new Date());
+  const [month, setMonth] = useState("");
   const data = {
     labels: [
       "Jan",
@@ -31,6 +33,14 @@ const Report = ({ route }) => {
       },
     ],
   };
+
+  useEffect(() => {
+    const month =
+      date.toLocaleString("en-us", { month: "long" }) +
+      " " +
+      date.getFullYear();
+    setMonth(month);
+  }, [date]);
 
   const showDatepicker = () => {
     DateTimePickerAndroid.open({
@@ -67,7 +77,10 @@ const Report = ({ route }) => {
         </Text>
 
         <View style={style.subHeaderWrapper}>
-          <Text style={style.subHeader}>Monthly Report</Text>
+          <View>
+            <Text style={style.subHeader}>Monthly Report</Text>
+            <Text style={style.monthName}>{month}</Text>
+          </View>
           <Pressable style={style.icon} onPress={showDatepicker}>
             <MaterialIcons name='filter-list' size={20} color='black' />
           </Pressable>
@@ -90,4 +103,4 @@ const Report = ({ route }) => {
   );
 };
 
-export default Report;
+export default ProductReport;

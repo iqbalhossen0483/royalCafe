@@ -91,7 +91,7 @@ const Notifications = ({ navigation }) => {
                       <Text>{item.price}</Text>
                       <BDT
                         style={{ marginRight: i !== 0 ? 6 : 0 }}
-                        ammount={item.total}
+                        amount={item.total}
                       />
                     </View>
                   ))}
@@ -100,7 +100,7 @@ const Notifications = ({ navigation }) => {
                     <View style={style.bottomItem}>
                       <View style={style.totalWrapper}>
                         <Text style={style.totalText}>Total:</Text>
-                        <BDT ammount={item.totalSale} />
+                        <BDT amount={item.totalSale} />
                       </View>
                       <View>
                         <Button

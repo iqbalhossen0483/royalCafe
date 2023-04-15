@@ -42,9 +42,6 @@ const Profile = ({ route, navigation }) => {
         <View style={styles.workContainer}>
           <Text style={styles.workText}>Dilivered Order: {data.delivered}</Text>
           <Text style={styles.workText}>Avarage: {data.average}</Text>
-          <Text style={styles.workText}>
-            Response Time: {data.responseTime} h
-          </Text>
         </View>
       </View>
     </Common>

@@ -1,11 +1,17 @@
-import React from "react";
-import { Text, View } from "react-native";
 import { Common } from "../App";
+import StockReport from "../components/StockReport";
+import Account from "../components/home/Account";
+import CashReport from "../components/home/CashReport";
+import { ScrollView } from "react-native";
 
 const Home = () => {
   return (
     <Common>
-      <Text>home</Text>
+      <ScrollView style={{ marginBottom: 75 }}>
+        <CashReport />
+        <Account />
+        <StockReport />
+      </ScrollView>
     </Common>
   );
 };

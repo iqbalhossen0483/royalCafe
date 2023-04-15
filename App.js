@@ -21,10 +21,15 @@ import {
   Orders,
 } from "./screens";
 import ManageProduct from "./pages/ManageProduct";
-import Report from "./pages/Report";
+import ProductReport from "./pages/ProductReport";
 import AddUser from "./pages/AddUser";
 import Profile from "./pages/Profile";
 import { color } from "./components/utilitise/colors";
+import Transitions from "./pages/Transitions";
+import AddSupplyer from "./pages/AddSupplyer";
+import ManageSupplyer from "./pages/ManageSupplyer";
+import Supplyer from "./pages/Supplyer";
+import Notes from "./pages/Notes";
 
 const Stack = createNativeStackNavigator();
 
@@ -60,9 +65,14 @@ export default function App() {
           <Stack.Screen name='editOrder' component={EditOrder} />
           <Stack.Screen name='customerDetails' component={CustomerDetails} />
           <Stack.Screen name='manageProduct' component={ManageProduct} />
-          <Stack.Screen name='report' component={Report} />
+          <Stack.Screen name='productReport' component={ProductReport} />
           <Stack.Screen name='addUser' component={AddUser} />
           <Stack.Screen name='profile' component={Profile} />
+          <Stack.Screen name='transitions' component={Transitions} />
+          <Stack.Screen name='addSupplyer' component={AddSupplyer} />
+          <Stack.Screen name='manageSupplyer' component={ManageSupplyer} />
+          <Stack.Screen name='supplyer' component={Supplyer} />
+          <Stack.Screen name='notes' component={Notes} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
