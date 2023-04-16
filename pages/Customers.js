@@ -6,6 +6,7 @@ import { Common } from "../App";
 import { customerData } from "../data";
 import SearchFilter from "../components/SearchFilter";
 import { color } from "../components/utilitise/colors";
+import BDT from "../components/utilitise/BDT";
 
 const Customers = ({ navigation }) => {
   return (
@@ -35,17 +36,18 @@ const Customers = ({ navigation }) => {
                     {item.shopName}
                   </Text>
                   <Text style={{ color: color.darkGray }}>{item.address}</Text>
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      marginTop: 3,
-                      color: color.darkGray,
-                    }}
-                  >
-                    {item.phone}
+                  <Text style={{ color: color.darkGray }}>
+                    Last Order: {item.lastOrder}
                   </Text>
+                  <Text style={{ color: color.darkGray }}>{item.phone}</Text>
+                  {item.due ? (
+                    <Text style={{ fontWeight: 500, color: color.orange }}>
+                      Due: <BDT amount={item.due} />
+                    </Text>
+                  ) : null}
                 </View>
               </View>
+
               <View>
                 <MaterialIcons
                   style={{ color: color.darkGray }}

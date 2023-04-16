@@ -4,6 +4,8 @@ import { Image, Text, View } from "react-native";
 import { styles } from "../css/profile";
 import Button from "../components/utilitise/Button";
 import { commonStyles } from "../css/common";
+import BDT from "../components/utilitise/BDT";
+import { alert } from "../components/utilitise/Alert";
 
 const Profile = ({ route, navigation }) => {
   const data = route.params.data;
@@ -12,6 +14,12 @@ const Profile = ({ route, navigation }) => {
       edit: true,
       data: data,
       user: true,
+    });
+  }
+
+  function logOut() {
+    alert("Are you sure to log Out?", () => {
+      console.log("ok");
     });
   }
 
@@ -30,18 +38,42 @@ const Profile = ({ route, navigation }) => {
               <Text style={styles.phone}>{data.phone}</Text>
             </View>
           </View>
-          {route.params.edit ? (
-            <View style={{ marginTop: 8 }}>
-              <Button onPress={goForEdit} title='Edit Profile' />
-            </View>
-          ) : null}
+          <View style={{ marginTop: 8, flexDirection: "row", columnGap: 10 }}>
+            <Button
+              onPress={() =>
+                navigation.navigate("balanceTransfer", { user: data })
+              }
+              title='Money Transfer'
+            />
+            {route.params.edit ? (
+              <>
+                <Button onPress={goForEdit} title='Edit Profile' />
+                <Button
+                  style={{ backgroundColor: "#e8a72e" }}
+                  onPress={logOut}
+                  title='LogOut'
+                />
+              </>
+            ) : null}
+          </View>
         </View>
 
         <Text style={commonStyles.heading}>Work Report</Text>
 
         <View style={styles.workContainer}>
-          <Text style={styles.workText}>Dilivered Order: {data.delivered}</Text>
-          <Text style={styles.workText}>Avarage: {data.average}</Text>
+          <Text style={styles.workText}>
+            Dilivered Order: <BDT amount={data.delivered} bdtSign={false} />
+          </Text>
+          {data.debt ? (
+            <Text style={{ ...styles.workText, color: "#e319a6" }}>
+              Debt: <BDT amount={data.debt} />
+            </Text>
+          ) : null}
+          {data.salesMoney ? (
+            <Text style={{ ...styles.workText, color: "#191ce3" }}>
+              Balance: <BDT amount={data.salesMoney} />
+            </Text>
+          ) : null}
         </View>
       </View>
     </Common>

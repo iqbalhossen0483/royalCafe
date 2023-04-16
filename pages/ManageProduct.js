@@ -5,12 +5,7 @@ import { Text, View } from "react-native";
 import { Common } from "../App";
 import Button from "../components/utilitise/Button";
 import { color } from "../components/utilitise/colors";
-import {
-  Ionicons,
-  Feather,
-  MaterialCommunityIcons,
-  Octicons,
-} from "@expo/vector-icons";
+import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { alert } from "../components/utilitise/Alert";
 import { products } from "../data";
 import { styles } from "../css/manageProduct";
@@ -97,15 +92,6 @@ const ManageProduct = ({ navigation }) => {
               color={color.orange}
             />
           }
-        />
-
-        <SubMenu
-          name='Report'
-          navigate={false}
-          onPress={() => navigation.navigate("productReport", showForm)}
-          bgColor='#d7e5f5'
-          showModal={setShowFrom}
-          icon={<Octicons name='report' size={16} color='#3b83db' />}
         />
       </Drawar>
     </Common>

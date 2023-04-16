@@ -30,14 +30,10 @@ const ManageUsers = ({ navigation }) => {
     <Common>
       <View style={styles.addBtn}>
         <Button
+          onPress={() => navigation.navigate("addUser")}
           style={{ width: 40, height: 40, borderRadius: 100 }}
           title={
-            <Ionicons
-              onPress={() => navigation.navigate("addUser")}
-              name='ios-add-circle-sharp'
-              size={24}
-              color='#fff'
-            />
+            <Ionicons name='ios-add-circle-sharp' size={24} color='#fff' />
           }
         />
       </View>

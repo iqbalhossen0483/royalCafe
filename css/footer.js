@@ -42,7 +42,6 @@ export const styles = StyleSheet.create({
   modal: {
     position: "absolute",
     left: 0,
-    minHeight: 200,
     backgroundColor: "#fff",
     width: "90%",
     borderRadius: 10,
@@ -54,7 +53,8 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.19,
     shadowRadius: 5.62,
     elevation: 6,
-    paddingBottom: 10,
+    paddingBottom: 20,
+    zIndex: 50,
   },
   closeIcon: {
     color: "#57534e",

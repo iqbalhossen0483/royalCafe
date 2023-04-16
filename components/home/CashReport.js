@@ -43,35 +43,29 @@ const CashReport = () => {
         </View>
       ))}
       <View
-        style={{
-          width: "100%",
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
+        style={{ justifyContent: "center", alignItems: "center", width: "40%" }}
       >
-        <Button
-          onPress={showDatepicker}
-          style={{ width: "70%" }}
-          title='Be Specific'
+        <Select
+          defaultValue='Days'
+          header='name'
+          name='method'
+          editable={false}
+          top={true}
+          placeholder='Select method'
+          options={[
+            { name: "Days" },
+            { name: "Month" },
+            { name: "Year" },
+            { name: "All" },
+          ]}
+          handler={(_, info) => setMethods(info)}
         />
-        <View style={{ width: "25%" }}>
-          <Select
-            defaultValue='Days'
-            header='name'
-            name='method'
-            editable={false}
-            top={true}
-            placeholder='Select method'
-            options={[
-              { name: "Days" },
-              { name: "Month" },
-              { name: "Year" },
-              { name: "All" },
-            ]}
-            handler={(_, info) => setMethods(info)}
-          />
-        </View>
       </View>
+      <Button
+        onPress={showDatepicker}
+        style={{ width: "100%" }}
+        title='Be Specific'
+      />
     </View>
   );
 };

@@ -9,8 +9,8 @@ const AddProduct = ({ route }) => {
   const [image, setImage] = useState(null);
   const [form, setForm] = useState({
     name: "",
-    price: 0,
-    stock: 0,
+    price: "",
+    stock: "",
   });
 
   function handleChange(name, value) {

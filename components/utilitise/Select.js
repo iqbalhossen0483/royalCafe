@@ -15,6 +15,7 @@ const Select = ({
   title,
   defaultValue,
   top = false,
+  zIndex = 100,
 }) => {
   const [show, setShow] = useState(false);
   const [value, setValue] = useState("");
@@ -41,7 +42,7 @@ const Select = ({
   }
 
   return (
-    <View style={{ zIndex: 100 }}>
+    <View style={{ zIndex }}>
       <TextInput
         value={value}
         editable={editable}

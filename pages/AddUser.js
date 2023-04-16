@@ -13,6 +13,7 @@ const AddUser = ({ route }) => {
     address: "",
     phone: "",
     designation: "",
+    password: "",
   });
 
   function handleChange(name, value) {
@@ -74,6 +75,14 @@ const AddUser = ({ route }) => {
             style={commonStyles.input}
             placeholder='Phone number'
             keyboardType='numeric'
+          />
+          <TextInput
+            defaultValue={form.password}
+            onChangeText={(value) => handleChange("password", value)}
+            style={commonStyles.input}
+            placeholder='Password'
+            secureTextEntry={true}
+            textContentType={"password"}
           />
           {!route.params?.user ? (
             <Select

@@ -1,22 +1,15 @@
 import { Image, Pressable, Text, View } from "react-native";
 import { styles } from "../../css/header";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { commonStyles } from "../../css/common";
 import { useNavigation } from "@react-navigation/native";
 import { color } from "../utilitise/colors";
+import { users } from "../../data";
+import BDT from "../utilitise/BDT";
 
 const Header = () => {
   const navigation = useNavigation();
-  const data = {
-    id: 1,
-    name: "Mohammad Kamal",
-    address: "Kandirpar",
-    phone: "01988784928",
-    designation: "Sales man",
-    delivered: 40,
-    average: 4,
-    responseTime: 1,
-  };
+  const data = users[0];
 
   return (
     <View style={styles.container}>
@@ -30,7 +23,26 @@ const Header = () => {
         />
         <View style={{ marginLeft: 5 }}>
           <Text style={styles.name}>{data.name}</Text>
-          <Text style={{ color: "#fff" }}>{data.designation}</Text>
+          <Pressable
+            onPress={() =>
+              navigation.navigate("balanceTransfer", { user: data })
+            }
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              columnGap: 8,
+              marginTop: -5,
+            }}
+          >
+            <Text style={{ color: "#e6e6f2" }}>
+              AC: <BDT amount={data.salesMoney || 0} />
+            </Text>
+            <MaterialCommunityIcons
+              name='bank-transfer-out'
+              size={28}
+              color='#e6e6f2'
+            />
+          </Pressable>
         </View>
       </Pressable>
       <View

@@ -95,6 +95,7 @@ export const commonStyles = StyleSheet.create({
     borderBottomWidth: 1,
     paddingVertical: 5,
   },
+
   sip: {
     borderRadius: 15,
     borderWidth: 0.6,

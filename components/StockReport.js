@@ -27,6 +27,7 @@ const StockReport = () => {
 
   useEffect(() => {
     const demo = [];
+    if (!stockReport.length) return;
     products.forEach((item) => {
       const product = stockReport.find((d) => item.name === d.name);
       if (product) demo.push(product);
@@ -54,13 +55,17 @@ const StockReport = () => {
 
       <View style={{ alignItems: "center", width: "100%" }}>
         <View style={commonStyles.tableRow}>
-          <Text style={styles}>Name</Text>
-          <Text style={styles}>Previous</Text>
-          <Text style={styles}>Purchase</Text>
-          <Text style={{ width: "15%", textAlign: "center" }}>Sale</Text>
-          <Text style={{ width: "19%", textAlign: "center" }}>Remaining</Text>
+          <Text style={{ ...styles, fontWeight: 500 }}>Name</Text>
+          <Text style={{ ...styles, fontWeight: 500 }}>Previous</Text>
+          <Text style={{ ...styles, fontWeight: 500 }}>Purchase</Text>
+          <Text style={{ width: "15%", textAlign: "center", fontWeight: 500 }}>
+            Sale
+          </Text>
+          <Text style={{ width: "19%", textAlign: "center", fontWeight: 500 }}>
+            Remaining
+          </Text>
         </View>
-        {data &&
+        {data ? (
           data.map((item, i) => (
             <View style={commonStyles.tableRow} key={i}>
               <Text style={styles}>
@@ -79,7 +84,10 @@ const StockReport = () => {
                 amount={item.remainingStock}
               />
             </View>
-          ))}
+          ))
+        ) : (
+          <Text>No sales</Text>
+        )}
       </View>
 
       <View
@@ -100,7 +108,7 @@ const StockReport = () => {
             defaultValue='Days'
             header='name'
             name='method'
-            top='0%'
+            top={true}
             editable={false}
             placeholder='Select method'
             options={[

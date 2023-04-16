@@ -45,14 +45,22 @@ const CustomerDetails = ({ route, navigation }) => {
                 </View>
               </View>
               <View style={styles.amountContainer}>
-                <Amount name='Total Sale' colors={color.green} amount={88500} />
-                <Amount name='Due Sale' colors={color.orange} amount={88500} />
+                <Amount
+                  name='Total Sale'
+                  colors={color.green}
+                  amount={data.totalSale}
+                />
+                <Amount
+                  name='Due Sale'
+                  colors={color.orange}
+                  amount={data.dueSale}
+                />
                 <Amount
                   name='Due Collection'
                   colors={color.green}
-                  amount={88500}
+                  amount={data.collection}
                 />
-                <Amount name='Due' colors={color.orange} amount={88500} />
+                <Amount name='Due' colors={color.orange} amount={data.due} />
               </View>
             </>
           )}
