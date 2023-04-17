@@ -31,6 +31,8 @@ import Supplyer from "./pages/Supplyer";
 import Notes from "./pages/Notes";
 import BalanceTransfer from "./pages/BalanceTransfer";
 import Login from "./pages/Login";
+import Message from "./components/utilitise/Message";
+import StoreProvider from "./context/StoreProvider";
 
 const Stack = createNativeStackNavigator();
 
@@ -44,39 +46,42 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={body}>
-      <NavigationContainer>
-        <StatusBar style='auto' backgroundColor={color.green} />
-        <Stack.Navigator
-          initialRouteName='home'
-          screenOptions={{ headerShown: false }}
-        >
-          <Stack.Screen name='home' component={Home} />
-          <Stack.Screen name='customer' component={Customers} />
-          <Stack.Screen name='order' component={Orders} />
-          <Stack.Screen name='addshop' component={AddShop} />
-          <Stack.Screen name='createOrder' component={CreateOrder} />
-          <Stack.Screen name='createNote' component={CreateNote} />
-          <Stack.Screen name='addProduct' component={AddProduct} />
-          <Stack.Screen name='manageUsers' component={ManageMan} />
-          <Stack.Screen name='notification' component={Notifications} />
-          <Stack.Screen name='orderDetails' component={OrderDetails} />
-          <Stack.Screen name='completeOrder' component={CompleteOrder} />
-          <Stack.Screen name='editOrder' component={EditOrder} />
-          <Stack.Screen name='customerDetails' component={CustomerDetails} />
-          <Stack.Screen name='manageProduct' component={ManageProduct} />
-          <Stack.Screen name='addUser' component={AddUser} />
-          <Stack.Screen name='profile' component={Profile} />
-          <Stack.Screen name='transitions' component={Transitions} />
-          <Stack.Screen name='addSupplyer' component={AddSupplyer} />
-          <Stack.Screen name='manageSupplyer' component={ManageSupplyer} />
-          <Stack.Screen name='supplyer' component={Supplyer} />
-          <Stack.Screen name='notes' component={Notes} />
-          <Stack.Screen name='balanceTransfer' component={BalanceTransfer} />
-          <Stack.Screen name='login' component={Login} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
+    <StoreProvider>
+      <SafeAreaView style={body}>
+        <NavigationContainer>
+          <StatusBar style='auto' backgroundColor={color.green} />
+          <Stack.Navigator
+            initialRouteName='home'
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name='home' component={Home} />
+            <Stack.Screen name='customer' component={Customers} />
+            <Stack.Screen name='order' component={Orders} />
+            <Stack.Screen name='addshop' component={AddShop} />
+            <Stack.Screen name='createOrder' component={CreateOrder} />
+            <Stack.Screen name='createNote' component={CreateNote} />
+            <Stack.Screen name='addProduct' component={AddProduct} />
+            <Stack.Screen name='manageUsers' component={ManageMan} />
+            <Stack.Screen name='notification' component={Notifications} />
+            <Stack.Screen name='orderDetails' component={OrderDetails} />
+            <Stack.Screen name='completeOrder' component={CompleteOrder} />
+            <Stack.Screen name='editOrder' component={EditOrder} />
+            <Stack.Screen name='customerDetails' component={CustomerDetails} />
+            <Stack.Screen name='manageProduct' component={ManageProduct} />
+            <Stack.Screen name='addUser' component={AddUser} />
+            <Stack.Screen name='profile' component={Profile} />
+            <Stack.Screen name='transitions' component={Transitions} />
+            <Stack.Screen name='addSupplyer' component={AddSupplyer} />
+            <Stack.Screen name='manageSupplyer' component={ManageSupplyer} />
+            <Stack.Screen name='supplyer' component={Supplyer} />
+            <Stack.Screen name='notes' component={Notes} />
+            <Stack.Screen name='balanceTransfer' component={BalanceTransfer} />
+            <Stack.Screen name='login' component={Login} />
+          </Stack.Navigator>
+          <Message />
+        </NavigationContainer>
+      </SafeAreaView>
+    </StoreProvider>
   );
 }
 

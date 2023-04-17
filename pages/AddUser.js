@@ -5,16 +5,21 @@ import Button from "../components/utilitise/Button";
 import { commonStyles } from "../css/common";
 import Select from "../components/utilitise/Select";
 import FileInput from "../components/utilitise/FileInput";
+import { Fetch } from "../services/common";
+import useStore from "../context/useStore";
+const initialState = {
+  name: "",
+  address: "",
+  phone: "",
+  designation: "",
+  password: "",
+  profile: "",
+};
 
 const AddUser = ({ route }) => {
   const [profile, setProfile] = useState(null);
-  const [form, setForm] = useState({
-    name: "",
-    address: "",
-    phone: "",
-    designation: "",
-    password: "",
-  });
+  const store = useStore();
+  const [form, setForm] = useState(initialState);
 
   function handleChange(name, value) {
     setForm((prev) => {
@@ -31,16 +36,23 @@ const AddUser = ({ route }) => {
     }
   }, [route.params]);
 
-  function onSubmit() {
-    if (route.params?.user && typeof profile !== "string") {
-      const uri = profile.uri.split(".");
-      form.profile = {
-        name: `${form.owner}.${uri[uri.length - 1]}`,
-        type: "image",
-        uri: profile.uri,
-      };
+  async function onSubmit() {
+    try {
+      if (route.params?.user && typeof profile !== "string") {
+        const uri = profile.uri.split(".");
+        form.profile = {
+          name: `${form.owner}.${uri[uri.length - 1]}`,
+          type: "image",
+          uri: profile.uri,
+        };
+      }
+
+      const { message } = await Fetch("/user", "POST", form);
+      if (message) store.setMessage({ msg: message, type: "success" });
+      setForm(initialState);
+    } catch (error) {
+      store.setMessage({ msg: error.message, type: "error" });
     }
-    console.log(form);
   }
 
   const data = [
@@ -70,11 +82,12 @@ const AddUser = ({ route }) => {
             placeholder='Address'
           />
           <TextInput
-            defaultValue={form.phone?.toString()}
-            onChangeText={(value) => handleChange("phone", parseInt(value))}
+            defaultValue={form.phone}
+            onChangeText={(value) => handleChange("phone", value)}
             style={commonStyles.input}
             placeholder='Phone number'
-            keyboardType='numeric'
+            keyboardType='phone-pad'
+            maxLength={11}
           />
           <TextInput
             defaultValue={form.password}
@@ -84,6 +97,7 @@ const AddUser = ({ route }) => {
             secureTextEntry={true}
             textContentType={"password"}
           />
+
           {!route.params?.user ? (
             <Select
               name='designation'
