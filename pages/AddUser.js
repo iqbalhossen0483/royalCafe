@@ -7,6 +7,7 @@ import Select from "../components/utilitise/Select";
 import FileInput from "../components/utilitise/FileInput";
 import { Fetch } from "../services/common";
 import useStore from "../context/useStore";
+import Loading from "../components/utilitise/Loading";
 const initialState = {
   name: "",
   address: "",
@@ -38,6 +39,18 @@ const AddUser = ({ route }) => {
 
   async function onSubmit() {
     try {
+      store.setLoading(true);
+      if (form.password.length < 6)
+        throw {
+          message: "Password should be at least 6 characters",
+          type: "alert",
+        };
+      if (form.phone.length < 11)
+        throw {
+          message: "Phone number is invalid",
+          type: "alert",
+        };
+
       if (route.params?.user && typeof profile !== "string") {
         const uri = profile.uri.split(".");
         form.profile = {
@@ -48,17 +61,18 @@ const AddUser = ({ route }) => {
       }
 
       const { message } = await Fetch("/user", "POST", form);
+      store.setLoading(false);
       if (message) store.setMessage({ msg: message, type: "success" });
       setForm(initialState);
     } catch (error) {
-      store.setMessage({ msg: error.message, type: "error" });
+      store.setLoading(false);
+      store.setMessage({ msg: error.message, type: error.type || "error" });
     }
   }
 
   const data = [
-    { key: 1, value: "Sales Manager" },
-    { key: 2, value: "Manager" },
-    { key: 3, value: "Admin" },
+    { key: 1, value: "Sales Man" },
+    { key: 2, value: "Admin" },
   ];
 
   return (
@@ -73,7 +87,7 @@ const AddUser = ({ route }) => {
             defaultValue={form.name}
             onChangeText={(value) => handleChange("name", value)}
             style={commonStyles.input}
-            placeholder='User name'
+            placeholder='Name'
           />
           <TextInput
             defaultValue={form.address}

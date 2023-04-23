@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, Pressable } from "react-native";
 import { Image } from "react-native";
 import { Text, View } from "react-native";
@@ -12,13 +12,27 @@ import {
   Octicons,
 } from "@expo/vector-icons";
 import { alert } from "../components/utilitise/Alert";
-import { users } from "../data";
 import { styles } from "../css/manageProduct";
 import Drawar from "../components/Drawar";
 import SubMenu from "../components/footer/SubMenu";
+import useStore from "../context/useStore";
+import { Fetch } from "../services/common";
 
 const ManageUsers = ({ navigation }) => {
   const [showForm, setShowFrom] = useState(null);
+  const [users, setUsers] = useState(null);
+  const store = useStore();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const users = await Fetch("/user", "GET");
+        setUsers(users);
+      } catch (error) {
+        store.setMessage({ msg: error.message, type: "error" });
+      }
+    })();
+  }, []);
 
   function removeProduct(id) {
     alert("Are you sure to remove?", () => {

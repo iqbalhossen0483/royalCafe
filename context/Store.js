@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const Store = () => {
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({
     msg: "",
     type: "",
@@ -8,6 +9,8 @@ const Store = () => {
   return {
     message,
     setMessage,
+    loading,
+    setLoading,
   };
 };
 

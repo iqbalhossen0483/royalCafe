@@ -33,6 +33,7 @@ import BalanceTransfer from "./pages/BalanceTransfer";
 import Login from "./pages/Login";
 import Message from "./components/utilitise/Message";
 import StoreProvider from "./context/StoreProvider";
+import Loading from "./components/utilitise/Loading";
 
 const Stack = createNativeStackNavigator();
 
@@ -79,6 +80,7 @@ export default function App() {
             <Stack.Screen name='login' component={Login} />
           </Stack.Navigator>
           <Message />
+          <Loading />
         </NavigationContainer>
       </SafeAreaView>
     </StoreProvider>
