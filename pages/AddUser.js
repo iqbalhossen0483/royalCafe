@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { Text, TextInput, View, Image } from "react-native";
 import { Common } from "../App";
 import Button from "../components/utilitise/Button";
 import { commonStyles } from "../css/common";
@@ -7,7 +7,8 @@ import Select from "../components/utilitise/Select";
 import FileInput from "../components/utilitise/FileInput";
 import { Fetch } from "../services/common";
 import useStore from "../context/useStore";
-import Loading from "../components/utilitise/Loading";
+import mime from "mime";
+
 const initialState = {
   name: "",
   address: "",
@@ -17,10 +18,10 @@ const initialState = {
   profile: "",
 };
 
-const AddUser = ({ route }) => {
+const AddUser = ({ route, navigation }) => {
+  const [form, setForm] = useState(initialState);
   const [profile, setProfile] = useState(null);
   const store = useStore();
-  const [form, setForm] = useState(initialState);
 
   function handleChange(name, value) {
     setForm((prev) => {
@@ -40,7 +41,7 @@ const AddUser = ({ route }) => {
   async function onSubmit() {
     try {
       store.setLoading(true);
-      if (form.password.length < 6)
+      if (!route.params?.user && form.password.length < 6)
         throw {
           message: "Password should be at least 6 characters",
           type: "alert",
@@ -52,18 +53,32 @@ const AddUser = ({ route }) => {
         };
 
       if (route.params?.user && typeof profile !== "string") {
-        const uri = profile.uri.split(".");
+        const newImageUri = "file:///" + profile.uri.split("file:/").join("");
         form.profile = {
-          name: `${form.owner}.${uri[uri.length - 1]}`,
-          type: "image",
-          uri: profile.uri,
+          uri: newImageUri,
+          type: mime.getType(newImageUri),
+          name: newImageUri.split("/").pop(),
         };
       }
 
-      const { message } = await Fetch("/user", "POST", form);
+      //save user;
+      if (!route.params?.edit) {
+        const { message } = await Fetch("/user", "POST", form);
+        if (message) store.setMessage({ msg: message, type: "success" });
+        setForm(initialState);
+      }
+      //edit user;
+      else {
+        const formData = new FormData();
+        Object.entries(form).forEach(([key, value]) => {
+          formData.append(key, value);
+        });
+        const { message } = await Fetch(`/user`, "PUT", formData, true);
+        if (message) store.setMessage({ msg: message, type: "success" });
+      }
       store.setLoading(false);
-      if (message) store.setMessage({ msg: message, type: "success" });
-      setForm(initialState);
+      store.setUpdateUser(true);
+      navigation.navigate("manageUsers", { update: true });
     } catch (error) {
       store.setLoading(false);
       store.setMessage({ msg: error.message, type: error.type || "error" });
@@ -103,32 +118,34 @@ const AddUser = ({ route }) => {
             keyboardType='phone-pad'
             maxLength={11}
           />
-          <TextInput
-            defaultValue={form.password}
-            onChangeText={(value) => handleChange("password", value)}
-            style={commonStyles.input}
-            placeholder='Password'
-            secureTextEntry={true}
-            textContentType={"password"}
-          />
 
           {!route.params?.user ? (
-            <Select
-              name='designation'
-              placeholder='Give a designation'
-              defaultValue={route.params?.edit ? form.designation : ""}
-              url=''
-              header='value'
-              handler={(_, info) =>
-                setForm((prev) => {
-                  return {
-                    ...prev,
-                    designation: info.value,
-                  };
-                })
-              }
-              options={data}
-            />
+            <>
+              <TextInput
+                defaultValue={form.password}
+                onChangeText={(value) => handleChange("password", value)}
+                style={commonStyles.input}
+                placeholder='Password'
+                secureTextEntry={true}
+                textContentType={"password"}
+              />
+              <Select
+                name='designation'
+                placeholder='Give a designation'
+                defaultValue={route.params?.edit ? form.designation : ""}
+                url=''
+                header='value'
+                handler={(_, info) =>
+                  setForm((prev) => {
+                    return {
+                      ...prev,
+                      designation: info.value,
+                    };
+                  })
+                }
+                options={data}
+              />
+            </>
           ) : (
             <View
               style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
@@ -136,7 +153,7 @@ const AddUser = ({ route }) => {
               <View>
                 <FileInput setImage={setProfile} />
               </View>
-              {profile && (
+              {profile ? (
                 <Image
                   source={{ uri: profile.uri }}
                   style={{
@@ -146,7 +163,7 @@ const AddUser = ({ route }) => {
                     resizeMode: "center",
                   }}
                 />
-              )}
+              ) : null}
             </View>
           )}
 

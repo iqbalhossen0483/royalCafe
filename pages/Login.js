@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { Text, TextInput, View } from "react-native";
-import { Common } from "../App";
 import Button from "../components/utilitise/Button";
 import { commonStyles } from "../css/common";
+import useStore from "../context/useStore";
+import { Fetch } from "../services/common";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Login = () => {
+const Login = ({ navigation }) => {
+  const store = useStore();
   const [form, setForm] = useState({
     phone: "",
     password: "",
@@ -16,8 +19,20 @@ const Login = () => {
     });
   }
 
-  function onSubmit() {
-    console.log(form);
+  async function onSubmit() {
+    try {
+      store.setLoading(true);
+      const result = await Fetch("/login", "POST", form);
+      store.setLoading(false);
+      await AsyncStorage.setItem("token", result.token);
+      store.setUser(result.user);
+      store.setMessage({ msg: result.message, type: "success" });
+      navigation.navigate("home");
+    } catch (error) {
+      console.log(error);
+      store.setLoading(false);
+      store.setMessage({ msg: error.message, type: error.type || "error" });
+    }
   }
 
   return (
@@ -29,6 +44,8 @@ const Login = () => {
           onChangeText={(value) => handleChange("phone", value)}
           style={commonStyles.input}
           placeholder='Phone number'
+          keyboardType='phone-pad'
+          maxLength={11}
         />
         <TextInput
           onChangeText={(value) => handleChange("password", value)}

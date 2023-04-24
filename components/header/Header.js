@@ -1,48 +1,35 @@
 import { Image, Pressable, Text, View } from "react-native";
 import { styles } from "../../css/header";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { commonStyles } from "../../css/common";
 import { useNavigation } from "@react-navigation/native";
 import { color } from "../utilitise/colors";
-import { users } from "../../data";
 import BDT from "../utilitise/BDT";
+import useStore from "../../context/useStore";
+import { serverUrl } from "../../services/common";
 
 const Header = () => {
   const navigation = useNavigation();
-  const data = users[0];
+  const { user } = useStore();
 
   return (
     <View style={styles.container}>
       <Pressable
         style={styles.profileWrapper}
-        onPress={() => navigation.navigate("profile", { data, edit: true })}
+        onPress={() =>
+          navigation.navigate("profile", { data: user, edit: true })
+        }
       >
         <Image
           style={{ width: 40, height: 40, borderRadius: 100 }}
-          source={require("../../assets/no-photo.png")}
+          source={{ uri: serverUrl + user.profile }}
+          resizeMode='cover'
         />
         <View style={{ marginLeft: 5 }}>
-          <Text style={styles.name}>{data.name}</Text>
-          <Pressable
-            onPress={() =>
-              navigation.navigate("balanceTransfer", { user: data })
-            }
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              columnGap: 8,
-              marginTop: -5,
-            }}
-          >
-            <Text style={{ color: "#e6e6f2" }}>
-              AC: <BDT amount={data.salesMoney || 0} />
-            </Text>
-            <MaterialCommunityIcons
-              name='bank-transfer-out'
-              size={28}
-              color='#e6e6f2'
-            />
-          </Pressable>
+          <Text style={styles.name}>{user.name}</Text>
+          <Text style={{ color: "#e6e6f2" }}>
+            AC: <BDT amount={user?.salesMoney || 0} />
+          </Text>
         </View>
       </Pressable>
       <View

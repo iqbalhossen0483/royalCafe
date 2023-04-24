@@ -34,6 +34,7 @@ import Login from "./pages/Login";
 import Message from "./components/utilitise/Message";
 import StoreProvider from "./context/StoreProvider";
 import Loading from "./components/utilitise/Loading";
+import ProtectApp from "./context/ProtectApp";
 
 const Stack = createNativeStackNavigator();
 
@@ -89,10 +90,10 @@ export default function App() {
 
 export function Common({ children }) {
   return (
-    <>
+    <ProtectApp>
       <Header />
       {children}
       <Footer />
-    </>
+    </ProtectApp>
   );
 }

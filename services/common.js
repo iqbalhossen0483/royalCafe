@@ -1,6 +1,6 @@
 export async function Fetch(url, method, body, formData = false) {
   try {
-    const newUrl = "https://7206-103-109-59-101.ngrok-free.app" + url;
+    const newUrl = "https://1807-103-109-59-101.ngrok-free.app" + url;
     const option =
       method === "GET"
         ? {}
@@ -22,3 +22,5 @@ export async function Fetch(url, method, body, formData = false) {
     throw error;
   }
 }
+
+export const serverUrl = "https://1807-103-109-59-101.ngrok-free.app/";

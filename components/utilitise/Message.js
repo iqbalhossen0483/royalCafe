@@ -62,6 +62,7 @@ const Message = () => {
           />
         ) : store.message.type === "alert" ? (
           <Image
+            resizeMode='contain'
             source={require("../../assets/alert.png")}
             style={{
               width: 50,

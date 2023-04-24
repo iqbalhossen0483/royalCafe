@@ -16,9 +16,9 @@ import { styles } from "../css/manageProduct";
 import Drawar from "../components/Drawar";
 import SubMenu from "../components/footer/SubMenu";
 import useStore from "../context/useStore";
-import { Fetch } from "../services/common";
+import { Fetch, serverUrl } from "../services/common";
 
-const ManageUsers = ({ navigation }) => {
+const ManageUsers = ({ navigation, route }) => {
   const [showForm, setShowFrom] = useState(null);
   const [users, setUsers] = useState(null);
   const store = useStore();
@@ -26,17 +26,34 @@ const ManageUsers = ({ navigation }) => {
   useEffect(() => {
     (async () => {
       try {
+        store.setLoading(true);
+        if (route.params?.update) {
+          route.params.update = false;
+        }
         const users = await Fetch("/user", "GET");
-        setUsers(users);
+        const rest = users.filter((item) => item.id !== store.user.id);
+        setUsers(rest);
+        store.setLoading(false);
       } catch (error) {
+        store.setLoading(false);
         store.setMessage({ msg: error.message, type: "error" });
       }
     })();
-  }, []);
+  }, [route.params?.update]);
 
   function removeProduct(id) {
-    alert("Are you sure to remove?", () => {
-      console.log(id);
+    alert("Are you sure to remove?", async () => {
+      try {
+        store.setLoading(true);
+        const { message } = await Fetch(`/user?id=${id}`, "DELETE");
+        store.setLoading(false);
+        store.setMessage({ msg: message, type: "success" });
+        const rest = users.filter((user) => user.id !== id);
+        setUsers(rest);
+      } catch (error) {
+        store.setLoading(false);
+        store.setMessage({ msg: error.message, type: "error" });
+      }
     });
   }
 
@@ -63,11 +80,19 @@ const ManageUsers = ({ navigation }) => {
             onPress={() => setShowFrom(item)}
           >
             <View style={{ flexDirection: "row", gap: 7 }}>
-              <Image
-                style={{ width: 40, height: 55, borderRadius: 5 }}
-                source={require("../assets/no-photo.png")}
-                alt=''
-              />
+              {item.profile ? (
+                <Image
+                  style={{ width: 40, height: 55, borderRadius: 5 }}
+                  source={{ uri: serverUrl + item.profile }}
+                  alt=''
+                />
+              ) : (
+                <Image
+                  style={{ width: 40, height: 55, borderRadius: 5 }}
+                  source={require("../assets/no-photo.png")}
+                  alt=''
+                />
+              )}
               <View>
                 <Text style={{ fontSize: 16, fontWeight: 500 }}>
                   {item.name}
