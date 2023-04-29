@@ -2,6 +2,7 @@ import React from "react";
 import Button from "./Button";
 import { Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import mime from "mime";
 
 const FileInput = ({ setImage }) => {
   async function handler() {
@@ -13,7 +14,15 @@ const FileInput = ({ setImage }) => {
         quality: 1,
       });
 
-      setImage(result.assets[0]);
+      if (result.assets[0]) {
+        const image = result.assets[0];
+        const imageUri = "file:///" + image.uri.split("file:/").join("");
+        setImage({
+          uri: imageUri,
+          type: mime.getType(imageUri),
+          name: imageUri.split("/").pop(),
+        });
+      }
     } catch (error) {
       Alert.alert(error);
     }

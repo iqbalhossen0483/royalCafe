@@ -14,9 +14,9 @@ const ProtectApp = ({ children }) => {
     if (!store.userLoading && !store.user) {
       navigation.navigate("login");
     }
-  }, [store.user]);
+  }, [store.user, store.userLoading]);
 
-  if (!store.userLoading) return children;
+  if (!store.userLoading && store.user) return children;
   else
     return (
       <View

@@ -12,6 +12,7 @@ const Header = () => {
   const navigation = useNavigation();
   const { user } = useStore();
 
+  if (!user) return null;
   return (
     <View style={styles.container}>
       <Pressable

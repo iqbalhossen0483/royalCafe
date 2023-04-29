@@ -39,13 +39,16 @@ const ManageUsers = ({ navigation, route }) => {
         store.setMessage({ msg: error.message, type: "error" });
       }
     })();
-  }, [route.params?.update]);
+  }, [store.updateUser]);
 
-  function removeProduct(id) {
+  function removeUser(id, profile) {
     alert("Are you sure to remove?", async () => {
       try {
         store.setLoading(true);
-        const { message } = await Fetch(`/user?id=${id}`, "DELETE");
+        const { message } = await Fetch(
+          `/user?id=${id}&profile=${profile}`,
+          "DELETE"
+        );
         store.setLoading(false);
         store.setMessage({ msg: message, type: "success" });
         const rest = users.filter((user) => user.id !== id);
@@ -126,7 +129,7 @@ const ManageUsers = ({ navigation, route }) => {
           bgColor={color.lightOrange}
           navigate={false}
           showModal={setShowFrom}
-          onPress={() => removeProduct(showForm.id)}
+          onPress={() => removeUser(showForm.id, showForm.profile)}
           icon={
             <MaterialCommunityIcons
               name='archive-remove'

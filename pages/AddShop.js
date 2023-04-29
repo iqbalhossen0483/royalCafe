@@ -4,8 +4,10 @@ import { Common } from "../App";
 import Button from "../components/utilitise/Button";
 import FileInput from "../components/utilitise/FileInput";
 import { commonStyles } from "../css/common";
+import useStore from "../context/useStore";
+import { Fetch, serverUrl } from "../services/common";
 
-const AddShop = ({ route }) => {
+const AddShop = ({ route, navigation }) => {
   const [profile, setProfile] = useState(null);
   const [form, setForm] = useState({
     owner: "",
@@ -13,6 +15,7 @@ const AddShop = ({ route }) => {
     address: "",
     phone: "",
   });
+  const store = useStore();
 
   function handleChange(name, value) {
     setForm((prev) => {
@@ -23,20 +26,32 @@ const AddShop = ({ route }) => {
   useEffect(() => {
     if (route.params?.edit) {
       setForm(route.params.data);
-      setProfile(route.params.data.profile);
+      setProfile({ uri: serverUrl + route.params.data.profile, edit: true });
     }
   }, [route.params]);
 
-  function onSubmit() {
-    if (typeof profile !== "string") {
-      const uri = profile.uri.split(".");
-      form.profile = {
-        name: `${form.owner}.${uri[uri.length - 1]}`,
-        type: "image",
-        uri: profile.uri,
-      };
+  async function onSubmit() {
+    try {
+      store.setLoading(true);
+      if (profile && !profile.edit) {
+        form.existedImg = form.profile;
+        form.profile = profile;
+      }
+      const formData = new FormData();
+      Object.entries(form).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      const method = route.params?.edit ? "PUT" : "POST";
+      const url = route.params?.edit ? `/customer?id=${form.id}` : "/customer";
+      const { message } = await Fetch(url, method, formData, true);
+      if (message) store.setMessage({ msg: message, type: "success" });
+      store.setUpdateCustomer((prev) => !prev);
+      store.setLoading(false);
+      navigation.goBack();
+    } catch (error) {
+      store.setLoading(false);
+      store.setMessage({ msg: error.message, type: error.type || "error" });
     }
-    console.log(form);
   }
 
   return (
@@ -67,16 +82,17 @@ const AddShop = ({ route }) => {
           />
           <TextInput
             defaultValue={form.phone?.toString()}
-            onChangeText={(value) => handleChange("phone", parseInt(value))}
+            onChangeText={(value) => handleChange("phone", value)}
             style={commonStyles.input}
             placeholder='Phone number'
-            keyboardType='numeric'
+            keyboardType='phone-pad'
+            maxLength={11}
           />
           <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
             <View>
               <FileInput setImage={setProfile} />
             </View>
-            {profile && (
+            {profile ? (
               <Image
                 source={{ uri: profile.uri }}
                 style={{
@@ -86,15 +102,11 @@ const AddShop = ({ route }) => {
                   resizeMode: "center",
                 }}
               />
-            )}
+            ) : null}
           </View>
           <Button
             disabled={
-              !form.owner ||
-              !form.address ||
-              !form.shopName ||
-              !form.phone ||
-              !profile
+              !form.owner || !form.address || !form.shopName || !form.phone
             }
             onPress={onSubmit}
             title='Submit'

@@ -3,6 +3,7 @@ import { Fetch } from "../services/common";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Store = () => {
+  const [updateCustomer, setUpdateCustomer] = useState("");
   const [updateUser, setUpdateUser] = useState(false);
   const [userLoading, setUserLoading] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -23,6 +24,7 @@ const Store = () => {
         setUser(user);
       } catch (error) {
         setUser(null);
+        await AsyncStorage.removeItem("token");
         setMessage({ msg: error.message, type: "error" });
       } finally {
         setUserLoading(false);
@@ -39,7 +41,10 @@ const Store = () => {
     user,
     setUser,
     userLoading,
+    updateUser,
     setUpdateUser,
+    updateCustomer,
+    setUpdateCustomer,
   };
 };
 

@@ -5,9 +5,8 @@ import Button from "../components/utilitise/Button";
 import { commonStyles } from "../css/common";
 import Select from "../components/utilitise/Select";
 import FileInput from "../components/utilitise/FileInput";
-import { Fetch } from "../services/common";
+import { Fetch, serverUrl } from "../services/common";
 import useStore from "../context/useStore";
-import mime from "mime";
 
 const initialState = {
   name: "",
@@ -33,7 +32,7 @@ const AddUser = ({ route, navigation }) => {
     if (route.params?.edit) {
       setForm(route.params?.data);
       if (route.params.user) {
-        setProfile(route.params.data.profile);
+        setProfile({ uri: serverUrl + route.params.data.profile, edit: true });
       }
     }
   }, [route.params]);
@@ -52,15 +51,6 @@ const AddUser = ({ route, navigation }) => {
           type: "alert",
         };
 
-      if (route.params?.user && typeof profile !== "string") {
-        const newImageUri = "file:///" + profile.uri.split("file:/").join("");
-        form.profile = {
-          uri: newImageUri,
-          type: mime.getType(newImageUri),
-          name: newImageUri.split("/").pop(),
-        };
-      }
-
       //save user;
       if (!route.params?.edit) {
         const { message } = await Fetch("/user", "POST", form);
@@ -69,6 +59,10 @@ const AddUser = ({ route, navigation }) => {
       }
       //edit user;
       else {
+        if (profile && !profile.edit) {
+          form.existedImg = form.profile;
+          form.profile = profile;
+        }
         const formData = new FormData();
         Object.entries(form).forEach(([key, value]) => {
           formData.append(key, value);
@@ -77,8 +71,8 @@ const AddUser = ({ route, navigation }) => {
         if (message) store.setMessage({ msg: message, type: "success" });
       }
       store.setLoading(false);
-      store.setUpdateUser(true);
-      navigation.navigate("manageUsers", { update: true });
+      store.setUpdateUser((prev) => !prev);
+      navigation.goBack();
     } catch (error) {
       store.setLoading(false);
       store.setMessage({ msg: error.message, type: error.type || "error" });

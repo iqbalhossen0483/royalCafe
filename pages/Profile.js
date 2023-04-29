@@ -6,13 +6,15 @@ import Button from "../components/utilitise/Button";
 import { commonStyles } from "../css/common";
 import BDT from "../components/utilitise/BDT";
 import { alert } from "../components/utilitise/Alert";
+import { serverUrl } from "../services/common";
+import useStore from "../context/useStore";
 
 const Profile = ({ route, navigation }) => {
-  const data = route.params.data;
+  const { user } = useStore();
   function goForEdit() {
     navigation.navigate("addUser", {
       edit: true,
-      data: data,
+      data: user,
       user: true,
     });
   }
@@ -28,20 +30,27 @@ const Profile = ({ route, navigation }) => {
       <View style={styles.container}>
         <View style={styles.profileContainer}>
           <View style={styles.profileWrapper}>
-            <Image
-              style={styles.profile}
-              source={require("../assets/no-photo.png")}
-            />
+            {user.profile ? (
+              <Image
+                style={styles.profile}
+                source={{ uri: serverUrl + user.profile }}
+              />
+            ) : (
+              <Image
+                style={styles.profile}
+                source={require("../assets/no-photo.png")}
+              />
+            )}
             <View>
-              <Text style={styles.name}>{data.name}</Text>
-              <Text style={styles.designation}>{data.designation}</Text>
-              <Text style={styles.phone}>{data.phone}</Text>
+              <Text style={styles.name}>{user.name}</Text>
+              <Text style={styles.designation}>{user.designation}</Text>
+              <Text style={styles.phone}>{user.phone}</Text>
             </View>
           </View>
           <View style={{ marginTop: 8, flexDirection: "row", columnGap: 10 }}>
             <Button
               onPress={() =>
-                navigation.navigate("balanceTransfer", { user: data })
+                navigation.navigate("balanceTransfer", { user: user })
               }
               title='Money Transfer'
             />
@@ -62,16 +71,16 @@ const Profile = ({ route, navigation }) => {
 
         <View style={styles.workContainer}>
           <Text style={styles.workText}>
-            Dilivered Order: <BDT amount={data.delivered} bdtSign={false} />
+            Dilivered Order: <BDT amount={user.delivered} bdtSign={false} />
           </Text>
-          {data.debt ? (
+          {user.debt ? (
             <Text style={{ ...styles.workText, color: "#e319a6" }}>
-              Debt: <BDT amount={data.debt} />
+              Debt: <BDT amount={user.debt} />
             </Text>
           ) : null}
-          {data.salesMoney ? (
+          {user.salesMoney ? (
             <Text style={{ ...styles.workText, color: "#191ce3" }}>
-              Balance: <BDT amount={data.salesMoney} />
+              Balance: <BDT amount={user.salesMoney} />
             </Text>
           ) : null}
         </View>
