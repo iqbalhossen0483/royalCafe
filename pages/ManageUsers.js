@@ -77,6 +77,9 @@ const ManageUsers = ({ navigation, route }) => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.contentContainer}
         ItemSeparatorComponent={() => <View style={{ marginBottom: 6 }} />}
+        ListEmptyComponent={() => (
+          <Text style={{ textAlign: "center" }}>No user</Text>
+        )}
         renderItem={({ item }) => (
           <Pressable
             style={styles.itemContainer}

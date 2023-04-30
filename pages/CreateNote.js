@@ -3,15 +3,32 @@ import { Text, TextInput, View } from "react-native";
 import { Common } from "../App";
 import Button from "../components/utilitise/Button";
 import { commonStyles } from "../css/common";
+import useStore from "../context/useStore";
+import { Fetch } from "../services/common";
 
-const CreateNote = ({ route }) => {
+const CreateNote = ({ route, navigation }) => {
+  const store = useStore();
   const [notes, setNotes] = useState({
     heading: "",
     description: "",
   });
 
-  function onSubmit() {
-    console.log(notes);
+  async function onSubmit() {
+    try {
+      store.setLoading(true);
+      notes.userId = store.user.id;
+      notes.date = new Date().toISOString();
+      const method = route.params?.edit ? "PUT" : "POST";
+      const url = route.params?.edit ? `/notes?id=${notes.id}` : "/notes";
+      const { message } = await Fetch(url, method, notes);
+      store.setLoading(false);
+      store.setMessage({ msg: message, type: "success" });
+      store.setUpdateNotes((prev) => !prev);
+      navigation.goBack();
+    } catch (error) {
+      store.setLoading(false);
+      store.setMessage({ msg: error.message, type: "error" });
+    }
   }
 
   useEffect(() => {

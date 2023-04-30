@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const Store = () => {
   const [updateCustomer, setUpdateCustomer] = useState("");
   const [updateUser, setUpdateUser] = useState(false);
+  const [updateNote, setUpdateNotes] = useState(false);
   const [userLoading, setUserLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
@@ -45,6 +46,8 @@ const Store = () => {
     setUpdateUser,
     updateCustomer,
     setUpdateCustomer,
+    updateNote,
+    setUpdateNotes,
   };
 };
 

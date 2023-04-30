@@ -47,4 +47,30 @@ export const styles = StyleSheet.create({
     fontWeight: 500,
     color: color.darkGray,
   },
+  noteContainer: {
+    backgroundColor: "#fff",
+    paddingVertical: 10,
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    marginTop: 10,
+  },
+  noteHeader: {
+    fontWeight: 500,
+    fontSize: 16,
+  },
+  noteItem: {
+    borderBottomColor: color.darkGray,
+    borderBottomWidth: 0.3,
+    paddingBottom: 5,
+  },
+  headingContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingTop: 3,
+  },
+  date: {
+    fontSize: 13,
+    color: color.darkGray,
+  },
 });
