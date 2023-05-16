@@ -142,7 +142,7 @@ const ManageSupplyer = ({ navigation }) => {
         <SubMenu
           name='Report'
           navigate={false}
-          onPress={() => navigation.navigate("supplyer", { data: showForm })}
+          onPress={() => navigation.navigate("supplyer", { id: showForm.id })}
           bgColor='#d7e5f5'
           showModal={setShowFrom}
           icon={<Octicons name='report' size={16} color='#3b83db' />}

@@ -1,15 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Common } from "../App";
 import { Image, Text, View } from "react-native";
 import { styles } from "../css/profile";
 import { commonStyles } from "../css/common";
 import BDT from "../components/utilitise/BDT";
 import { color } from "../components/utilitise/colors";
-import { serverUrl } from "../services/common";
+import { Fetch, serverUrl } from "../services/common";
+import useStore from "../context/useStore";
 
 const Supplyer = ({ route }) => {
-  const data = route.params.data;
+  const [data, setData] = useState(null);
+  const store = useStore();
+  const id = route.params.id;
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const result = await Fetch(`/supplier?id=${id}`, "GET");
+        setData(result);
+      } catch (error) {
+        store.setMessage({ msg: error.message, type: "error" });
+      }
+    })();
+  }, [id]);
+
+  if (!data) return null;
   return (
     <Common>
       <View style={styles.container}>

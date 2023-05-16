@@ -10,11 +10,9 @@ import { Fetch } from "../services/common";
 import Select from "../components/utilitise/Select";
 import { alert } from "../components/utilitise/Alert";
 import { Ionicons } from "@expo/vector-icons";
-import { KeyboardAvoidingView } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Keyboard } from "react-native";
 
-const PurchaseProduct = () => {
+const PurchaseProduct = ({ navigation }) => {
   const [data, setData] = useState({ supplier: null, products: null });
   const [numOfShow, setNumOfShow] = useState(1);
   const [bottomMargin, setBottomMargin] = useState(0);
@@ -65,6 +63,7 @@ After purchasing you won't change it anymore`;
           };
           const { message } = await Fetch("/purchase", "POST", data);
           store.setMessage({ msg: message, type: "success" });
+          navigation.goBack();
         } catch (error) {
           throw error;
         }
@@ -107,6 +106,7 @@ After purchasing you won't change it anymore`;
                 ))}
 
             <Button
+              disabled={!data.products || data.products.length <= numOfShow}
               style={{
                 width: 30,
                 height: 30,

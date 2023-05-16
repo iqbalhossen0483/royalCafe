@@ -99,8 +99,9 @@ const ManageProduct = ({ navigation }) => {
                 <Text style={{ fontSize: 15, fontWeight: 500 }}>
                   {item.name}
                 </Text>
-                <Text>Stock: {item.stock}</Text>
+                <Text>Total Purchased: {item.purchased}</Text>
                 <Text>Total Sold: {item.sold}</Text>
+                <Text>Remain Stock: {item.stock}</Text>
               </View>
             </View>
           </Pressable>
