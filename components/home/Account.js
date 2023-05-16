@@ -1,12 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Text } from "react-native";
 import { commonStyles } from "../../css/common";
 import { accounts, users } from "../../data";
 import { style } from "../../css/home";
 import BDT from "../utilitise/BDT";
+import useStore from "../../context/useStore";
+import { Fetch } from "../../services/common";
 
 const Account = () => {
+  const [users, setUsers] = useState(null);
+  const store = useStore();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const users = await Fetch("/user", "GET");
+        const rest = users.filter((item) => item.id !== store.user.id);
+        setUsers(rest);
+      } catch (error) {
+        store.setMessage({ msg: error.message, type: "error" });
+      }
+    })();
+  }, []);
+
   const styles = { width: "30%" };
   return (
     <View style={style.accountContainer}>
@@ -18,13 +35,14 @@ const Account = () => {
         <Text style={{ ...styles, fontWeight: 500 }}>Debt</Text>
         <Text style={{ ...styles, fontWeight: 500 }}>Balance</Text>
       </View>
-      {users.map((item) => (
-        <View style={commonStyles.tableRow} key={item.id}>
-          <Text style={styles}>{item.name}</Text>
-          <BDT style={styles} amount={item.salesMoney} />
-          <BDT style={styles} amount={item.debt || 0} />
-        </View>
-      ))}
+      {users &&
+        users.map((item) => (
+          <View style={commonStyles.tableRow} key={item.id}>
+            <Text style={styles}>{item.name}</Text>
+            <BDT style={styles} amount={item.haveMoney || 0} />
+            <BDT style={styles} amount={item.debt || 0} />
+          </View>
+        ))}
     </View>
   );
 };

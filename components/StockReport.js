@@ -1,17 +1,21 @@
+import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import React, { useEffect, useState } from "react";
 import { Text, View } from "react-native";
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { style } from "../css/home";
 import { commonStyles } from "../css/common";
 import Button from "./utilitise/Button";
 import Select from "./utilitise/Select";
-import { products, stockReport } from "../data";
+import { stockReport } from "../data";
 import BDT from "./utilitise/BDT";
+import { Fetch } from "../services/common";
+import useStore from "../context/useStore";
 
 const StockReport = () => {
   const [date, setDate] = useState(new Date());
+  const [products, setProducts] = useState(null);
   const [data, setData] = useState(null);
   const [methods, setMethods] = useState("Days");
+  const { setMessage } = useStore();
 
   const showDatepicker = () => {
     DateTimePickerAndroid.open({
@@ -26,8 +30,19 @@ const StockReport = () => {
   };
 
   useEffect(() => {
+    (async () => {
+      try {
+        const products = await Fetch("/product", "GET");
+        setProducts(products);
+      } catch (error) {
+        setMessage({ msg: error.message, type: "error" });
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
     const demo = [];
-    if (!stockReport.length) return;
+    if (!stockReport.length || !products) return;
     products.forEach((item) => {
       const product = stockReport.find((d) => item.name === d.name);
       if (product) demo.push(product);
@@ -72,7 +87,7 @@ const StockReport = () => {
                 {item.name.length > 8 ? item.name.split(" ")[0] : item.name}
               </Text>
               <BDT bdtSign={false} style={styles} amount={item.previousStock} />
-              <BDT bdtSign={false} style={styles} amount={item.purchase} />
+              <BDT bdtSign={false} style={styles} amount={item.purchased} />
               <BDT
                 bdtSign={false}
                 style={{ width: "15%", textAlign: "center" }}

@@ -4,13 +4,15 @@ import { Common } from "../App";
 import Button from "../components/utilitise/Button";
 import FileInput from "../components/utilitise/FileInput";
 import { commonStyles } from "../css/common";
+import useStore from "../context/useStore";
+import { Fetch, serverUrl } from "../services/common";
 
-const AddProduct = ({ route }) => {
+const AddProduct = ({ route, navigation }) => {
   const [image, setImage] = useState(null);
+  const { setMessage, setLoading, setUpdateProduct } = useStore();
   const [form, setForm] = useState({
     name: "",
     price: "",
-    stock: "",
   });
 
   function handleChange(name, value) {
@@ -21,19 +23,34 @@ const AddProduct = ({ route }) => {
 
   useEffect(() => {
     if (route.params?.edit) {
-      setForm(route.params.data);
-      setImage(route.params.data.profile);
+      const { id, name, price, profile } = route.params.data;
+      setForm({ id, name, price, profile });
+      setImage({ uri: serverUrl + profile, edit: true });
     }
   }, [route.params]);
 
-  function onSubmit() {
-    const uri = image.uri.split(".");
-    form.image = {
-      name: `${form.name}.${uri[uri.length - 1]}`,
-      type: "image",
-      uri: image.uri,
-    };
-    console.log(form);
+  async function onSubmit() {
+    try {
+      setLoading(true);
+      if (!image?.edit) {
+        if (route.params?.edit) form.existedImg = form.profile;
+        form.profile = image;
+      }
+      const formData = new FormData();
+      Object.entries(form).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      const method = route.params?.edit ? "PUT" : "POST";
+      const uri = route.params?.edit ? `/product?id=${form.id}` : "/product";
+      const { message } = await Fetch(uri, method, formData, true);
+      setMessage({ msg: message, type: "success" });
+      setUpdateProduct((prev) => !prev);
+      navigation.goBack();
+    } catch (error) {
+      setMessage({ msg: error.message, type: "error" });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -51,25 +68,18 @@ const AddProduct = ({ route }) => {
             placeholder='Product name'
           />
           <TextInput
-            defaultValue={form.price?.toString()}
-            onChangeText={(value) => handleChange("price", parseInt(value))}
+            defaultValue={form.price.toString()}
+            onChangeText={(value) => handleChange("price", value)}
             style={commonStyles.input}
             placeholder='Unit price৳'
-            keyboardType='numeric'
-          />
-          <TextInput
-            defaultValue={form.stock?.toString()}
-            onChangeText={(value) => handleChange("stock", parseInt(value))}
-            style={commonStyles.input}
-            placeholder='Product stock'
-            keyboardType='numeric'
+            keyboardType='phone-pad'
           />
 
           <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
             <View>
               <FileInput setImage={setImage} />
             </View>
-            {image && (
+            {image && image.uri && (
               <Image
                 source={{ uri: image.uri }}
                 style={{
@@ -82,7 +92,7 @@ const AddProduct = ({ route }) => {
             )}
           </View>
           <Button
-            disabled={!form.name || !form.price || !form.stock || !image}
+            disabled={!form.name || !form.price}
             onPress={onSubmit}
             title='Submit'
           />

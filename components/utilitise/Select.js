@@ -66,24 +66,28 @@ const Select = ({
         <View
           style={{ ...commonStyles.selectView, top: !top ? "100%" : "-400%" }}
         >
-          {options.map((item, i) => (
-            <Pressable
-              onPress={() => handleTuch(item)}
-              key={i}
-              style={{
-                borderBottomWidth: 0.5,
-                borderBottomColor: color.gray,
-                paddingVertical: 7,
-              }}
-            >
-              <Text style={{ fontSize: 16 }}>{item[header]}</Text>
-              {title ? (
-                <Text style={{ color: color.darkGray, marginTop: -3 }}>
-                  {item[title]}
-                </Text>
-              ) : null}
-            </Pressable>
-          ))}
+          {options && options.length ? (
+            options.map((item, i) => (
+              <Pressable
+                onPress={() => handleTuch(item)}
+                key={i}
+                style={{
+                  borderBottomWidth: 0.5,
+                  borderBottomColor: color.gray,
+                  paddingVertical: 7,
+                }}
+              >
+                <Text style={{ fontSize: 16 }}>{item[header]}</Text>
+                {title ? (
+                  <Text style={{ color: color.darkGray, marginTop: -3 }}>
+                    {item[title]}
+                  </Text>
+                ) : null}
+              </Pressable>
+            ))
+          ) : (
+            <Text style={{ textAlign: "center" }}>no options</Text>
+          )}
         </View>
       )}
     </View>

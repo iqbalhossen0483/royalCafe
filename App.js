@@ -35,6 +35,7 @@ import Message from "./components/utilitise/Message";
 import StoreProvider from "./context/StoreProvider";
 import Loading from "./components/utilitise/Loading";
 import ProtectApp from "./context/ProtectApp";
+import PurchaseProduct from "./pages/PurchaseProduct";
 
 const Stack = createNativeStackNavigator();
 
@@ -51,7 +52,7 @@ export default function App() {
     <StoreProvider>
       <SafeAreaView style={body}>
         <NavigationContainer>
-          <StatusBar style='auto' backgroundColor={color.green} />
+          <StatusBar style='light' backgroundColor={color.green} />
           <Stack.Navigator
             initialRouteName='home'
             screenOptions={{ headerShown: false }}
@@ -78,6 +79,7 @@ export default function App() {
             <Stack.Screen name='supplyer' component={Supplyer} />
             <Stack.Screen name='notes' component={Notes} />
             <Stack.Screen name='balanceTransfer' component={BalanceTransfer} />
+            <Stack.Screen name='purchase' component={PurchaseProduct} />
             <Stack.Screen name='login' component={Login} />
           </Stack.Navigator>
           <Message />

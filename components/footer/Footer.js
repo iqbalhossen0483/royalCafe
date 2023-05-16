@@ -128,6 +128,13 @@ const Footer = () => {
           }
         />
         <SubMenu
+          name='Purchase Product'
+          url='purchase'
+          bgColor='#c8e1fa'
+          showModal={setCreateModal}
+          icon={<AntDesign name='shoppingcart' size={20} color='#157ce6' />}
+        />
+        <SubMenu
           name='Create Note'
           url='createNote'
           bgColor='#ecfccb'

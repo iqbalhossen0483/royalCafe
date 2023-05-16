@@ -54,11 +54,12 @@ export const styles = StyleSheet.create({
   address: { textAlign: "center", color: color.darkGray },
   amountContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     marginTop: 10,
     borderBottomColor: color.gray,
     borderBottomWidth: 0.6,
     paddingBottom: 13,
+    gap: 10,
   },
   itemSeperator: {
     borderBottomColor: color.gray,

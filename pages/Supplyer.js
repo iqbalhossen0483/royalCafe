@@ -2,12 +2,12 @@ import React from "react";
 import { Common } from "../App";
 import { Image, Text, View } from "react-native";
 import { styles } from "../css/profile";
-import Button from "../components/utilitise/Button";
 import { commonStyles } from "../css/common";
 import BDT from "../components/utilitise/BDT";
 import { color } from "../components/utilitise/colors";
+import { serverUrl } from "../services/common";
 
-const Supplyer = ({ route, navigation }) => {
+const Supplyer = ({ route }) => {
   const data = route.params.data;
 
   return (
@@ -17,7 +17,7 @@ const Supplyer = ({ route, navigation }) => {
           <View style={styles.profileWrapper}>
             <Image
               style={styles.profile}
-              source={require("../assets/no-photo.png")}
+              source={{ uri: serverUrl + data.profile }}
             />
             <View>
               <Text style={styles.name}>{data.name}</Text>
@@ -39,15 +39,19 @@ const Supplyer = ({ route, navigation }) => {
           </View>
         </View>
 
-        <Text style={commonStyles.heading}>Purchase Report</Text>
+        {data.products && (
+          <>
+            <Text style={commonStyles.heading}>Purchase Report</Text>
 
-        <View style={styles.workContainer}>
-          {data.products.map((item) => (
-            <Text key={item.id} style={styles.workText}>
-              {item.name} : <BDT bdtSign={false} amount={item.purchased} />
-            </Text>
-          ))}
-        </View>
+            <View style={styles.workContainer}>
+              {data.products.map((item) => (
+                <Text key={item.id} style={styles.workText}>
+                  {item.name} : <BDT bdtSign={false} amount={item.purchased} />
+                </Text>
+              ))}
+            </View>
+          </>
+        )}
       </View>
     </Common>
   );

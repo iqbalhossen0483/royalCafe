@@ -1,6 +1,6 @@
 export async function Fetch(url, method, body, formData = false) {
   try {
-    const newUrl = "https://612e-58-145-189-244.ngrok-free.app" + url;
+    const newUrl = "https://3729-58-145-190-239.ngrok-free.app" + url;
     const option = /"GET"|"DELETE"/.test(method)
       ? {}
       : formData
@@ -23,8 +23,16 @@ export async function Fetch(url, method, body, formData = false) {
   }
 }
 
-export const serverUrl = "https://612e-58-145-189-244.ngrok-free.app/";
+export const serverUrl = "https://3729-58-145-190-239.ngrok-free.app/";
 
 export function prittyPrint(obj) {
   console.log(JSON.stringify(obj, null, 3));
+}
+
+export function dateFormatter(date) {
+  const yearAndMonth = date.slice(0, 8);
+  let tarikh = parseInt(date.slice(8, 10)) + 1;
+  tarikh = tarikh + "";
+  tarikh = tarikh.length === 1 ? "0" + tarikh : tarikh;
+  return yearAndMonth + tarikh;
 }

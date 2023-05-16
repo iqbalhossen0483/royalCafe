@@ -21,13 +21,13 @@ const CreateNote = ({ route, navigation }) => {
       const method = route.params?.edit ? "PUT" : "POST";
       const url = route.params?.edit ? `/notes?id=${notes.id}` : "/notes";
       const { message } = await Fetch(url, method, notes);
-      store.setLoading(false);
       store.setMessage({ msg: message, type: "success" });
       store.setUpdateNotes((prev) => !prev);
       navigation.goBack();
     } catch (error) {
-      store.setLoading(false);
       store.setMessage({ msg: error.message, type: "error" });
+    } finally {
+      store.setLoading(false);
     }
   }
 

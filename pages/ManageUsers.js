@@ -18,7 +18,7 @@ import SubMenu from "../components/footer/SubMenu";
 import useStore from "../context/useStore";
 import { Fetch, serverUrl } from "../services/common";
 
-const ManageUsers = ({ navigation, route }) => {
+const ManageUsers = ({ navigation }) => {
   const [showForm, setShowFrom] = useState(null);
   const [users, setUsers] = useState(null);
   const store = useStore();
@@ -27,16 +27,13 @@ const ManageUsers = ({ navigation, route }) => {
     (async () => {
       try {
         store.setLoading(true);
-        if (route.params?.update) {
-          route.params.update = false;
-        }
         const users = await Fetch("/user", "GET");
         const rest = users.filter((item) => item.id !== store.user.id);
         setUsers(rest);
-        store.setLoading(false);
       } catch (error) {
-        store.setLoading(false);
         store.setMessage({ msg: error.message, type: "error" });
+      } finally {
+        store.setLoading(false);
       }
     })();
   }, [store.updateUser]);
@@ -49,13 +46,13 @@ const ManageUsers = ({ navigation, route }) => {
           `/user?id=${id}&profile=${profile}`,
           "DELETE"
         );
-        store.setLoading(false);
         store.setMessage({ msg: message, type: "success" });
         const rest = users.filter((user) => user.id !== id);
         setUsers(rest);
       } catch (error) {
-        store.setLoading(false);
         store.setMessage({ msg: error.message, type: "error" });
+      } finally {
+        store.setLoading(false);
       }
     });
   }
@@ -80,16 +77,16 @@ const ManageUsers = ({ navigation, route }) => {
         ListEmptyComponent={() => (
           <Text style={{ textAlign: "center" }}>No user</Text>
         )}
-        renderItem={({ item }) => (
+        renderItem={({ item: user }) => (
           <Pressable
             style={styles.itemContainer}
-            onPress={() => setShowFrom(item)}
+            onPress={() => setShowFrom(user)}
           >
             <View style={{ flexDirection: "row", gap: 7 }}>
-              {item.profile ? (
+              {user.profile ? (
                 <Image
                   style={{ width: 40, height: 55, borderRadius: 5 }}
-                  source={{ uri: serverUrl + item.profile }}
+                  source={{ uri: serverUrl + user.profile }}
                   alt=''
                 />
               ) : (
@@ -101,12 +98,12 @@ const ManageUsers = ({ navigation, route }) => {
               )}
               <View>
                 <Text style={{ fontSize: 16, fontWeight: 500 }}>
-                  {item.name}
+                  {user.name}
                 </Text>
                 <Text style={{ color: color.darkGray, fontWeight: 500 }}>
-                  {item.designation}
+                  {user.designation}
                 </Text>
-                <Text style={{ color: color.darkGray }}>{item.phone}</Text>
+                <Text style={{ color: color.darkGray }}>{user.phone}</Text>
               </View>
             </View>
           </Pressable>

@@ -46,11 +46,11 @@ const AddShop = ({ route, navigation }) => {
       const { message } = await Fetch(url, method, formData, true);
       if (message) store.setMessage({ msg: message, type: "success" });
       store.setUpdateCustomer((prev) => !prev);
-      store.setLoading(false);
       navigation.goBack();
     } catch (error) {
-      store.setLoading(false);
       store.setMessage({ msg: error.message, type: error.type || "error" });
+    } finally {
+      store.setLoading(false);
     }
   }
 

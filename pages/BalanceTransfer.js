@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Common } from "../App";
 import { TextInput, View } from "react-native";
 import { Text } from "react-native";
 import { commonStyles } from "../css/common";
 import Button from "../components/utilitise/Button";
 import Select from "../components/utilitise/Select";
-import { users } from "../data";
+import useStore from "../context/useStore";
+import { Fetch } from "../services/common";
 
 const BalanceTransfer = ({ route }) => {
+  const [users, setUsers] = useState(null);
   const [info, setInfo] = useState({
     name: "",
     amount: 0,
@@ -19,8 +21,21 @@ const BalanceTransfer = ({ route }) => {
     purpose: "",
   });
   const user = route.params.user;
+  const store = useStore();
 
-  function handlePupose(info) {
+  useEffect(() => {
+    (async () => {
+      try {
+        const users = await Fetch("/user", "GET");
+        const rest = users.filter((item) => item.id !== store.user.id);
+        setUsers(rest);
+      } catch (error) {
+        store.setMessage({ msg: error.message, type: "error" });
+      }
+    })();
+  }, []);
+
+  function handlePurpose(info) {
     setForm((prev) => {
       return {
         ...prev,
@@ -61,7 +76,7 @@ const BalanceTransfer = ({ route }) => {
             url=''
             header='name'
             zIndex={150}
-            handler={(_, info) => handlePupose(info)}
+            handler={(_, info) => handlePurpose(info)}
             options={[
               { id: 1, name: "Sale" },
               { id: 2, name: "Debt" },

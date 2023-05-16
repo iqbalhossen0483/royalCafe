@@ -6,7 +6,7 @@ import { Common } from "../App";
 import SearchFilter from "../components/SearchFilter";
 import { color } from "../components/utilitise/colors";
 import BDT from "../components/utilitise/BDT";
-import { Fetch, serverUrl } from "../services/common";
+import { Fetch, dateFormatter, serverUrl } from "../services/common";
 import useStore from "../context/useStore";
 
 const Customers = ({ navigation, route }) => {
@@ -63,20 +63,29 @@ const Customers = ({ navigation, route }) => {
                     alt=''
                   />
                 )}
-                <View style={{ marginLeft: 6 }}>
-                  <Text style={{ fontSize: 16, fontWeight: 500 }}>
-                    {item.shopName}
-                  </Text>
-                  <Text style={{ color: color.darkGray }}>{item.address}</Text>
-                  <Text style={{ color: color.darkGray }}>
-                    Last Order: {item.lastOrder}
-                  </Text>
-                  <Text style={{ color: color.darkGray }}>{item.phone}</Text>
-                  {item.due ? (
-                    <Text style={{ fontWeight: 500, color: color.orange }}>
-                      Due: <BDT amount={item.due} />
+                <View style={{ marginLeft: 6, flexDirection: "row", gap: 10 }}>
+                  <View>
+                    <Text style={{ fontSize: 16, fontWeight: 500 }}>
+                      {item.shopName}
                     </Text>
-                  ) : null}
+                    <Text style={{ color: color.darkGray }}>
+                      {item.address}
+                    </Text>
+                    <Text style={{ color: color.darkGray }}>{item.phone}</Text>
+                  </View>
+
+                  <View>
+                    {item.lastOrder ? (
+                      <Text style={{ color: color.darkGray }}>
+                        Last Order: {dateFormatter(item.lastOrder)}
+                      </Text>
+                    ) : null}
+                    {item.due ? (
+                      <Text style={{ fontWeight: 500, color: color.orange }}>
+                        Due: <BDT amount={item.due} />
+                      </Text>
+                    ) : null}
+                  </View>
                 </View>
               </View>
 

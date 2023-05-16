@@ -6,7 +6,7 @@ import Button from "../components/utilitise/Button";
 import { commonStyles } from "../css/common";
 import BDT from "../components/utilitise/BDT";
 import { alert } from "../components/utilitise/Alert";
-import { Fetch, serverUrl } from "../services/common";
+import { Fetch, dateFormatter, serverUrl } from "../services/common";
 import useStore from "../context/useStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
@@ -17,7 +17,8 @@ import { ScrollView } from "react-native";
 const Profile = ({ route, navigation }) => {
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState(null);
-  const { user, setUser, updateNote, setMessage } = useStore();
+  const { setUser, updateNote, setMessage } = useStore();
+  const user = route.params?.data;
   function goForEdit() {
     navigation.navigate("addUser", {
       edit: true,
@@ -133,10 +134,7 @@ const Profile = ({ route, navigation }) => {
                 <View style={styles.headingContainer}>
                   <View>
                     <Text style={styles.noteHeader}>{item.heading}</Text>
-                    <Text style={styles.date}>
-                      {item.date.slice(0, 7)}-
-                      {parseInt(item.date.slice(8, 10)) + 1}
-                    </Text>
+                    <Text style={styles.date}>{dateFormatter(item.date)}</Text>
                     <Text>{item.description}</Text>
                   </View>
 

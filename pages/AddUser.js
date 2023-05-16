@@ -70,12 +70,12 @@ const AddUser = ({ route, navigation }) => {
         const { message } = await Fetch(`/user`, "PUT", formData, true);
         if (message) store.setMessage({ msg: message, type: "success" });
       }
-      store.setLoading(false);
       store.setUpdateUser((prev) => !prev);
       navigation.goBack();
     } catch (error) {
-      store.setLoading(false);
       store.setMessage({ msg: error.message, type: error.type || "error" });
+    } finally {
+      store.setLoading(false);
     }
   }
 

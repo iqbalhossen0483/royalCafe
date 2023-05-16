@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, Pressable } from "react-native";
 import { Image } from "react-native";
 import { Text, View } from "react-native";
@@ -12,17 +12,44 @@ import {
   Octicons,
 } from "@expo/vector-icons";
 import { alert } from "../components/utilitise/Alert";
-import { supplyers, users } from "../data";
 import { styles } from "../css/manageProduct";
 import Drawar from "../components/Drawar";
 import SubMenu from "../components/footer/SubMenu";
+import useStore from "../context/useStore";
+import { Fetch, serverUrl } from "../services/common";
 
 const ManageSupplyer = ({ navigation }) => {
   const [showForm, setShowFrom] = useState(null);
+  const [suppliers, setSuppliers] = useState(null);
+  const store = useStore();
 
-  function removeSupplyer(id) {
-    alert("Are you sure to remove?", () => {
-      console.log(id);
+  useEffect(() => {
+    (async () => {
+      try {
+        store.setLoading(true);
+        const supplier = await Fetch("/supplier", "GET");
+        setSuppliers(supplier);
+      } catch (error) {
+        store.setMessage({ msg: error.message, type: "error" });
+      } finally {
+        store.setLoading(false);
+      }
+    })();
+  }, [store.updateSupplier]);
+
+  function removeSupplyer(id, profile) {
+    alert("Are you sure to remove?", async () => {
+      try {
+        store.setLoading(true);
+        const url = `/supplier?id=${id}&profile=${profile}`;
+        const { message } = await Fetch(url, "DELETE");
+        store.setMessage({ msg: message, type: "success" });
+        store.setUpdateSupplier((prev) => !prev);
+      } catch (error) {
+        store.setMessage({ msg: error.message, type: "error" });
+      } finally {
+        store.setLoading(false);
+      }
     });
   }
 
@@ -43,21 +70,32 @@ const ManageSupplyer = ({ navigation }) => {
       </View>
 
       <FlatList
-        data={supplyers}
+        data={suppliers}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.contentContainer}
         ItemSeparatorComponent={() => <View style={{ marginBottom: 6 }} />}
+        ListEmptyComponent={() => (
+          <Text style={{ textAlign: "center" }}>no supplier</Text>
+        )}
         renderItem={({ item }) => (
           <Pressable
             style={styles.itemContainer}
             onPress={() => setShowFrom(item)}
           >
             <View style={{ flexDirection: "row", gap: 7 }}>
-              <Image
-                style={{ width: 40, height: 55, borderRadius: 5 }}
-                source={require("../assets/no-photo.png")}
-                alt=''
-              />
+              {item.profile ? (
+                <Image
+                  style={{ width: 40, height: 55, borderRadius: 5 }}
+                  source={{ uri: serverUrl + item.profile }}
+                  alt=''
+                />
+              ) : (
+                <Image
+                  style={{ width: 40, height: 55, borderRadius: 5 }}
+                  source={require("../assets/no-photo.png")}
+                  alt=''
+                />
+              )}
               <View>
                 <Text style={{ fontSize: 16, fontWeight: 500 }}>
                   {item.name}
@@ -91,7 +129,7 @@ const ManageSupplyer = ({ navigation }) => {
           bgColor={color.lightOrange}
           navigate={false}
           showModal={setShowFrom}
-          onPress={() => removeSupplyer(showForm.id)}
+          onPress={() => removeSupplyer(showForm.id, showForm.profile)}
           icon={
             <MaterialCommunityIcons
               name='archive-remove'

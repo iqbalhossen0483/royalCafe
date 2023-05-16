@@ -3,7 +3,9 @@ import { Fetch } from "../services/common";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Store = () => {
-  const [updateCustomer, setUpdateCustomer] = useState("");
+  const [updateProduct, setUpdateProduct] = useState(false);
+  const [updateCustomer, setUpdateCustomer] = useState(false);
+  const [updateSupplier, setUpdateSupplier] = useState(false);
   const [updateUser, setUpdateUser] = useState(false);
   const [updateNote, setUpdateNotes] = useState(false);
   const [userLoading, setUserLoading] = useState(true);
@@ -48,6 +50,10 @@ const Store = () => {
     setUpdateCustomer,
     updateNote,
     setUpdateNotes,
+    updateProduct,
+    setUpdateProduct,
+    updateSupplier,
+    setUpdateSupplier,
   };
 };
 

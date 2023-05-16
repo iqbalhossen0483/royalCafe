@@ -2,6 +2,7 @@ import React from "react";
 import { Text } from "react-native";
 
 const BDT = ({ amount, style, bdtSign = true }) => {
+  if (!amount) amount = 0;
   const taka = amount.toString();
   const formated =
     taka.length === 4
