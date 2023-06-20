@@ -6,11 +6,13 @@ const Store = () => {
   const [updateProduct, setUpdateProduct] = useState(false);
   const [updateCustomer, setUpdateCustomer] = useState(false);
   const [updateSupplier, setUpdateSupplier] = useState(false);
+  const [updateOrder, setUpdateOrder] = useState(false);
   const [updateUser, setUpdateUser] = useState(false);
   const [updateNote, setUpdateNotes] = useState(false);
   const [userLoading, setUserLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
+  const [updateReport, setUpdateReport] = useState(false);
   const [message, setMessage] = useState({
     msg: "",
     type: "",
@@ -20,10 +22,7 @@ const Store = () => {
     (async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        const user = await Fetch(
-          `/login?token=${token}&updateUser=${updateUser}`,
-          "GET"
-        );
+        const user = await Fetch(`/login?token=${token}`, "GET");
         setUser(user);
       } catch (error) {
         setUser(null);
@@ -31,7 +30,6 @@ const Store = () => {
         setMessage({ msg: error.message, type: "error" });
       } finally {
         setUserLoading(false);
-        setUpdateUser(false);
       }
     })();
   }, [updateUser]);
@@ -54,6 +52,10 @@ const Store = () => {
     setUpdateProduct,
     updateSupplier,
     setUpdateSupplier,
+    updateOrder,
+    setUpdateOrder,
+    updateReport,
+    setUpdateReport,
   };
 };
 

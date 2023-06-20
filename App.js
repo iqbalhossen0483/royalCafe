@@ -28,7 +28,6 @@ import Transitions from "./pages/Transitions";
 import AddSupplyer from "./pages/AddSupplyer";
 import ManageSupplyer from "./pages/ManageSupplyer";
 import Supplyer from "./pages/Supplyer";
-import Notes from "./pages/Notes";
 import BalanceTransfer from "./pages/BalanceTransfer";
 import Login from "./pages/Login";
 import Message from "./components/utilitise/Message";
@@ -77,7 +76,6 @@ export default function App() {
             <Stack.Screen name='addSupplyer' component={AddSupplyer} />
             <Stack.Screen name='manageSupplyer' component={ManageSupplyer} />
             <Stack.Screen name='supplyer' component={Supplyer} />
-            <Stack.Screen name='notes' component={Notes} />
             <Stack.Screen name='balanceTransfer' component={BalanceTransfer} />
             <Stack.Screen name='purchase' component={PurchaseProduct} />
             <Stack.Screen name='login' component={Login} />

@@ -1,98 +1,151 @@
-import React, { useState } from "react";
-import { FlatList, Image, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { FlatList, Image, Pressable, Text, View } from "react-native";
 import { styles } from "../css/customer";
 import { MaterialIcons } from "@expo/vector-icons";
-import { orderdata } from "../data";
 import Button from "../components/utilitise/Button";
 import { Common } from "../App";
 import { color } from "../components/utilitise/colors";
 import BDT from "../components/utilitise/BDT";
 import { style } from "../css/notification";
+import useStore from "../context/useStore";
+import { Fetch, serverUrl } from "../services/common";
+import { alert } from "../components/utilitise/Alert";
 
 const Notifications = ({ navigation }) => {
   const [showDetails, setShowDetails] = useState(-1);
+  const [showDeleteBtn, setShowDeleteBtn] = useState(-1);
+  const [orders, setOrders] = useState(null);
+  const store = useStore();
 
+  useEffect(() => {
+    (async () => {
+      try {
+        store.setLoading(true);
+        const orders = await Fetch("/order?notification=true", "GET");
+        setOrders(orders);
+      } catch (error) {
+        store.setMessage({ msg: error.message, type: "error" });
+      } finally {
+        store.setLoading(false);
+      }
+    })();
+  }, [store.updateOrder]);
+
+  function removeOrder(id) {
+    alert("Are you sure to delete?", async () => {
+      try {
+        store.setLoading(true);
+        const { message } = await Fetch(`/order?id=${id}`, "DELETE");
+        store.setMessage({ msg: message, type: "success" });
+        setShowDeleteBtn(-1);
+        store.setUpdateOrder((prev) => !prev);
+      } catch (error) {
+        store.setMessage({ msg: error.message, type: "error" });
+      } finally {
+        store.setLoading(false);
+      }
+    });
+  }
+
+  const tableheaderStyle = { fontWeight: 500, width: "30%" };
+  const tablerowStyle = { width: "30%" };
   return (
     <Common>
       <View style={{ paddingBottom: 75 }}>
         <FlatList
-          data={orderdata}
+          data={orders}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ padding: 5 }}
+          ListEmptyComponent={() => (
+            <Text style={{ textAlign: "center" }}>
+              There is no pending order
+            </Text>
+          )}
           renderItem={({ item, index: i }) => (
             <View style={styles.container}>
               <View style={style.constainer}>
-                <View
-                  onTouchStart={() =>
+                <Pressable
+                  style={{ flexDirection: "row", alignItems: "center" }}
+                  onPress={() =>
                     setShowDetails((prev) => (i === prev ? -1 : i))
                   }
-                  style={{ flexDirection: "row", alignItems: "center" }}
                 >
-                  <Image
-                    style={styles.profile}
-                    source={require("../assets/no-photo.png")}
-                  />
+                  {item.profile ? (
+                    <Image
+                      style={styles.profile}
+                      source={{ uri: serverUrl + item.profile }}
+                    />
+                  ) : (
+                    <Image
+                      style={styles.profile}
+                      source={require("../assets/no-photo.png")}
+                    />
+                  )}
                   <View style={{ marginLeft: 6 }}>
                     <View
                       style={{ flexDirection: "row", alignItems: "center" }}
                     >
                       <Text style={{ fontSize: 16, fontWeight: 500 }}>
-                        {item.shopInfo.shopName}
+                        {item.shopName}
                       </Text>
-                      {showDetails === i ? (
-                        <MaterialIcons
-                          name='keyboard-arrow-up'
-                          size={24}
-                          color={color.darkGray}
-                        />
-                      ) : (
-                        <MaterialIcons
-                          name='keyboard-arrow-down'
-                          size={24}
-                          color={color.darkGray}
-                        />
-                      )}
+                      <MaterialIcons
+                        name={
+                          showDetails === i
+                            ? "keyboard-arrow-up"
+                            : "keyboard-arrow-down"
+                        }
+                        size={24}
+                        color={color.darkGray}
+                      />
                     </View>
-                    <Text style={{ color: color.darkGray }}>
-                      {item.shopInfo.address}
-                    </Text>
+                    <Text>{item.phone}</Text>
+                    <Text>{item.address}</Text>
                   </View>
-                </View>
-                <View onTouchStart={(e) => e.stopPropagation()}>
-                  <Text
-                    style={{
-                      ...styles.status,
-                      backgroundColor:
-                        item.status === "Undelivered" ? "#fde68a" : "#d9f99d",
-                      color:
-                        item.status === "Undelivered" ? "#d97706" : "#65a30d",
-                    }}
-                  >
-                    {item.status}
+                </Pressable>
+                <Pressable
+                  onLongPress={() => setShowDeleteBtn(i)}
+                  onPress={() => setShowDeleteBtn(-1)}
+                >
+                  <Text>
+                    Bill no: <BDT amount={item.billno} bdtSign={false} />
                   </Text>
-                  <Text style={{ fontSize: 13, marginRight: 3 }}>
-                    {item.time}
+                  <Text>
+                    Toal sale: <BDT amount={item.totalSale} />
                   </Text>
+                </Pressable>
+                <View>
+                  <Text style={{ color: color.orange }}>{item.status}</Text>
+                  <Text style={{ fontSize: 13 }}>{item.time}</Text>
                 </View>
               </View>
+
+              {/* delete btn */}
+              {showDeleteBtn === i && (
+                <View style={style.deleteBtn}>
+                  <Button
+                    onPress={() => removeOrder(item.id)}
+                    style={{ backgroundColor: color.orange }}
+                    title='Delete'
+                  />
+                </View>
+              )}
 
               {showDetails === i && (
                 <View style={style.detailsContainer}>
                   <View key={item.id} style={style.detailsTableHeader}>
-                    <Text>Name</Text>
-                    <Text>Qty</Text>
-                    <Text>Price</Text>
-                    <Text>Total</Text>
+                    <Text style={tableheaderStyle}>Name</Text>
+                    <Text style={tableheaderStyle}>Qty</Text>
+                    <Text style={tableheaderStyle}>Price</Text>
+                    <Text style={tableheaderStyle}>Total</Text>
                   </View>
                   {item.products.map((item, i) => (
                     <View key={item.id} style={style.detailsItem}>
-                      <Text>{item.name}</Text>
-                      <Text>{item.qty}</Text>
-                      <Text>{item.price}</Text>
-                      <BDT
-                        style={{ marginRight: i !== 0 ? 6 : 0 }}
-                        amount={item.total}
-                      />
+                      <Text style={tablerowStyle}>
+                        {item.name.split(" ")[0]}
+                      </Text>
+                      <Text style={tablerowStyle}>{item.qty}</Text>
+                      <Text style={tablerowStyle}>{item.price}</Text>
+                      <BDT style={tablerowStyle} amount={item.total} />
                     </View>
                   ))}
 

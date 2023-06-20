@@ -29,7 +29,7 @@ const Header = () => {
         <View style={{ marginLeft: 5 }}>
           <Text style={styles.name}>{user.name}</Text>
           <Text style={{ color: "#e6e6f2" }}>
-            AC: <BDT amount={user?.salesMoney || 0} />
+            AC: <BDT amount={user?.haveMoney || 0} />
           </Text>
         </View>
       </Pressable>

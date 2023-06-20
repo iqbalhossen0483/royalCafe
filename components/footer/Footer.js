@@ -173,13 +173,6 @@ const Footer = () => {
           showModal={setMoreOption}
           icon={<Octicons name='history' size={16} color='#af3ae0' />}
         />
-        <SubMenu
-          name='Your Notes'
-          url='notes'
-          bgColor='#e3c0ed'
-          showModal={setMoreOption}
-          icon={<Foundation name='clipboard-notes' size={20} color='#b51fde' />}
-        />
       </Drawar>
     </View>
   );

@@ -1,25 +1,24 @@
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { style } from "../css/home";
 import { commonStyles } from "../css/common";
 import Button from "./utilitise/Button";
 import Select from "./utilitise/Select";
-import { stockReport } from "../data";
 import BDT from "./utilitise/BDT";
-import { Fetch } from "../services/common";
 import useStore from "../context/useStore";
+import { Fetch } from "../services/common";
+import { modifyStockReport } from "../services/report";
 
-const StockReport = () => {
-  const [date, setDate] = useState(new Date());
-  const [products, setProducts] = useState(null);
-  const [data, setData] = useState(null);
+const StockReport = ({ data }) => {
+  const [date, setDate] = useState(null);
+  const [report, setReport] = useState(null);
   const [methods, setMethods] = useState("Days");
-  const { setMessage } = useStore();
+  const store = useStore();
 
   const showDatepicker = () => {
     DateTimePickerAndroid.open({
-      value: date,
+      value: date || new Date(),
       onChange: (event, selectedDate) => {
         const currentDate = selectedDate;
         setDate(currentDate);
@@ -30,36 +29,42 @@ const StockReport = () => {
   };
 
   useEffect(() => {
-    (async () => {
-      try {
-        const products = await Fetch("/product", "GET");
-        setProducts(products);
-      } catch (error) {
-        setMessage({ msg: error.message, type: "error" });
-      }
-    })();
+    const modified = modifyStockReport(data.products, data.stockReport);
+    setReport(modified);
   }, []);
 
   useEffect(() => {
-    const demo = [];
-    if (!stockReport.length || !products) return;
-    products.forEach((item) => {
-      const product = stockReport.find((d) => item.name === d.name);
-      if (product) demo.push(product);
-      else {
-        demo.push({
-          name: item.name,
-          productId: item.id,
-          date: "",
-          previousStock: item.stock,
-          purchase: 0,
-          todaySale: 0,
-          remainingStock: item.stock,
-        });
+    async function fetchData() {
+      try {
+        store.setLoading(true);
+        let base = "/admin?stockReport=true&";
+        const method = methods.name;
+        const url =
+          method === "Days"
+            ? (base += `method=date&date=${date.toISOString()}`)
+            : method === "Month"
+            ? (base += `method=month&date=${date.toLocaleString("en-us", {
+                month: "long",
+              })}&year=${date.getFullYear()}`)
+            : (base += `method=year&date=${date.getFullYear()}`);
+        const report = await Fetch(url, "GET");
+        const modified = modifyStockReport(data.products, report);
+        setReport(modified);
+        store.setLoading(false);
+      } catch (error) {
+        store.setLoading(false);
+        store.setMessage({ msg: error.message, type: "error" });
       }
-      setData(demo);
-    });
-  }, []);
+    }
+    if (date) fetchData();
+  }, [date]);
+
+  useEffect(() => {
+    if (methods.name === "Clear") {
+      const modified = modifyStockReport(data.products, data.stockReport);
+      setReport(modified);
+    }
+  }, [methods.name]);
 
   const styles = { width: "17%", textAlign: "center" };
   return (
@@ -80,8 +85,8 @@ const StockReport = () => {
             Remaining
           </Text>
         </View>
-        {data ? (
-          data.map((item, i) => (
+        {report && report.length ? (
+          report.map((item, i) => (
             <View style={commonStyles.tableRow} key={i}>
               <Text style={styles}>
                 {item.name.length > 8 ? item.name.split(" ")[0] : item.name}
@@ -91,7 +96,7 @@ const StockReport = () => {
               <BDT
                 bdtSign={false}
                 style={{ width: "15%", textAlign: "center" }}
-                amount={item.todaySale}
+                amount={item.totalSold}
               />
               <BDT
                 bdtSign={false}
@@ -130,7 +135,7 @@ const StockReport = () => {
               { name: "Days" },
               { name: "Month" },
               { name: "Year" },
-              { name: "All" },
+              { name: "Clear" },
             ]}
             handler={(_, info) => setMethods(info)}
           />

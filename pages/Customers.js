@@ -9,7 +9,7 @@ import BDT from "../components/utilitise/BDT";
 import { Fetch, dateFormatter, serverUrl } from "../services/common";
 import useStore from "../context/useStore";
 
-const Customers = ({ navigation, route }) => {
+const Customers = ({ navigation }) => {
   const [customers, setCustomers] = useState(null);
   const store = useStore();
 
@@ -37,10 +37,7 @@ const Customers = ({ navigation, route }) => {
           renderItem={({ item }) => (
             <Pressable
               onPress={() =>
-                navigation.navigate("customerDetails", {
-                  data: item,
-                  normal: true,
-                })
+                navigation.navigate("customerDetails", { id: item.id })
               }
               style={{
                 ...styles.container,

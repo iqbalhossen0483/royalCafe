@@ -1,254 +1,132 @@
-import React, { useState } from "react";
-import { FlatList, Pressable, Text, TextInput } from "react-native";
+import { useEffect, useState } from "react";
+import { Text } from "react-native";
 import { View } from "react-native";
 import Button from "../components/utilitise/Button";
 import { styles } from "../css/orderDetails";
-import { commonStyles } from "../css/common";
-import { Ionicons } from "@expo/vector-icons";
 import { Common } from "../App";
-import { color } from "../components/utilitise/colors";
 import BDT from "../components/utilitise/BDT";
+import useStore from "../context/useStore";
+import { Fetch, dateFormatter } from "../services/common";
+import CollectionForm from "../components/order/CollectionForm";
+import SeeCollectionList from "../components/order/SeeCollectionList";
+import { commonStyles } from "../css/common";
 
 const OrderDetails = ({ route }) => {
-  const [showCollectionForm, setShowCollectionForm] = useState(false);
-  const [showCollectionInfo, setShowCollectionInfo] = useState(0);
-  const data = route.params;
-  const [payment, setPayment] = useState(0);
+  const [showCollnForm, setShowCollForm] = useState(false);
+  const [showCollInfo, setShowCollInfo] = useState(false);
+  const [data, setData] = useState(null);
+  const store = useStore();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        store.setLoading(true);
+        const result = await Fetch(`/order?id=${route.params?.id}`, "GET");
+        setData(result);
+      } catch (error) {
+        store.setMessage({ msg: error.message, type: "error" });
+      } finally {
+        store.setLoading(false);
+      }
+    })();
+  }, [route.params?.id, store.updateOrder]);
+
+  if (!data) return null;
+  const tablerowStyle = { width: "25%", textAlign: "center" };
+  const tableheaderStyle = {
+    fontWeight: 500,
+    ...tablerowStyle,
+  };
 
   return (
     <Common>
       <View style={styles.container}>
-        <Text style={{ fontSize: 19, fontWeight: 500, textAlign: "center" }}>
-          M/S Hazera Enterprise
-        </Text>
-        <Text style={{ marginTop: -2, textAlign: "center" }}>
-          Dharmopur, College Reoad, Adarsha Sadar, Cumilla.
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginBottom: 5,
-            marginTop: 10,
-          }}
-        >
-          <Text>
-            <Text style={{ fontWeight: 500 }}>Bill No:</Text> {data.billno}
-          </Text>
-          <Text>
-            <Text style={{ fontWeight: 500 }}>Date: </Text>
-            {data.date}
+        <View style={styles.headerWrapper}>
+          <Text style={styles.header}>M/S Hazera Enterprise</Text>
+          <Text style={styles.address}>
+            Dharmopur, College Reoad, Adarsha Sadar, Cumilla.
           </Text>
         </View>
-
-        <View style={{ flexDirection: "row", columnGap: 5, marginTop: 8 }}>
-          <Text style={{ fontWeight: 500, fontSize: 16 }}>Name:</Text>
-          <Text
-            style={{
-              fontSize: 16,
-              borderBottomWidth: 0.7,
-              borderBottomColor: "#cbd5e1",
-            }}
-          >
-            {data.shopInfo.shopName}
-          </Text>
-        </View>
-        <View style={{ flexDirection: "row", columnGap: 5 }}>
-          <Text style={{ fontWeight: 500, fontSize: 16 }}>Address:</Text>
-          <Text
-            style={{
-              fontSize: 16,
-              borderBottomWidth: 0.7,
-              borderBottomColor: "#cbd5e1",
-            }}
-          >
-            {data.shopInfo.address}
-          </Text>
-        </View>
-
-        {/* details */}
-        <View
-          style={{
-            marginTop: 10,
-            paddingHorizontal: 8,
-            paddingVertical: 10,
-            borderRadius: 6,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              borderBottomWidth: 0.7,
-              borderBottomColor: "#cbd5e1",
-              paddingBottom: 4,
-              marginBottom: 4,
-            }}
-          >
-            <Text style={{ fontWeight: 500 }}>Product</Text>
-            <Text style={{ fontWeight: 500 }}>Qty</Text>
-            <Text style={{ fontWeight: 500 }}>Price</Text>
-            <Text style={{ fontWeight: 500 }}>Total</Text>
+        <View style={{ paddingHorizontal: 15, paddingVertical: 10 }}>
+          <View style={styles.dateNbill}>
+            <Text>
+              <Text style={{ fontWeight: 500 }}>Bill No:</Text> {data.billno}
+            </Text>
+            <Text>
+              <Text style={{ fontWeight: 500 }}>Date: </Text>
+              {dateFormatter(data.date)}
+            </Text>
           </View>
-          <FlatList
-            data={data.products}
-            keyExtractor={(item) => item.id}
-            ItemSeparatorComponent={() => (
-              <View
-                style={{
-                  borderBottomWidth: 0.7,
-                  borderBottomColor: "#cbd5e1",
-                  marginBottom: 4,
-                  paddingBottom: 4,
-                }}
-              />
-            )}
-            renderItem={({ item }) => (
-              <View
-                key={item.id}
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text>{item.name}</Text>
-                <Text>{item.qty}</Text>
-                <Text>{item.price}</Text>
-                <BDT amount={item.total} />
-              </View>
-            )}
-          />
-          <View
-            style={{
-              marginTop: 10,
-              alignItems: "flex-end",
-            }}
-          >
-            <Account name='Total' amount={data.totalSale} width='100%' />
-            <Account name='Payment' amount={data.payment} />
 
-            {data.collection && (
-              <FlatList
-                keyExtractor={(data) => data.id}
-                data={data.collection}
-                renderItem={({ item }) => (
-                  <View>
-                    <Pressable
-                      onPress={() =>
-                        setShowCollectionInfo((prev) => {
-                          if (prev === item.id) return 0;
-                          else return item.id;
-                        })
-                      }
-                    >
-                      <Account name={item.collectedBy} amount={item.amount} />
-                    </Pressable>
-                    {showCollectionInfo === item.id ? (
-                      <Text
-                        style={{ textAlign: "right", color: color.darkGray }}
-                      >
-                        Date: {item.date}
-                      </Text>
-                    ) : null}
-                  </View>
-                )}
-              />
-            )}
+          <View style={{ flexDirection: "row", columnGap: 5, marginTop: 5 }}>
+            <Text style={{ fontWeight: 500 }}>Name:</Text>
+            <Text style={styles.shopNameNaddress}>{data.shopName}</Text>
+          </View>
+          <View style={{ flexDirection: "row", columnGap: 5 }}>
+            <Text style={{ fontWeight: 500 }}>Address:</Text>
+            <Text style={styles.shopNameNaddress}>{data.address}</Text>
+          </View>
 
-            {data.discount ? (
-              <Account name='Discount' amount={data.discount} />
-            ) : null}
-
-            <Account
-              style={{ color: data.due ? "#dc2626" : "#000" }}
-              name='Due'
-              amount={data.due}
-            />
-
-            <View>
-              {data.due ? (
-                <View>
-                  <Button
-                    onPress={() => setShowCollectionForm(true)}
-                    style={{ marginTop: 4 }}
-                    title='Collection'
-                  />
-                </View>
-              ) : null}
+          {/* details */}
+          <View style={styles.detailsWrapper}>
+            <View style={commonStyles.tableRow}>
+              <Text style={tableheaderStyle}>Product</Text>
+              <Text style={tableheaderStyle}>Qty</Text>
+              <Text style={tableheaderStyle}>Price</Text>
+              <Text style={tableheaderStyle}>Total</Text>
             </View>
-          </View>
-        </View>
-
-        {showCollectionForm && (
-          <View
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "#fff",
-              borderRadius: 5,
-              paddingVertical: 30,
-              paddingHorizontal: 20,
-              alignItems: "center",
-            }}
-          >
+            {data.products.map((item) => (
+              <View key={item.id} style={commonStyles.tableRow}>
+                <Text style={tablerowStyle}>{item.name.split(" ")[0]}</Text>
+                <Text style={tablerowStyle}>{item.qty}</Text>
+                <Text style={tablerowStyle}>{item.price}</Text>
+                <BDT style={tableheaderStyle} amount={item.total} />
+              </View>
+            ))}
             <View
-              onTouchStart={() => setShowCollectionForm(false)}
-              style={commonStyles.closeIconWrapper}
+              style={{
+                marginTop: 10,
+                alignItems: "flex-end",
+              }}
             >
-              <Ionicons
-                style={commonStyles.closeIcon}
-                name='close-sharp'
-                size={24}
-                color='black'
+              <Account name='Total' amount={data.totalSale} width='100%' />
+              <Account name='Payment' amount={data.payment} />
+
+              {data.discount ? (
+                <Account name='Discount' amount={data.discount} />
+              ) : null}
+
+              <Account
+                style={{ color: data.due ? "#dc2626" : "#000" }}
+                name='Due'
+                amount={data.due}
               />
-            </View>
-            <View style={{ width: "80%" }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  gap: 5,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text
-                  style={{ fontWeight: 500, fontSize: 18, color: "#dc2626" }}
-                >
-                  Due:
-                </Text>
-                <Text
-                  style={{ fontSize: 18, color: "#dc2626", fontWeight: 500 }}
-                >
-                  {data.due - payment}৳
-                </Text>
-              </View>
-              <TextInput
-                style={{ ...commonStyles.input, marginVertical: 20 }}
-                placeholder='Collection ৳'
-                keyboardType='numeric'
-                onChangeText={(value) => setPayment(parseInt(value || 0))}
-              />
-              <View
-                style={{
-                  flexDirection: "row",
-                  gap: 8,
-                  justifyContent: "center",
-                }}
-              >
+
+              {data.due !== 0 && (
                 <Button
-                  disabled={payment === 0 || payment > data.due}
-                  title='Submit'
+                  onPress={() => setShowCollForm(true)}
+                  style={{ marginVertical: 5 }}
+                  title='Get Collection'
                 />
+              )}
+              {data.collections.length !== 0 && (
                 <Button
-                  disabled={payment >= data.due || data.due - 100 > payment}
-                  title='Continue with discount'
+                  onPress={() => setShowCollInfo(true)}
+                  title='See Collection Info'
                 />
-              </View>
+              )}
             </View>
           </View>
+        </View>
+
+        {showCollnForm && (
+          <CollectionForm data={data} setShow={setShowCollForm} />
+        )}
+        {showCollInfo && (
+          <SeeCollectionList
+            data={data.collections}
+            setShow={setShowCollInfo}
+          />
         )}
       </View>
     </Common>
@@ -261,8 +139,6 @@ function Account({ name, amount, width, style }) {
   return (
     <View
       style={{
-        borderTopColor: "#cbd5e1",
-        borderTopWidth: 0.7,
         flexDirection: "row",
         justifyContent: "flex-end",
         paddingLeft: 10,

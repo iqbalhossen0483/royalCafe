@@ -50,4 +50,9 @@ export const style = StyleSheet.create({
     fontWeight: 500,
     marginRight: 4,
   },
+  deleteBtn: {
+    position: "absolute",
+    top: 15,
+    right: 15,
+  },
 });

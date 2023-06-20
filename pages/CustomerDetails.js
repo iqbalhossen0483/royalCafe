@@ -3,31 +3,21 @@ import { Image, Text, View, FlatList, Pressable } from "react-native";
 import { Common } from "../App";
 import BDT from "../components/utilitise/BDT";
 import { color } from "../components/utilitise/colors";
-import { orderdata } from "../data";
 import { styles } from "../css/customer";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
-import Button from "../components/utilitise/Button";
-import { Fetch, serverUrl } from "../services/common";
+import { Fetch, dateFormatter, serverUrl } from "../services/common";
 import useStore from "../context/useStore";
-import { alert } from "../components/utilitise/Alert";
 
 const CustomerDetails = ({ route, navigation }) => {
-  const [data, setData] = useState(route.params.data);
+  const [data, setData] = useState(null);
   const store = useStore();
 
   useEffect(() => {
     (async () => {
-      if (route.params.normal) {
-        route.params.normal = false;
-        return;
-      }
       try {
         store.setLoading(true);
-        const customers = await Fetch(
-          `/customer?id=${route.params.data.id}`,
-          "GET"
-        );
-        setData(customers[0]);
+        const customers = await Fetch(`/customer?id=${route.params.id}`, "GET");
+        setData(customers);
         store.setLoading(false);
       } catch (error) {
         store.setLoading(false);
@@ -36,32 +26,15 @@ const CustomerDetails = ({ route, navigation }) => {
     })();
   }, [store.updateCustomer]);
 
-  function removeCustomer() {
-    alert("Are you sure to delete?", async () => {
-      try {
-        store.setLoading(true);
-        const { message } = await Fetch(
-          `/customer?id=${data.id}&profile=${data.profile}`,
-          "DELETE"
-        );
-        store.setMessage({ msg: message, type: "success" });
-        store.setUpdateCustomer((prev) => !prev);
-        navigation.navigate("customer");
-        store.setLoading(false);
-      } catch (error) {
-        store.setLoading(false);
-        store.setMessage({ msg: error.message, type: "error" });
-      }
-    });
-  }
-
+  if (!data) return null;
   return (
     <Common>
       <View style={{ marginBottom: 75 }}>
         <FlatList
-          data={orderdata}
+          data={data.orders}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.detailsContentContainer}
+          ItemSeparatorComponent={() => <View style={styles.itemSeperator} />}
           ListHeaderComponent={() => (
             <>
               <View style={styles.customerProfile}>
@@ -97,11 +70,6 @@ const CustomerDetails = ({ route, navigation }) => {
                   <Text style={{ textAlign: "center", marginBottom: 8 }}>
                     {data.phone}
                   </Text>
-                  <Button
-                    onPress={removeCustomer}
-                    style={{ backgroundColor: "#db5c25", paddingVertical: 3 }}
-                    title='Remove'
-                  />
                 </View>
               </View>
               <View style={styles.amountContainer}>
@@ -124,7 +92,6 @@ const CustomerDetails = ({ route, navigation }) => {
               </View>
             </>
           )}
-          ItemSeparatorComponent={() => <View style={styles.itemSeperator} />}
           renderItem={({ item }) => (
             <Pressable
               onPress={() => navigation.navigate("orderDetails", item)}
@@ -133,12 +100,10 @@ const CustomerDetails = ({ route, navigation }) => {
               <View>
                 <View style={{ marginLeft: 6 }}>
                   <Text style={{ fontSize: 16, fontWeight: 500 }}>
-                    {item.shopInfo.shopName}
+                    {item.shopName}
                   </Text>
-                  <Text style={{ color: color.darkGray }}>
-                    {item.shopInfo.address}
-                  </Text>
-                  <Text style={styles.date}>{item.date}</Text>
+                  <Text style={{ color: color.darkGray }}>{item.address}</Text>
+                  <Text style={styles.date}>{dateFormatter(item.date)}</Text>
                 </View>
               </View>
               <View>
@@ -146,10 +111,12 @@ const CustomerDetails = ({ route, navigation }) => {
                   <Text>Bill no: </Text>
                   <Text style={{ fontWeight: 500 }}>{item.billno}</Text>
                 </View>
-                <View style={{ flexDirection: "row" }}>
-                  <Text>Sale: </Text>
-                  <BDT amount={item.totalSale} />
-                </View>
+                <Text>
+                  Sale: <BDT amount={item.totalSale} />
+                </Text>
+                <Text>
+                  Due: <BDT style={{ color: color.orange }} amount={item.due} />
+                </Text>
               </View>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <View
@@ -176,7 +143,6 @@ const CustomerDetails = ({ route, navigation }) => {
 export default CustomerDetails;
 
 function Amount({ name, amount, colors }) {
-  if (!amount) return null;
   return (
     <View style={{ ...styles.amountWrapper, backgroundColor: colors }}>
       <Text style={styles.amountName}>{name}</Text>

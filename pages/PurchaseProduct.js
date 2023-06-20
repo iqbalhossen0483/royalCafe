@@ -73,6 +73,7 @@ After purchasing you won't change it anymore`;
     }
   }
 
+  if (!data.products || !data.supplier) return null;
   return (
     <Common>
       <ScrollView style={{ marginBottom: bottomMargin }}>

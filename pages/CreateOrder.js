@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import { Common } from "../App";
 import Button from "../components/utilitise/Button";
@@ -9,11 +9,14 @@ import { customerData, products } from "../data";
 import BDT from "../components/utilitise/BDT";
 import { styles } from "../css/createOrder";
 import { Alert } from "react-native";
+import useStore from "../context/useStore";
+import { Fetch } from "../services/common";
 
-const CreateOrder = ({ route }) => {
+const CreateOrder = ({ route, navigation }) => {
   const [showDelete, setShowDelete] = useState(-1);
   const [product, setProduct] = useState({});
   const [show, setShow] = useState(false);
+  const store = useStore();
   const [form, setForm] = useState({
     shopInfo: {},
     products: [],
@@ -21,23 +24,24 @@ const CreateOrder = ({ route }) => {
     billno: "",
   });
 
+  //for editing initialize;
   useEffect(() => {
     const order = route.params?.order;
     if (!route.params?.edit) return;
     setForm({
       shopInfo: {
-        shopName: order.shopInfo.shopName,
-        address: order.shopInfo.address,
-        phone: order.shopInfo.phone,
+        shopName: order.shopName,
+        address: order.address,
+        phone: order.phone,
       },
       products: order.products,
       totalSale: order.totalSale,
       billno: order.billno,
     });
-  }, [route.params]);
+  }, [route.params]); //till;
 
   function addToListProduct() {
-    const exist = form.products.find((p) => p.id === product.id);
+    const exist = form.products.find((p) => p.productId === product.productId);
     if (exist) return Alert.alert("Alrady added");
     setForm((prev) => {
       if (!product.qty) product.qty = 1;
@@ -50,22 +54,41 @@ const CreateOrder = ({ route }) => {
     setShow(false);
   }
 
-  function deleteProductFromList(id) {
+  function deleteProductFromList(id, totalPrice) {
     setForm((prev) => {
       const filtered = prev.products.filter((p) => p.id !== id);
       prev.products = filtered;
+      if (prev.deleteProduct) prev.deleteProduct.push(id);
+      else prev.deleteProduct = [id];
+      prev.totalSale = parseInt(prev.totalSale) - parseInt(totalPrice);
       return { ...prev };
     });
     setShowDelete(-1);
   }
 
-  function onSubmit() {
-    const data = form;
-    data.status = "Undelivered";
-    const date = new Date();
-    data.date = date.toISOString().slice(0, 10);
-    data.time = formatAMPM(date);
-    console.log(JSON.stringify(data, undefined, 4));
+  async function onSubmit() {
+    try {
+      store.setLoading(true);
+      const edit = route.params?.edit;
+      const data = form;
+      data.shopId = data.shopInfo.id;
+      delete data.shopInfo;
+      data.created_by = store.user.id;
+      if (!edit) {
+        const date = new Date();
+        data.time = formatAMPM(date);
+      }
+      const method = edit ? "PUT" : "POST";
+      const url = edit ? `/order?id=${route.params?.order.id}` : "/order";
+      const { message } = await Fetch(url, method, data);
+      store.setMessage({ msg: message, type: "success" });
+      store.setUpdateOrder((prev) => !prev);
+      navigation.goBack();
+    } catch (error) {
+      store.setMessage({ msg: error.message, type: "error" });
+    } finally {
+      store.setLoading(false);
+    }
   }
 
   function formatAMPM(date) {
@@ -79,6 +102,11 @@ const CreateOrder = ({ route }) => {
     return strTime;
   }
 
+  const submitBtnDisable =
+    route.params?.edit && form.products.length
+      ? false
+      : !form.shopInfo?.id || !form.products.length || !form.billno;
+
   return (
     <Common>
       <View style={{ ...commonStyles.formContainer, zIndex: 0 }}>
@@ -89,7 +117,7 @@ const CreateOrder = ({ route }) => {
           <Select
             name='shopInfo'
             placeholder='Shop name'
-            url=''
+            url='/customer?opt=id,shopName,address,phone'
             defaultValue={route.params?.edit && form.shopInfo?.shopName}
             header='shopName'
             title='address'
@@ -114,7 +142,7 @@ const CreateOrder = ({ route }) => {
                 return { ...prev, billno: value };
               })
             }
-            keyboardType='numeric'
+            keyboardType='phone-pad'
             defaultValue={form.billno?.toString()}
             style={commonStyles.input}
             placeholder='Bill no.'
@@ -160,7 +188,9 @@ const CreateOrder = ({ route }) => {
                     {showDelete === index ? (
                       <View style={styles.deleteBtn}>
                         <Pressable
-                          onPress={() => deleteProductFromList(item.id)}
+                          onPress={() =>
+                            deleteProductFromList(item.id, item.total)
+                          }
                         >
                           <Text style={styles.deleteBtnText}>Delete</Text>
                         </Pressable>
@@ -182,7 +212,7 @@ const CreateOrder = ({ route }) => {
           <View style={{ alignItems: "flex-end" }}>
             <Button
               onPress={() => setShow((prev) => !prev)}
-              disabled={!form.shopInfo.id}
+              disabled={route.params?.edit ? false : !form.shopInfo?.id}
               style={{ width: 40, height: 40, borderRadius: 100 }}
               title={
                 <Ionicons name='ios-add-circle-sharp' size={24} color='#fff' />
@@ -191,70 +221,76 @@ const CreateOrder = ({ route }) => {
           </View>
 
           <Button
-            disabled={
-              !form.shopInfo.id || !form.products.length || !form.billno
-            }
+            disabled={submitBtnDisable}
             onPress={onSubmit}
             title='Submit'
           />
         </View>
 
         {/* add product form */}
-        {show ? (
-          <View style={styles.productContainer}>
-            <Text
-              style={{
-                textAlign: "center",
-                fontWeight: 500,
-                marginBottom: 4,
-              }}
-            >
-              Add a product
-            </Text>
-            <Select
-              placeholder='Select Product'
-              header='name'
-              options={products}
-              handler={(_, info) =>
-                setProduct({ id: info.id, name: info.name, price: info.price })
-              }
-            />
-            {product.name ? (
-              <>
-                <TextInput
-                  style={commonStyles.input}
-                  placeholder='Qty'
-                  keyboardType='numeric'
-                  defaultValue='1'
-                  onChangeText={(value) =>
-                    setProduct((prev) => {
-                      return { ...prev, qty: parseInt(value || 0) };
-                    })
-                  }
-                />
-                <TextInput
-                  style={commonStyles.input}
-                  placeholder='Price'
-                  keyboardType='numeric'
-                  defaultValue={
-                    product.price === 0 ? "" : product.price.toString()
-                  }
-                  onChangeText={(value) =>
-                    setProduct((prev) => {
-                      return { ...prev, price: parseInt(value || 0) };
-                    })
-                  }
-                />
-              </>
-            ) : null}
-            <Button
-              style={{ marginTop: 5 }}
-              disabled={!product.name}
-              title='Add'
-              onPress={addToListProduct}
-            />
-          </View>
-        ) : null}
+        <View
+          style={{
+            ...styles.productContainer,
+            display: show ? "flex" : "none",
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              fontWeight: 500,
+              marginBottom: 4,
+            }}
+          >
+            Add a product
+          </Text>
+          <Select
+            placeholder='Select Product'
+            header='name'
+            options={products}
+            url='/product?opt=id,name,price'
+            handler={(_, info) =>
+              setProduct({
+                productId: info.id,
+                name: info.name,
+                price: info.price,
+              })
+            }
+          />
+          {product.name ? (
+            <>
+              <TextInput
+                style={commonStyles.input}
+                placeholder='Qty'
+                keyboardType='phone-pad'
+                defaultValue='1'
+                onChangeText={(value) =>
+                  setProduct((prev) => {
+                    return { ...prev, qty: value };
+                  })
+                }
+              />
+              <TextInput
+                style={commonStyles.input}
+                placeholder='Price'
+                keyboardType='phone-pad'
+                defaultValue={
+                  product.price === 0 ? "" : product.price.toString()
+                }
+                onChangeText={(value) =>
+                  setProduct((prev) => {
+                    return { ...prev, price: value };
+                  })
+                }
+              />
+            </>
+          ) : null}
+          <Button
+            style={{ marginTop: 5 }}
+            disabled={!product.name}
+            title='Add'
+            onPress={addToListProduct}
+          />
+        </View>
       </View>
     </Common>
   );

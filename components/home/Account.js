@@ -1,48 +1,33 @@
-import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Text } from "react-native";
 import { commonStyles } from "../../css/common";
-import { accounts, users } from "../../data";
 import { style } from "../../css/home";
 import BDT from "../utilitise/BDT";
-import useStore from "../../context/useStore";
-import { Fetch } from "../../services/common";
 
-const Account = () => {
-  const [users, setUsers] = useState(null);
-  const store = useStore();
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const users = await Fetch("/user", "GET");
-        const rest = users.filter((item) => item.id !== store.user.id);
-        setUsers(rest);
-      } catch (error) {
-        store.setMessage({ msg: error.message, type: "error" });
-      }
-    })();
-  }, []);
-
+const Account = ({ users }) => {
   const styles = { width: "30%" };
+  const headerStyle = { width: "30%", fontWeight: 500 };
   return (
     <View style={style.accountContainer}>
       <Text style={{ ...commonStyles.heading, marginTop: 0, marginBottom: 15 }}>
         Account of Money
       </Text>
       <View style={commonStyles.tableRow}>
-        <Text style={{ ...styles, fontWeight: 500 }}>Name</Text>
-        <Text style={{ ...styles, fontWeight: 500 }}>Debt</Text>
-        <Text style={{ ...styles, fontWeight: 500 }}>Balance</Text>
+        <Text style={headerStyle}>Name</Text>
+        <Text style={headerStyle}>Debt</Text>
+        <Text style={headerStyle}>Balance</Text>
       </View>
-      {users &&
+      {users && users.length ? (
         users.map((item) => (
           <View style={commonStyles.tableRow} key={item.id}>
             <Text style={styles}>{item.name}</Text>
-            <BDT style={styles} amount={item.haveMoney || 0} />
-            <BDT style={styles} amount={item.debt || 0} />
+            <BDT style={styles} amount={item.debt} />
+            <BDT style={styles} amount={item.haveMoney} />
           </View>
-        ))}
+        ))
+      ) : (
+        <Text style={{ textAlign: "center", marginTop: 4 }}>No Balance</Text>
+      )}
     </View>
   );
 };

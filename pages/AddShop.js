@@ -72,6 +72,7 @@ const AddShop = ({ route, navigation }) => {
             defaultValue={form.shopName}
             onChangeText={(value) => handleChange("shopName", value)}
             style={commonStyles.input}
+            maxLength={15}
             placeholder='Shop name'
           />
           <TextInput

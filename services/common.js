@@ -1,6 +1,6 @@
 export async function Fetch(url, method, body, formData = false) {
   try {
-    const newUrl = "https://3729-58-145-190-239.ngrok-free.app" + url;
+    const newUrl = "https://8298-58-145-189-242.ngrok-free.app" + url;
     const option = /"GET"|"DELETE"/.test(method)
       ? {}
       : formData
@@ -23,7 +23,7 @@ export async function Fetch(url, method, body, formData = false) {
   }
 }
 
-export const serverUrl = "https://3729-58-145-190-239.ngrok-free.app/";
+export const serverUrl = "https://8298-58-145-189-242.ngrok-free.app/";
 
 export function prittyPrint(obj) {
   console.log(JSON.stringify(obj, null, 3));

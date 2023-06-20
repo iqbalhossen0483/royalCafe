@@ -116,7 +116,8 @@ const Profile = ({ route, navigation }) => {
             Debt: <BDT amount={user.debt} />
           </Text>
           <Text style={styles.workText}>
-            Dilivered Order: <BDT amount={user.delivered} bdtSign={false} />
+            Dilivered Order:{" "}
+            <BDT amount={user.delivered_order} bdtSign={false} />
           </Text>
         </View>
 

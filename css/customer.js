@@ -10,16 +10,9 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 7,
   },
   profile: {
-    height: 40,
-    width: 40,
-    borderRadius: 100,
-  },
-  status: {
-    fontSize: 13,
-    paddingHorizontal: 5,
-    paddingVertical: 3,
-    borderRadius: 5,
-    marginTop: 3,
+    height: 60,
+    width: 50,
+    borderRadius: 3,
   },
   amountWrapper: {
     paddingHorizontal: 8,
