@@ -1,6 +1,8 @@
+const ngrok = "https://283e-58-145-189-248.ngrok-free.app";
+
 export async function Fetch(url, method, body, formData = false) {
   try {
-    const newUrl = "https://8298-58-145-189-242.ngrok-free.app" + url;
+    const newUrl = ngrok + url;
     const option = /"GET"|"DELETE"/.test(method)
       ? {}
       : formData
@@ -23,16 +25,13 @@ export async function Fetch(url, method, body, formData = false) {
   }
 }
 
-export const serverUrl = "https://8298-58-145-189-242.ngrok-free.app/";
+export const serverUrl = ngrok + "/";
 
 export function prittyPrint(obj) {
   console.log(JSON.stringify(obj, null, 3));
 }
 
 export function dateFormatter(date) {
-  const yearAndMonth = date.slice(0, 8);
-  let tarikh = parseInt(date.slice(8, 10)) + 1;
-  tarikh = tarikh + "";
-  tarikh = tarikh.length === 1 ? "0" + tarikh : tarikh;
-  return yearAndMonth + tarikh;
+  const d = new Date(date);
+  return d.toLocaleDateString("en-GB");
 }

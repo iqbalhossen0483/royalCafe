@@ -11,7 +11,7 @@ export function modifyCashReport(data) {
     {
       id: 1,
       name: "Total Sale",
-      amount: data.totalSale,
+      amount: data.todaySale || data.totalSale || 0,
       bgColor: "#d5f2db",
       textColor: "#159e31",
     },

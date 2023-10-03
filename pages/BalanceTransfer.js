@@ -7,89 +7,96 @@ import Button from "../components/utilitise/Button";
 import Select from "../components/utilitise/Select";
 import useStore from "../context/useStore";
 import { Fetch } from "../services/common";
+import BDT from "../components/utilitise/BDT";
 
 const BalanceTransfer = ({ route }) => {
+  const user = route.params.user;
   const [users, setUsers] = useState(null);
-  const [info, setInfo] = useState({
-    name: "",
+  const [form, setForm] = useState({
+    purpose: "",
     amount: 0,
     restAmount: 0,
+    to: {},
   });
-  const [form, setForm] = useState({
-    amount: 0,
-    to: null,
-    purpose: "",
-  });
-  const user = route.params.user;
   const store = useStore();
 
   useEffect(() => {
     (async () => {
       try {
+        store.setLoading(true);
         const users = await Fetch("/user", "GET");
-        const rest = users.filter((item) => item.id !== store.user.id);
-        setUsers(rest);
+        const supplier = await Fetch("/supplier", "GET");
+        const rest = users.filter((item) => item.id !== user.id);
+        setUsers([...rest, ...supplier]);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
+      } finally {
+        store.setLoading(false);
       }
     })();
   }, []);
 
-  function handlePurpose(info) {
-    setForm((prev) => {
-      return {
-        ...prev,
-        purpose: info.name,
-      };
-    });
-    setInfo({
-      name: info.name === "Sale" ? "Balance" : info.name,
-      amount: info.name === "Debt" ? user.debt : user.salesMoney,
-      restAmount: info.name === "Debt" ? user.debt : user.salesMoney,
-    });
+  async function onSubmit() {
+    try {
+      store.setLoading(true);
+      form.fromUser = user.id;
+      form.toUser = form.to.userId;
+      const body = { ...form };
+      delete body.to;
+      delete body.restAmount;
+      const res = await Fetch("/user/balance_transfer", "POST", body);
+      store.setMessage({ msg: res.message, type: "success" });
+      store.setUpdateUser((prev) => !prev);
+    } catch (error) {
+      setForm((prev) => {
+        return { ...prev, restAmount: user.haveMoney };
+      });
+      store.setMessage({ msg: error.message, type: "error" });
+    } finally {
+      store.setLoading(false);
+    }
   }
 
-  function handleChange(name, value) {
-    setForm((prev) => {
-      return { ...prev, [name]: value };
-    });
-  }
-  function onSubmit() {
-    console.log(form);
-  }
-
+  if (store.loading) return null;
   return (
     <Common>
       <View style={commonStyles.formContainer}>
         <Text style={commonStyles.formHeader}>Balance Transfer</Text>
-        {info.name ? (
+        {form.purpose && form.purpose !== "Debt Payment" ? (
           <Text
             style={{ textAlign: "center", marginBottom: 5, fontWeight: 500 }}
           >
-            {info.name}: {info.restAmount}
+            {form.purpose}:<BDT amount={form.restAmount || user.haveMoney} />
           </Text>
         ) : null}
         <View style={{ rowGap: 9 }}>
           <Select
             name='purpose'
             placeholder='Purpose'
-            url=''
             header='name'
             zIndex={150}
-            handler={(_, info) => handlePurpose(info)}
+            editable={false}
+            handler={(_, info) =>
+              setForm((prev) => {
+                return { ...prev, purpose: info.name };
+              })
+            }
             options={[
-              { id: 1, name: "Sale" },
-              { id: 2, name: "Debt" },
+              { id: 1, name: "Balance Transfer" },
+              { id: 2, name: "Debt Payment" },
+              { id: 3, name: "Purchase Product" },
+              { id: 4, name: "Salary" },
+              { id: 5, name: "Incentive" },
             ]}
           />
           <TextInput
             defaultValue={form.phone?.toString()}
             onChangeText={(value) => {
-              handleChange("amount", parseInt(value));
-              setInfo((prev) => {
+              setForm((prev) => {
                 return {
                   ...prev,
-                  restAmount: prev.amount - parseInt(value || 0),
+                  amount: parseInt(value),
+                  restAmount: user.haveMoney - parseInt(value),
                 };
               });
             }}
@@ -101,7 +108,6 @@ const BalanceTransfer = ({ route }) => {
           <Select
             name='to'
             placeholder='To'
-            url=''
             header='name'
             handler={(_, info) =>
               setForm((prev) => {
@@ -117,9 +123,7 @@ const BalanceTransfer = ({ route }) => {
             options={users}
           />
           <Button
-            disabled={
-              !form.amount || !form.to || !form.purpose || info.restAmount < 0
-            }
+            disabled={!form.amount || !form.to.userId || !form.purpose}
             onPress={onSubmit}
             title='Submit'
           />

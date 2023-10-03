@@ -4,9 +4,8 @@ import { color } from "../components/utilitise/colors";
 export const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
-    borderRadius: 5,
     marginVertical: 5,
-    paddingVertical: 6,
+    paddingVertical: 3,
     paddingHorizontal: 7,
   },
   profile: {
@@ -62,6 +61,8 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: color.gray,
   },
   date: {
     fontSize: 13,

@@ -3,7 +3,10 @@ import { color } from "../components/utilitise/colors";
 
 export const styles = StyleSheet.create({
   profile: { width: 60, height: 60, borderRadius: 200 },
-  container: { margin: 10 },
+  container: {
+    marginHorizontal: 10,
+    paddingTop: 10,
+  },
   profileContainer: {
     backgroundColor: "#fff",
     paddingVertical: 30,
@@ -42,6 +45,8 @@ export const styles = StyleSheet.create({
     marginTop: 10,
     padding: 15,
     paddingLeft: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   workText: {
     fontWeight: 500,

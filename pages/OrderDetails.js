@@ -75,14 +75,18 @@ const OrderDetails = ({ route }) => {
               <Text style={tableheaderStyle}>Price</Text>
               <Text style={tableheaderStyle}>Total</Text>
             </View>
-            {data.products.map((item) => (
-              <View key={item.id} style={commonStyles.tableRow}>
-                <Text style={tablerowStyle}>{item.name.split(" ")[0]}</Text>
-                <Text style={tablerowStyle}>{item.qty}</Text>
-                <Text style={tablerowStyle}>{item.price}</Text>
-                <BDT style={tableheaderStyle} amount={item.total} />
-              </View>
-            ))}
+            {data.products.length ? (
+              data.products.map((item) => (
+                <View key={item.id} style={commonStyles.tableRow}>
+                  <Text style={tablerowStyle}>{item.name.split(" ")[0]}</Text>
+                  <Text style={tablerowStyle}>{item.qty}</Text>
+                  <Text style={tablerowStyle}>{item.price}</Text>
+                  <BDT style={tableheaderStyle} amount={item.total} />
+                </View>
+              ))
+            ) : (
+              <Text style={{ textAlign: "center" }}>No product</Text>
+            )}
             <View
               style={{
                 marginTop: 10,

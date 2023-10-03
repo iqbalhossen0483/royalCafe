@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { Keyboard, Text, TextInput, View } from "react-native";
 import Button from "../components/utilitise/Button";
 import { commonStyles } from "../css/common";
 import useStore from "../context/useStore";
@@ -22,14 +22,15 @@ const Login = ({ navigation }) => {
   async function onSubmit() {
     try {
       store.setLoading(true);
+      Keyboard.dismiss();
       const result = await Fetch("/login", "POST", form);
       store.setLoading(false);
       await AsyncStorage.setItem("token", result.token);
       store.setUser(result.user);
       store.setMessage({ msg: result.message, type: "success" });
-      navigation.navigate("home");
+      const url = result.user.designation === "Admin" ? "home" : "profile";
+      navigation.navigate(url);
     } catch (error) {
-      console.log(error);
       store.setLoading(false);
       store.setMessage({ msg: error.message, type: error.type || "error" });
     }

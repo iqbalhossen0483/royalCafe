@@ -21,8 +21,9 @@ const CollectionForm = ({ setShow, data }) => {
         discount,
         shopId: data.shopId,
         collected_by: store.user.id,
+        date: data.date,
         collection: {
-          receiver_name: store.user.name,
+          receiverId: store.user.id,
           amount: payment,
           orderId: data.id,
         },
@@ -31,6 +32,7 @@ const CollectionForm = ({ setShow, data }) => {
       const { message } = await Fetch(url, "PUT", peyload);
       store.setMessage({ msg: message, type: "success" });
       store.setUpdateOrder((prev) => !prev);
+      store.setUpdateReport((prev) => !prev);
       store.setUpdateUser((prev) => !prev);
       setShow(false);
     } catch (error) {

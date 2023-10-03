@@ -6,11 +6,24 @@ import { useNavigation } from "@react-navigation/native";
 import { color } from "../utilitise/colors";
 import BDT from "../utilitise/BDT";
 import useStore from "../../context/useStore";
-import { serverUrl } from "../../services/common";
+import { Fetch, serverUrl } from "../../services/common";
+import { useEffect, useState } from "react";
 
 const Header = () => {
   const navigation = useNavigation();
-  const { user } = useStore();
+  const [notification, setNotification] = useState(0);
+  const { user, setMessage, upNotification } = useStore();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const notify = await Fetch("/admin/notification", "GET");
+        setNotification(notify.length);
+      } catch (error) {
+        setMessage({ msg: error.message, type: "error" });
+      }
+    })();
+  }, [upNotification]);
 
   if (!user) return null;
   return (
@@ -18,14 +31,22 @@ const Header = () => {
       <Pressable
         style={styles.profileWrapper}
         onPress={() =>
-          navigation.navigate("profile", { data: user, edit: true })
+          navigation.navigate("profile", { userId: user.id, edit: true })
         }
       >
-        <Image
-          style={{ width: 40, height: 40, borderRadius: 100 }}
-          source={{ uri: serverUrl + user.profile }}
-          resizeMode='cover'
-        />
+        {user.profile ? (
+          <Image
+            style={{ width: 40, height: 40, borderRadius: 100 }}
+            source={{ uri: serverUrl + user.profile }}
+            resizeMode='cover'
+          />
+        ) : (
+          <Image
+            style={{ width: 40, height: 40, borderRadius: 100 }}
+            source={require("../../assets/no-photo.png")}
+            resizeMode='cover'
+          />
+        )}
         <View style={{ marginLeft: 5 }}>
           <Text style={styles.name}>{user.name}</Text>
           <Text style={{ color: "#e6e6f2" }}>
@@ -37,7 +58,7 @@ const Header = () => {
         onTouchStart={() => navigation.navigate("notification")}
         style={{ marginRight: 13, position: "relative" }}
       >
-        <View style={styles.notificationNose} />
+        {notification ? <View style={styles.notificationNose} /> : null}
         <View
           style={{
             ...commonStyles.iconWrapper,

@@ -1,10 +1,11 @@
-import { StatusBar } from "expo-status-bar";
-import { NavigationContainer } from "@react-navigation/native";
-import { SafeAreaView } from "react-native";
-import Header from "./components/header/Header";
-import { Dimensions } from "react-native";
-import Footer from "./components/footer/Footer";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NavigationContainer } from "@react-navigation/native";
+import { color } from "./components/utilitise/colors";
+import Footer from "./components/footer/Footer";
+import Header from "./components/header/Header";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaView } from "react-native";
+import { Dimensions } from "react-native";
 import {
   Home,
   Customers,
@@ -14,31 +15,40 @@ import {
   CreateNote,
   CreateOrder,
   CustomerDetails,
-  EditOrder,
   ManageMan,
   Notifications,
   OrderDetails,
   Orders,
+  ManageProduct,
+  AddUser,
+  Profile,
+  Transitions,
+  AddSupplyer,
+  ManageSupplyer,
+  Supplyer,
+  BalanceTransfer,
+  Login,
+  Message,
+  StoreProvider,
+  Loading,
+  PurchaseProduct,
+  ExpenseType,
+  AddExpense,
+  ExpenseReport,
 } from "./screens";
-import ManageProduct from "./pages/ManageProduct";
-import AddUser from "./pages/AddUser";
-import Profile from "./pages/Profile";
-import { color } from "./components/utilitise/colors";
-import Transitions from "./pages/Transitions";
-import AddSupplyer from "./pages/AddSupplyer";
-import ManageSupplyer from "./pages/ManageSupplyer";
-import Supplyer from "./pages/Supplyer";
-import BalanceTransfer from "./pages/BalanceTransfer";
-import Login from "./pages/Login";
-import Message from "./components/utilitise/Message";
-import StoreProvider from "./context/StoreProvider";
-import Loading from "./components/utilitise/Loading";
-import ProtectApp from "./context/ProtectApp";
-import PurchaseProduct from "./pages/PurchaseProduct";
+import useStore from "./context/useStore";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  return (
+    <StoreProvider>
+      <Layout />
+    </StoreProvider>
+  );
+}
+
+function Layout() {
   const height = Dimensions.get("window").height;
   const body = {
     paddingTop: 32,
@@ -46,54 +56,86 @@ export default function App() {
     minHeight: height + 30,
     position: "relative",
   };
+  const store = useStore();
+  const initialRoute = store?.userLoading
+    ? "loading"
+    : store?.user?.designation === "Admin"
+    ? "home"
+    : "profile";
 
   return (
-    <StoreProvider>
-      <SafeAreaView style={body}>
-        <NavigationContainer>
-          <StatusBar style='light' backgroundColor={color.green} />
-          <Stack.Navigator
-            initialRouteName='home'
-            screenOptions={{ headerShown: false }}
-          >
+    <SafeAreaView style={body}>
+      <NavigationContainer>
+        <StatusBar style='light' backgroundColor={color.green} />
+        <Stack.Navigator
+          initialRouteName={initialRoute}
+          screenOptions={{ headerShown: false }}
+        >
+          {store.userLoading ? (
             <Stack.Screen name='home' component={Home} />
-            <Stack.Screen name='customer' component={Customers} />
-            <Stack.Screen name='order' component={Orders} />
-            <Stack.Screen name='addshop' component={AddShop} />
-            <Stack.Screen name='createOrder' component={CreateOrder} />
-            <Stack.Screen name='createNote' component={CreateNote} />
-            <Stack.Screen name='addProduct' component={AddProduct} />
-            <Stack.Screen name='manageUsers' component={ManageMan} />
-            <Stack.Screen name='notification' component={Notifications} />
-            <Stack.Screen name='orderDetails' component={OrderDetails} />
-            <Stack.Screen name='completeOrder' component={CompleteOrder} />
-            <Stack.Screen name='editOrder' component={EditOrder} />
-            <Stack.Screen name='customerDetails' component={CustomerDetails} />
-            <Stack.Screen name='manageProduct' component={ManageProduct} />
-            <Stack.Screen name='addUser' component={AddUser} />
-            <Stack.Screen name='profile' component={Profile} />
-            <Stack.Screen name='transitions' component={Transitions} />
-            <Stack.Screen name='addSupplyer' component={AddSupplyer} />
-            <Stack.Screen name='manageSupplyer' component={ManageSupplyer} />
-            <Stack.Screen name='supplyer' component={Supplyer} />
-            <Stack.Screen name='balanceTransfer' component={BalanceTransfer} />
-            <Stack.Screen name='purchase' component={PurchaseProduct} />
+          ) : store.user ? (
+            <>
+              {store.user.designation === "Admin" ? (
+                <>
+                  <Stack.Screen name='home' component={Home} />
+                  <Stack.Screen name='addProduct' component={AddProduct} />
+                  <Stack.Screen name='manageUsers' component={ManageMan} />
+                  <Stack.Screen
+                    name='manageProduct'
+                    component={ManageProduct}
+                  />
+                  <Stack.Screen name='supplyer' component={Supplyer} />
+                  <Stack.Screen name='addSupplyer' component={AddSupplyer} />
+                  <Stack.Screen
+                    name='manageSupplyer'
+                    component={ManageSupplyer}
+                  />
+                  <Stack.Screen name='transitions' component={Transitions} />
+                  <Stack.Screen name='purchase' component={PurchaseProduct} />
+                  <Stack.Screen name='expenseType' component={ExpenseType} />
+                  <Stack.Screen
+                    name='expenseReport'
+                    component={ExpenseReport}
+                  />
+                </>
+              ) : null}
+              <Stack.Screen name='profile' component={Profile} />
+              <Stack.Screen name='order' component={Orders} />
+              <Stack.Screen name='createNote' component={CreateNote} />
+              <Stack.Screen name='notification' component={Notifications} />
+              <Stack.Screen name='orderDetails' component={OrderDetails} />
+              <Stack.Screen name='completeOrder' component={CompleteOrder} />
+              <Stack.Screen
+                name='customerDetails'
+                component={CustomerDetails}
+              />
+              <Stack.Screen name='addExpense' component={AddExpense} />
+              <Stack.Screen
+                name='balanceTransfer'
+                component={BalanceTransfer}
+              />
+              <Stack.Screen name='createOrder' component={CreateOrder} />
+              <Stack.Screen name='addshop' component={AddShop} />
+              <Stack.Screen name='addUser' component={AddUser} />
+              <Stack.Screen name='customer' component={Customers} />
+            </>
+          ) : (
             <Stack.Screen name='login' component={Login} />
-          </Stack.Navigator>
-          <Message />
-          <Loading />
-        </NavigationContainer>
-      </SafeAreaView>
-    </StoreProvider>
+          )}
+        </Stack.Navigator>
+        <Message />
+        <Loading />
+      </NavigationContainer>
+    </SafeAreaView>
   );
 }
 
 export function Common({ children }) {
   return (
-    <ProtectApp>
+    <>
       <Header />
       {children}
       <Footer />
-    </ProtectApp>
+    </>
   );
 }

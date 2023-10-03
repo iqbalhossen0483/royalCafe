@@ -9,11 +9,13 @@ import BDT from "./utilitise/BDT";
 import useStore from "../context/useStore";
 import { Fetch } from "../services/common";
 import { modifyStockReport } from "../services/report";
+import { LoadingOnComponent } from "./utilitise/Loading";
 
 const StockReport = ({ data }) => {
   const [date, setDate] = useState(null);
   const [report, setReport] = useState(null);
-  const [methods, setMethods] = useState("Days");
+  const [loading, setLoading] = useState(false);
+  const [methods, setMethods] = useState({ name: "Days" });
   const store = useStore();
 
   const showDatepicker = () => {
@@ -21,6 +23,7 @@ const StockReport = ({ data }) => {
       value: date || new Date(),
       onChange: (event, selectedDate) => {
         const currentDate = selectedDate;
+        if (methods.name === "Clear") setMethods({ name: "Days" });
         setDate(currentDate);
       },
       mode: "date",
@@ -31,14 +34,15 @@ const StockReport = ({ data }) => {
   useEffect(() => {
     const modified = modifyStockReport(data.products, data.stockReport);
     setReport(modified);
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        store.setLoading(true);
-        let base = "/admin?stockReport=true&";
+        setLoading(true);
         const method = methods.name;
+        if (method === "Clear") return;
+        let base = "/admin?stockReport=true&";
         const url =
           method === "Days"
             ? (base += `method=date&date=${date.toISOString()}`)
@@ -50,10 +54,10 @@ const StockReport = ({ data }) => {
         const report = await Fetch(url, "GET");
         const modified = modifyStockReport(data.products, report);
         setReport(modified);
-        store.setLoading(false);
       } catch (error) {
-        store.setLoading(false);
         store.setMessage({ msg: error.message, type: "error" });
+      } finally {
+        setLoading(false);
       }
     }
     if (date) fetchData();
@@ -63,6 +67,7 @@ const StockReport = ({ data }) => {
     if (methods.name === "Clear") {
       const modified = modifyStockReport(data.products, data.stockReport);
       setReport(modified);
+      setDate(null);
     }
   }, [methods.name]);
 
@@ -70,7 +75,10 @@ const StockReport = ({ data }) => {
   return (
     <View style={{ ...style.totalReportContainer, marginBottom: 10 }}>
       <Text style={{ ...commonStyles.heading, width: "100%", marginTop: 0 }}>
-        Stock Report
+        Stock Report Of {"\n"}
+        <Text style={{ color: "#8f1391" }}>
+          {date ? prittyDate(date, methods) : prittyDate(new Date(), methods)}
+        </Text>
       </Text>
 
       <View style={{ alignItems: "center", width: "100%" }}>
@@ -125,7 +133,7 @@ const StockReport = ({ data }) => {
         />
         <View style={{ width: "25%" }}>
           <Select
-            defaultValue='Days'
+            defaultValue={methods.name}
             header='name'
             name='method'
             top={true}
@@ -141,8 +149,22 @@ const StockReport = ({ data }) => {
           />
         </View>
       </View>
+      {loading ? <LoadingOnComponent /> : null}
     </View>
   );
 };
 
 export default StockReport;
+
+function prittyDate(date, method) {
+  if (method.name === "Month") {
+    return (
+      date.toLocaleDateString("en-GB", { month: "long" }) +
+      " " +
+      date.getFullYear()
+    );
+  } else if (method.name === "Year") {
+    return date.getFullYear();
+  }
+  return date.toLocaleDateString("en-GB");
+}

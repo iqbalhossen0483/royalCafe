@@ -22,6 +22,7 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.19,
     shadowRadius: 5.62,
     elevation: 6,
+    height: "7%",
   },
   iconWrapper: {
     display: "flex",
@@ -54,7 +55,7 @@ export const styles = StyleSheet.create({
     shadowRadius: 5.62,
     elevation: 6,
     paddingBottom: 20,
-    zIndex: 50,
+    zIndex: 60,
   },
   closeIcon: {
     color: "#57534e",

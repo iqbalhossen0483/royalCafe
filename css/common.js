@@ -1,10 +1,10 @@
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { color } from "../components/utilitise/colors";
 
 export const commonStyles = StyleSheet.create({
   iconWrapper: {
-    height: 33,
-    width: 33,
+    height: 30,
+    width: 30,
     borderRadius: 100,
     display: "flex",
     justifyContent: "center",

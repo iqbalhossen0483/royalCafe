@@ -9,10 +9,12 @@ const Store = () => {
   const [updateOrder, setUpdateOrder] = useState(false);
   const [updateUser, setUpdateUser] = useState(false);
   const [updateNote, setUpdateNotes] = useState(false);
+  const [updateExpense, setUpdateExpense] = useState(false);
   const [userLoading, setUserLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
   const [updateReport, setUpdateReport] = useState(false);
+  const [upNotification, setUpNotification] = useState(false);
   const [message, setMessage] = useState({
     msg: "",
     type: "",
@@ -56,6 +58,10 @@ const Store = () => {
     setUpdateOrder,
     updateReport,
     setUpdateReport,
+    upNotification,
+    setUpNotification,
+    updateExpense,
+    setUpdateExpense,
   };
 };
 

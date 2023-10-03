@@ -1,45 +1,42 @@
-import React, { useState } from "react";
-import { FlatList, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Dimensions, FlatList, View } from "react-native";
 import { Common } from "../App";
-import { transitions } from "../data";
 import { Text } from "react-native";
 import BDT from "../components/utilitise/BDT";
-import { color } from "../components/utilitise/colors";
+import { Fetch, dateFormatter } from "../services/common";
+import useStore from "../context/useStore";
+import SearchFilter from "../components/SearchFilter";
 
 const Transitions = () => {
-  let data = {
-    Sales: 20000,
-    Salary: 2000,
-    Purchase: 16000,
-  };
+  const [transitions, setTransition] = useState(null);
+  const store = useStore();
+  const height = Dimensions.get("window").height;
+
+  useEffect(() => {
+    (async () => {
+      try {
+        store.setLoading(true);
+        const result = await Fetch("/admin/transitions", "GET");
+        setTransition(result);
+      } catch (error) {
+        setMessage({ msg: error.message, type: "error" });
+      } finally {
+        store.setLoading(false);
+      }
+    })();
+  }, []);
 
   return (
     <Common>
-      <View style={{ marginBottom: 105 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            marginTop: 10,
-            marginBottom: 0,
-            flexWrap: "wrap",
-            columnGap: 5,
-          }}
-        >
-          <Text style={{ color: color.green }}>
-            Sales: <BDT amount={data.Sales} />
-          </Text>
-          <Text style={{ color: color.orange }}>
-            Salary: <BDT amount={data.Salary} />
-          </Text>
-          <Text style={{ color: "#1b39bf" }}>
-            Purchase: <BDT amount={data.Purchase} />
-          </Text>
-        </View>
+      <View style={{ marginBottom: height - height * 0.79 }}>
+        <SearchFilter url='/admin/transitions' setData={setTransition} />
         <FlatList
           data={transitions}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ margin: 15 }}
+          ListEmptyComponent={() => (
+            <Text style={{ textAlign: "center" }}>No Transitions found</Text>
+          )}
           renderItem={({ item }) => (
             <View
               style={{
@@ -47,21 +44,20 @@ const Transitions = () => {
                 justifyContent: "space-between",
                 padding: 10,
                 borderRadius: 10,
-                backgroundColor:
-                  item.purpose === "Sales" ? "#cdf0b6" : "#f0cfb6",
+                backgroundColor: "#fff",
                 marginBottom: 10,
               }}
             >
               <View>
                 <Text>From: {item.fromUserName}</Text>
-                <Text>To: {item.toUserName}</Text>
+                <Text>To: {item.toUserName || item.toSuppilerName}</Text>
                 <Text>Purpose: {item.purpose}</Text>
               </View>
               <View>
                 <Text>
                   Amount: <BDT amount={item.amount} />
                 </Text>
-                <Text>Date: {item.date}</Text>
+                <Text>Date: {dateFormatter(item.date)}</Text>
               </View>
             </View>
           )}

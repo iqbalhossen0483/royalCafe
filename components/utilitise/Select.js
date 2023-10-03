@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Keyboard, Pressable, Text, TextInput, View } from "react-native";
+import {
+  Keyboard,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { commonStyles } from "../../css/common";
 import { MaterialIcons } from "@expo/vector-icons";
 import { color } from "./colors";
@@ -17,11 +24,30 @@ const Select = ({
   defaultValue,
   top = false,
   zIndex = 100,
+  search = false,
 }) => {
   const [show, setShow] = useState(false);
-  const [value, setValue] = useState("");
   const [headerValue, setHeaderValue] = useState("");
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState(options);
+  const [value, setValue] = useState("");
+
+  useEffect(() => {
+    async function fethData() {
+      try {
+        setLoading(true);
+        if (search) url += `&search=${value}`;
+        const result = await Fetch(url, "GET");
+        setData(result);
+      } catch (error) {
+        setData(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (url && !search) fethData();
+    else if (search && value) fethData();
+  }, [value]);
 
   useEffect(() => {
     if (value.length >= 3 && value !== headerValue) setShow(true);
@@ -43,18 +69,6 @@ const Select = ({
     handler(name, info);
   }
 
-  useEffect(() => {
-    async function fethData() {
-      try {
-        const result = await Fetch(url, "GET");
-        setData(result);
-      } catch (error) {
-        setData(null);
-      }
-    }
-    if (url) fethData();
-  }, []);
-
   return (
     <View style={{ zIndex }}>
       <TextInput
@@ -69,18 +83,22 @@ const Select = ({
         onPress={() => setShow((prev) => !prev)}
         style={{ position: "absolute", top: 8, right: 5 }}
       >
-        <MaterialIcons
-          name={show ? "keyboard-arrow-up" : "keyboard-arrow-down"}
-          size={24}
-          color={color.darkGray}
-        />
+        {!search ? (
+          <MaterialIcons
+            name={show ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+            size={24}
+            color={color.darkGray}
+          />
+        ) : null}
       </Pressable>
 
       {show && (
         <View
           style={{ ...commonStyles.selectView, top: !top ? "100%" : "-400%" }}
         >
-          {data && data.length ? (
+          {loading ? (
+            <Text style={{ textAlign: "center" }}>Loading...</Text>
+          ) : data && data.length ? (
             data.map((item, i, arr) => (
               <Pressable
                 onPress={() => handleTuch(item)}

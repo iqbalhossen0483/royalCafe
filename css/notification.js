@@ -7,18 +7,16 @@ export const style = StyleSheet.create({
     alignItems: "center",
   },
   detailsContainer: {
-    marginLeft: 50,
     marginTop: 10,
     backgroundColor: "#f1f5f9",
     paddingHorizontal: 8,
     paddingVertical: 10,
     borderRadius: 6,
-    width: 280,
+    width: "100%",
   },
   detailsTableHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: 250,
     borderBottomWidth: 1,
     borderBottomColor: "#cbd5e1",
     paddingBottom: 3,
@@ -28,7 +26,6 @@ export const style = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 2,
-    width: 250,
   },
   bottomContainer: {
     marginTop: 4,

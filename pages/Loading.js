@@ -1,31 +1,11 @@
 import React from "react";
-import { Image } from "react-native";
-import { View } from "react-native";
-import useStore from "../../context/useStore";
 
 const Loading = () => {
-  const store = useStore();
-
-  if (!store.loading) return null;
-  return <LoadingUI />;
-};
-
-export default Loading;
-
-export function LoadingOnComponent() {
-  return <LoadingUI />;
-}
-
-function LoadingUI() {
+  console.log("hitting loading");
   return (
     <View
       style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        backgroundColor: "#00000040",
+        backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 10,
@@ -55,4 +35,6 @@ function LoadingUI() {
       </View>
     </View>
   );
-}
+};
+
+export default Loading;

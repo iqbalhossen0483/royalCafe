@@ -9,10 +9,12 @@ import { style } from "../../css/home";
 import useStore from "../../context/useStore";
 import { Fetch } from "../../services/common";
 import { modifyCashReport } from "../../services/report";
+import { LoadingOnComponent } from "../utilitise/Loading";
 
 const CashReport = ({ data }) => {
   const [date, setDate] = useState(null);
-  const [methods, setMethods] = useState("Days");
+  const [loading, setLoading] = useState(false);
+  const [methods, setMethods] = useState({ name: "Days" });
   const [report, setReport] = useState(data);
   const store = useStore();
 
@@ -21,6 +23,7 @@ const CashReport = ({ data }) => {
       value: date || new Date(),
       onChange: (_, selectedDate) => {
         const currentDate = selectedDate;
+        if (methods.name === "Clear") setMethods({ name: "Days" });
         setDate(currentDate);
       },
       mode: "date",
@@ -31,9 +34,10 @@ const CashReport = ({ data }) => {
   useEffect(() => {
     async function fetchData() {
       try {
-        store.setLoading(true);
-        let base = "/admin?cashReport=true&";
+        setLoading(true);
         const method = methods.name;
+        if (method === "Clear") return;
+        let base = "/admin?cashReport=true&";
         const url =
           method === "Days"
             ? (base += `method=date&date=${date.toISOString()}`)
@@ -45,23 +49,33 @@ const CashReport = ({ data }) => {
         const report = await Fetch(url, "GET");
         const modified = modifyCashReport(report);
         setReport(modified);
-        store.setLoading(false);
       } catch (error) {
-        store.setLoading(false);
         store.setMessage({ msg: error.message, type: "error" });
+      } finally {
+        setLoading(false);
       }
     }
     if (date) fetchData();
   }, [date]);
 
   useEffect(() => {
-    if (methods.name === "Clear") setReport(data);
+    if (methods.name === "Clear") {
+      setReport(data);
+      setDate(null);
+    }
   }, [methods.name]);
+
+  useEffect(() => {
+    setReport(data);
+  }, [data]);
 
   return (
     <View style={style.totalReportContainer}>
       <Text style={{ ...commonStyles.heading, width: "100%", marginTop: 0 }}>
-        At a glance your business
+        At a glance your business Of {"\n"}
+        <Text style={{ color: "#8f1391" }}>
+          {date ? prittyDate(date, methods) : prittyDate(new Date(), methods)}
+        </Text>
       </Text>
       {report &&
         report.map((item) => (
@@ -92,7 +106,7 @@ const CashReport = ({ data }) => {
           title='Be Specific'
         />
         <Select
-          defaultValue='Days'
+          defaultValue={methods.name}
           header='name'
           name='method'
           style={{ width: "25%" }}
@@ -108,8 +122,23 @@ const CashReport = ({ data }) => {
           handler={(_, info) => setMethods(info)}
         />
       </View>
+
+      {loading ? <LoadingOnComponent /> : null}
     </View>
   );
 };
 
 export default CashReport;
+
+function prittyDate(date, method) {
+  if (method.name === "Month") {
+    return (
+      date.toLocaleDateString("en-GB", { month: "long" }) +
+      " " +
+      date.getFullYear()
+    );
+  } else if (method.name === "Year") {
+    return date.getFullYear();
+  }
+  return date.toLocaleDateString("en-GB");
+}

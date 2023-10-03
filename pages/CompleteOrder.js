@@ -39,19 +39,24 @@ const CompleteOrder = ({ route, navigation }) => {
         discount,
         shopId: data.shopId,
         delivered_by: store.user.id,
+        created_by: data.created_by,
+        prevSale: data.prevSale,
         forShop: {
           totalSale: data.totalSale,
           dueSale: due,
           due,
           discount,
+          lastOrder: new Date().toISOString(),
+          commission: data.commission,
         },
       };
       const url = `/order?id=${route.params?.id}`;
       const { message } = await Fetch(url, "PUT", peyload);
       store.setMessage({ msg: message, type: "success" });
       store.setUpdateOrder((prev) => !prev);
-      store.setUpdateUser((prev) => !prev);
       store.setUpdateReport((prev) => !prev);
+      store.setUpdateUser((prev) => !prev);
+      store.setUpNotification((prev) => !prev);
       navigation.goBack();
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });

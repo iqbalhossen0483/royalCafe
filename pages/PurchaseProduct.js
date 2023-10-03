@@ -17,9 +17,9 @@ const PurchaseProduct = ({ navigation }) => {
   const [numOfShow, setNumOfShow] = useState(1);
   const [bottomMargin, setBottomMargin] = useState(0);
   const [supplier, setSupplier] = useState({
-    supplierId: "",
-    totalPurchased: "",
-    giveAmount: "",
+    supplierId: 0,
+    totalPurchased: 0,
+    giveAmount: 0,
   });
   const [form, setForm] = useState([]);
   const store = useStore();
@@ -27,11 +27,14 @@ const PurchaseProduct = ({ navigation }) => {
   useEffect(() => {
     (async () => {
       try {
+        store.setLoading(true);
         const supplier = await Fetch("/supplier?opt=id,name", "GET");
-        const products = await Fetch("/product?opt=id,name", "GET");
+        const products = await Fetch("/product?opt=id,name,stock", "GET");
         setData({ supplier, products });
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
+      } finally {
+        store.setLoading(false);
       }
     })();
   }, []);
@@ -51,26 +54,28 @@ const PurchaseProduct = ({ navigation }) => {
   }, []);
 
   function onSubmit() {
-    try {
-      const txtMessage = `Please be sure to purchase.
-After purchasing you won't change it anymore`;
-      alert(txtMessage, async () => {
-        try {
-          const data = {
-            ...supplier,
-            debtAmount: supplier.totalPurchased - supplier.giveAmount,
-            product: form,
-          };
-          const { message } = await Fetch("/purchase", "POST", data);
-          store.setMessage({ msg: message, type: "success" });
-          navigation.goBack();
-        } catch (error) {
-          throw error;
-        }
-      });
-    } catch (error) {
-      store.setMessage({ msg: error.message, type: "error" });
-    }
+    const txtMessage =
+      "Please be sure to purchase.\n After purchasing you won't change it anymore";
+    alert(txtMessage, async () => {
+      try {
+        store.setLoading(true);
+        const data = {
+          ...supplier,
+          debtAmount: supplier.totalPurchased - supplier.giveAmount,
+          product: form,
+          userId: store.user.id,
+        };
+        const { message } = await Fetch("/purchase", "POST", data);
+        store.setMessage({ msg: message, type: "success" });
+        store.setUpdateReport((prev) => !prev);
+        store.setUpdateUser((prev) => !prev);
+        navigation.goBack();
+      } catch (error) {
+        store.setMessage({ msg: error.message, type: "error" });
+      } finally {
+        store.setLoading(false);
+      }
+    });
   }
 
   if (!data.products || !data.supplier) return null;
@@ -128,17 +133,17 @@ After purchasing you won't change it anymore`;
             <TextInput
               onChangeText={(value) =>
                 setSupplier((prev) => {
-                  return { ...prev, totalPurchased: value };
+                  return { ...prev, totalPurchased: parseInt(value) };
                 })
               }
               style={commonStyles.input}
-              placeholder='Total purchase'
+              placeholder='Total purchase $'
               keyboardType='phone-pad'
             />
             <TextInput
               onChangeText={(value) =>
                 setSupplier((prev) => {
-                  return { ...prev, giveAmount: value };
+                  return { ...prev, giveAmount: parseInt(value) };
                 })
               }
               style={commonStyles.input}
@@ -173,7 +178,8 @@ function PurchaseInput({ arr, i, setForm, products, form }) {
     const data = {
       productId: product.id,
       product_name: product.name,
-      purchased: value,
+      purchased: parseInt(value),
+      stock: product.stock,
     };
     setForm(() => [...rest, data]);
   }
@@ -192,7 +198,7 @@ function PurchaseInput({ arr, i, setForm, products, form }) {
         onChangeText={(value) => handleChange(value)}
         editable={product ? true : false}
         style={commonStyles.input}
-        placeholder='Purchase amount'
+        placeholder='Quantity'
         keyboardType='phone-pad'
       />
     </React.Fragment>

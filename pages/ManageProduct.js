@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, Pressable } from "react-native";
+import { Dimensions, FlatList, Pressable } from "react-native";
 import { Image } from "react-native";
 import { Text, View } from "react-native";
 import { Common } from "../App";
@@ -17,6 +17,7 @@ const ManageProduct = ({ navigation }) => {
   const [showForm, setShowFrom] = useState(null);
   const [products, setProducts] = useState(null);
   const { setMessage, setLoading, updateProduct } = useStore();
+  const height = Dimensions.get("window").height;
 
   useEffect(() => {
     (async () => {
@@ -67,8 +68,8 @@ const ManageProduct = ({ navigation }) => {
           }
         />
       </View>
-
       <FlatList
+        style={{ marginBottom: height - height * 0.86 }}
         data={products}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.contentContainer}

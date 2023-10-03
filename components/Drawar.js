@@ -12,13 +12,14 @@ const Drawar = ({
   bottom = 35,
   width = "50%",
   rowGap = 10,
+  top = undefined,
 }) => {
   return (
     <Modal
       onBackButtonPress={setShowModal}
       isVisible={show}
       coverScreen={coverScreen}
-      style={{ ...styles.modal, bottom: bottom }}
+      style={{ ...styles.modal, bottom: bottom, top: top }}
     >
       <View style={{ flex: 1, alignItems: "center" }}>
         <View style={styles.closeIconWrapper}>

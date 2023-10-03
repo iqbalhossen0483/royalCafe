@@ -1,12 +1,11 @@
-import React from "react";
-import { View } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { color } from "../utilitise/colors";
 import { styles } from "../../css/footer";
-import { Text } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
 import { Pressable } from "react-native";
+import { Text } from "react-native";
+import React from "react";
 
-const Menu = ({ name, Icon, showModal, navigate = true }) => {
+const Menu = ({ name, Icon, showModal, navigate = "" }) => {
   const navigation = useNavigation();
   const route = useRoute();
 
@@ -14,17 +13,17 @@ const Menu = ({ name, Icon, showModal, navigate = true }) => {
     <Pressable
       style={styles.iconWrapper}
       onPress={() =>
-        navigate ? navigation.navigate(name) : showModal((prev) => !prev)
+        navigate ? navigation.navigate(navigate) : showModal((prev) => !prev)
       }
     >
       {Icon}
       <Text
         style={{
-          color: name === route.name ? color.green : "#4b5563",
+          color: navigate === route.name ? color.green : "#4b5563",
           fontWeight: 500,
         }}
       >
-        {name.charAt(0).toUpperCase() + name.slice(1)}
+        {name}
       </Text>
     </Pressable>
   );

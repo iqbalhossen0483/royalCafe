@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, Pressable } from "react-native";
+import { Dimensions, FlatList, Pressable } from "react-native";
 import { Image } from "react-native";
 import { Text, View } from "react-native";
 import { Common } from "../App";
@@ -21,6 +21,7 @@ import { Fetch, serverUrl } from "../services/common";
 const ManageSupplyer = ({ navigation }) => {
   const [showForm, setShowFrom] = useState(null);
   const [suppliers, setSuppliers] = useState(null);
+  const height = Dimensions.get("window").height;
   const store = useStore();
 
   useEffect(() => {
@@ -70,6 +71,7 @@ const ManageSupplyer = ({ navigation }) => {
       </View>
 
       <FlatList
+        style={{ marginBottom: height - height * 0.93 }}
         data={suppliers}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.contentContainer}

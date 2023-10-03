@@ -3,8 +3,8 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   addBtn: {
     position: "absolute",
-    bottom: 90,
-    right: 15,
+    bottom: "10%",
+    right: "5%",
     zIndex: 1,
   },
   contentContainer: {
