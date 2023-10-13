@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, TouchableHighlight } from "react-native";
+import { StyleSheet, Text, TouchableHighlight } from "react-native";
 import { View } from "react-native";
 import { Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -14,7 +14,6 @@ const SubMenu = ({
   bgColor,
   navigate = true,
   onPress,
-  border = false,
 }) => {
   const navigation = useNavigation();
 
@@ -24,39 +23,36 @@ const SubMenu = ({
     else onPress();
   }
 
-  const style = {
-    container: {
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      marginTop: -5,
-    },
-    icon: {
-      ...commonStyles.iconWrapper,
-      backgroundColor: bgColor,
-    },
-    name: {
-      fontSize: 16,
-      marginLeft: 5,
-      color: color.darkGray,
-      fontWeight: 500,
-      minWidth: 130,
-    },
-    border: {
-      borderBottomWidth: 1,
-      borderColor: color.darkGray,
-      paddingBottom: 4,
-    },
+  const iconStyle = {
+    ...commonStyles.iconWrapper,
+    backgroundColor: bgColor,
   };
-  const nameStype = border
-    ? { ...style.name, ...style.border }
-    : style.container;
+
   return (
     <Pressable onPress={handler} style={style.container}>
-      <View style={style.icon}>{icon}</View>
-      <Text style={nameStype}>{name}</Text>
+      <View style={iconStyle}>{icon}</View>
+      <Text style={style.name}>{name}</Text>
     </Pressable>
   );
 };
+
+const style = StyleSheet.create({
+  container: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: -5,
+    columnGap: 4,
+  },
+  name: {
+    fontSize: 16,
+    color: color.darkGray,
+    fontWeight: 500,
+    minWidth: 130,
+    borderBottomWidth: 1,
+    borderColor: color.darkGray,
+    paddingBottom: 4,
+  },
+});
 
 export default SubMenu;

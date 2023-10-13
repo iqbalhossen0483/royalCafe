@@ -36,6 +36,7 @@ const ManageSupplyer = ({ navigation }) => {
         store.setLoading(false);
       }
     })();
+    return () => store.setLoading(false);
   }, [store.updateSupplier]);
 
   function removeSupplyer(id, profile) {

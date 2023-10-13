@@ -31,6 +31,7 @@ const ManageProduct = ({ navigation }) => {
         setLoading(false);
       }
     })();
+    return () => setLoading(false);
   }, [updateProduct]);
 
   function removeProduct(id, profile) {

@@ -20,10 +20,13 @@ const Customers = ({ navigation }) => {
     if (page > 0 && customers?.count !== customers?.data?.length) {
       fetchData(`/customer?page=${page}`, true);
     }
+
+    return () => store.setLoading(false);
   }, [page]);
 
   useEffect(() => {
     fetchData("/customer", false);
+    return () => store.setLoading(false);
   }, [store.updateCustomer]);
 
   async function fetchData(url, page) {

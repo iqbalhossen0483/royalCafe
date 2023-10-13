@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
-import { Common } from "../App";
+import { Keyboard, Pressable, Text, TextInput, View } from "react-native";
+import { Common, socket } from "../App";
 import Button from "../components/utilitise/Button";
 import { color } from "../components/utilitise/colors";
 import { commonStyles } from "../css/common";
@@ -32,6 +32,7 @@ const CompleteOrder = ({ route, navigation }) => {
 
   async function completeOrder(discount, due) {
     try {
+      Keyboard.dismiss();
       store.setLoading(true);
       const peyload = {
         payment,
@@ -46,18 +47,23 @@ const CompleteOrder = ({ route, navigation }) => {
           dueSale: due,
           due,
           discount,
-          lastOrder: new Date().toISOString(),
           commission: data.commission,
         },
       };
       const url = `/order?id=${route.params?.id}`;
       const { message } = await Fetch(url, "PUT", peyload);
       store.setMessage({ msg: message, type: "success" });
-      store.setUpdateOrder((prev) => !prev);
-      store.setUpdateReport((prev) => !prev);
-      store.setUpdateUser((prev) => !prev);
-      store.setUpNotification((prev) => !prev);
       navigation.goBack();
+      if (socket) {
+        socket.send(
+          JSON.stringify({
+            type: "completeOrder",
+            id: store.user.id,
+            name: store.user?.name,
+            shopName: data.shopName,
+          })
+        );
+      }
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {

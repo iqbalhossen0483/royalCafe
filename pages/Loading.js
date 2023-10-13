@@ -1,7 +1,6 @@
 import React from "react";
 
 const Loading = () => {
-  console.log("hitting loading");
   return (
     <View
       style={{

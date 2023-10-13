@@ -54,6 +54,7 @@ const ExpenseType = () => {
         store.setLoading(false);
       }
     })();
+    return () => store.setLoading(false);
   }, [update]);
 
   async function actionsForExpenseType(method, id = null) {

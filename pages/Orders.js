@@ -21,10 +21,12 @@ const Orders = ({ navigation }) => {
     if (page > 0 && orders?.count !== orders?.data?.length) {
       fetData(`/order?page=${page}`, true);
     }
+    return () => store.setLoading(false);
   }, [page]);
 
   useEffect(() => {
     fetData(`/order`, false);
+    return () => store.setLoading(false);
   }, [store.updateOrder]);
 
   async function fetData(url, page) {

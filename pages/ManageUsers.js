@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Image } from "react-native";
 import { Text, View } from "react-native";
-import { Common } from "../App";
+import { Common, socket } from "../App";
 import Button from "../components/utilitise/Button";
 import { color } from "../components/utilitise/colors";
 import {
@@ -54,6 +54,7 @@ const ManageUsers = ({ navigation }) => {
         store.setLoading(false);
       }
     })();
+    return () => store.setLoading(false);
   }, [store.updateUser]);
 
   function removeUser(id, profile) {
@@ -104,6 +105,15 @@ const ManageUsers = ({ navigation }) => {
       const { message } = await Fetch(`/user/target`, "POST", data);
       setTargetForm(null);
       store.setMessage({ msg: message, type: "success" });
+      if (socket) {
+        socket.send(
+          JSON.stringify({
+            type: "target_received",
+            by: store.user.name,
+            to: data.user_id,
+          })
+        );
+      }
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {

@@ -129,7 +129,6 @@ function AdminFooter() {
           name='Add Shop'
           url='addshop'
           bgColor='#d1fae5'
-          border
           showModal={setCreateModal}
           icon={<Entypo name='shop' size={20} color='#10b981' />}
         />
@@ -138,7 +137,6 @@ function AdminFooter() {
           name='Create Order'
           url='createOrder'
           bgColor='#cffafe'
-          border
           showModal={setCreateModal}
           icon={
             <FontAwesome name='shopping-basket' size={18} color='#06b6d4' />
@@ -149,7 +147,6 @@ function AdminFooter() {
           name='Purchase Product'
           url='purchase'
           bgColor='#c8e1fa'
-          border
           showModal={setCreateModal}
           icon={<AntDesign name='shoppingcart' size={20} color='#157ce6' />}
         />
@@ -158,7 +155,6 @@ function AdminFooter() {
           name='Create Note'
           url='createNote'
           bgColor='#ecfccb'
-          border
           showModal={setCreateModal}
           icon={<MaterialIcons name='note-add' size={24} color='#84cc16' />}
         />
@@ -166,7 +162,6 @@ function AdminFooter() {
           name='Add Expense'
           url='addExpense'
           bgColor='#f2e4f0'
-          border
           showModal={setCreateModal}
           icon={<AntDesign name='pay-circle-o1' size={24} color='#c912ae' />}
         />

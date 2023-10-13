@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Keyboard, ScrollView, Text, TextInput, View } from "react-native";
-import { Common } from "../App";
+import { ScrollView, Text, TextInput, View } from "react-native";
+import { Common, socket } from "../App";
 import Button from "../components/utilitise/Button";
 import Select from "../components/utilitise/Select";
 import { commonStyles } from "../css/common";
@@ -19,7 +19,7 @@ const CreateOrder = ({ route, navigation }) => {
     shopInfo: {},
     products: [],
     totalSale: 0,
-    billno: "",
+    billno: 0,
     prevSale: false,
   });
 
@@ -40,6 +40,17 @@ const CreateOrder = ({ route, navigation }) => {
     });
   }, [route.params]); //till;
 
+  function formatAMPM(date) {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "pm" : "am";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    const strTime = hours + ":" + minutes + " " + ampm;
+    return strTime;
+  }
+
   async function onSubmit() {
     try {
       store.setLoading(true);
@@ -59,9 +70,16 @@ const CreateOrder = ({ route, navigation }) => {
         : "/order";
       const { message } = await Fetch(url, method, data);
       store.setMessage({ msg: message, type: "success" });
-      store.setUpdateOrder((prev) => !prev);
-      store.setUpNotification((prev) => !prev);
       navigation.goBack();
+      if (socket) {
+        socket.send(
+          JSON.stringify({
+            type: "createdOrder",
+            id: store.user.id,
+            name: store.user.name,
+          })
+        );
+      }
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {
@@ -69,22 +87,11 @@ const CreateOrder = ({ route, navigation }) => {
     }
   }
 
-  function formatAMPM(date) {
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
-    const ampm = hours >= 12 ? "pm" : "am";
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    const strTime = hours + ":" + minutes + " " + ampm;
-    return strTime;
-  }
-
   const submitBtnDisable = route.params?.edit
     ? false
     : form.prevSale && form.shopInfo?.id && form.totalSale
     ? false
-    : !form.shopInfo?.id || !form.products.length || !form.billno;
+    : !form.shopInfo?.id || !form.products.length;
 
   return (
     <Common>
@@ -123,7 +130,7 @@ const CreateOrder = ({ route, navigation }) => {
                 })
               }
               keyboardType='phone-pad'
-              defaultValue={form.billno?.toString()}
+              defaultValue={form.billno ? form.billno.toString() : ""}
               style={commonStyles.input}
               placeholder='Bill no.'
             />
@@ -171,7 +178,9 @@ const CreateOrder = ({ route, navigation }) => {
             </View>
 
             {/* in case of Previous sold order; */}
-            <PreviousOrder form={form} setForm={setForm} />
+            {store.user.designation === "Admin" ? (
+              <PreviousOrder form={form} setForm={setForm} />
+            ) : null}
 
             {/* create order */}
             <Button

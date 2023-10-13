@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Fetch } from "../services/common";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 const Store = () => {
   const [updateProduct, setUpdateProduct] = useState(false);
@@ -24,6 +25,10 @@ const Store = () => {
     (async () => {
       try {
         const token = await AsyncStorage.getItem("token");
+        if (!token) {
+          setUserLoading(false);
+          return;
+        }
         const user = await Fetch(`/login?token=${token}`, "GET");
         setUser(user);
       } catch (error) {

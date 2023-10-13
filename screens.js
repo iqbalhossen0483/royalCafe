@@ -7,7 +7,7 @@ import CustomerDetails from "./pages/CustomerDetails";
 import Customers from "./pages/Customers";
 import Home from "./pages/Home";
 import ManageUsers from "./pages/ManageUsers";
-import Notifications from "./pages/Notifications";
+import NotificationsPage from "./pages/Notifications";
 import OrderDetails from "./pages/OrderDetails";
 import Orders from "./pages/Orders";
 import ManageProduct from "./pages/ManageProduct";
@@ -37,7 +37,7 @@ export {
   CreateOrder,
   CustomerDetails,
   ManageUsers as ManageMan,
-  Notifications,
+  NotificationsPage,
   OrderDetails,
   Orders,
   ManageProduct,

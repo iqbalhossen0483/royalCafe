@@ -8,6 +8,7 @@ import { Fetch } from "../../services/common";
 import Button from "../utilitise/Button";
 import BDT from "../utilitise/BDT";
 import { Pressable } from "react-native";
+import { socket } from "../../App";
 
 const MoneyReport = ({ transactions, user }) => {
   const [showDate, setShowDate] = useState(-1);
@@ -18,6 +19,16 @@ const MoneyReport = ({ transactions, user }) => {
       store.setLoading(true);
       const result = await Fetch("/user/receive_balance", "POST", data);
       store.setMessage({ msg: result.message, type: "success" });
+      if (socket) {
+        socket.send(
+          JSON.stringify({
+            type: "balance_accepted",
+            fromUser: data.fromUser,
+            toUser: user.id,
+            toUserName: user.name,
+          })
+        );
+      }
       store.setUpdateUser((prev) => !prev);
       store.setUpdateReport((prev) => !prev);
     } catch (error) {
@@ -27,28 +38,51 @@ const MoneyReport = ({ transactions, user }) => {
     }
   }
 
+  async function declineRequest(id, fromUser) {
+    try {
+      const result = await Fetch(`/user/decline_balance?id=${id}`, "DELETE");
+      store.setMessage({ msg: result.message, type: "success" });
+      if (socket) {
+        socket.send(
+          JSON.stringify({
+            type: "balance_decline",
+            fromUser: fromUser,
+            toUser: user.id,
+            toUserName: user.name,
+          })
+        );
+      }
+      store.setUpdateUser((prev) => !prev);
+    } catch (error) {
+      store.setMessage({ msg: error.message, type: "error" });
+    }
+  }
+
   return (
     <>
       <Text style={commonStyles.heading}>Money Report</Text>
       <View style={{ ...styles.workContainer, marginBottom: 20 }}>
-        {!transactions.length ? (
-          <Text>No money transition pending </Text>
-        ) : (
-          transactions.map((trs, i) => {
-            return (
-              <View style={{ width: "100%" }} key={trs.id}>
-                <View
-                  style={{
-                    ...commonStyles.tableRow,
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text style={{ fontWeight: 500 }}>From User</Text>
-                  <Text style={{ fontWeight: 500 }}>To User</Text>
-                  <Text style={{ fontWeight: 500 }}>Purpose</Text>
-                  <Text style={{ fontWeight: 500 }}>Amount</Text>
-                </View>
+        <View style={{ width: "100%" }}>
+          <View
+            style={{
+              ...commonStyles.tableRow,
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ fontWeight: 500 }}>From User</Text>
+            <Text style={{ fontWeight: 500 }}>To User</Text>
+            <Text style={{ fontWeight: 500 }}>Purpose</Text>
+            <Text style={{ fontWeight: 500 }}>Amount</Text>
+          </View>
+          {!transactions.length ? (
+            <Text style={{ textAlign: "center" }}>
+              No money transition pending{" "}
+            </Text>
+          ) : (
+            transactions.map((trs, i) => {
+              return (
                 <Pressable
+                  key={trs.id}
                   onPress={() =>
                     setShowDate((prev) => {
                       if (prev === i) return -1;
@@ -82,17 +116,35 @@ const MoneyReport = ({ transactions, user }) => {
                     </Text>
                   ) : null}
                   {trs.toUser === user.id ? (
-                    <Button
-                      onPress={() => achieveBalance(trs)}
-                      style={{ paddingVertical: 3 }}
-                      title='Achieve'
-                    />
+                    <View
+                      style={{
+                        justifyContent: "center",
+                        flexDirection: "row",
+                        width: "100%",
+                        columnGap: 10,
+                      }}
+                    >
+                      <Button
+                        onPress={() => achieveBalance(trs)}
+                        style={{ paddingVertical: 3, width: "45%" }}
+                        title='Achieve'
+                      />
+                      <Button
+                        onPress={() => declineRequest(trs.id, trs.fromUser)}
+                        style={{
+                          paddingVertical: 3,
+                          width: "45%",
+                          backgroundColor: color.orange,
+                        }}
+                        title='Decline'
+                      />
+                    </View>
                   ) : null}
                 </Pressable>
-              </View>
-            );
-          })
-        )}
+              );
+            })
+          )}
+        </View>
       </View>
     </>
   );

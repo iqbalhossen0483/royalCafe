@@ -1,4 +1,4 @@
-const ngrok = "https://283e-58-145-189-248.ngrok-free.app";
+const ngrok = "https://server.switchcafebd.com";
 
 export async function Fetch(url, method, body, formData = false) {
   try {
@@ -20,7 +20,6 @@ export async function Fetch(url, method, body, formData = false) {
     if (!res.ok) throw result;
     else return result;
   } catch (error) {
-    console.log(error);
     throw error;
   }
 }

@@ -4,7 +4,7 @@ import { Dimensions, Image, Text, View } from "react-native";
 import { styles } from "../css/profile";
 import Button from "../components/utilitise/Button";
 import { alert } from "../components/utilitise/Alert";
-import { Fetch, prittyPrint, serverUrl } from "../services/common";
+import { Fetch, serverUrl } from "../services/common";
 import useStore from "../context/useStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native";
@@ -49,7 +49,7 @@ const Profile = ({ route, navigation }) => {
 
   if (!user) return <LoadingOnComponent />;
 
-  const money_transactions = user.money_transactions;
+  const money_transactions = user?.money_transactions;
 
   return (
     <Common>
@@ -100,18 +100,22 @@ const Profile = ({ route, navigation }) => {
         {/* notes  */}
         <Notes id={user.id} navigation={navigation} />
 
-        {/* target report */}
-        <Target
-          commision={money_transactions.commision}
-          user={user}
-          activeUser={store.user}
-        />
+        {money_transactions ? (
+          <>
+            {/* target report */}
+            <Target
+              commision={money_transactions?.commision}
+              user={user}
+              activeUser={store.user}
+            />
 
-        {/* money report */}
-        <MoneyReport
-          transactions={money_transactions.transactions}
-          user={store.user}
-        />
+            {/* money report */}
+            <MoneyReport
+              transactions={money_transactions?.transactions}
+              user={store.user}
+            />
+          </>
+        ) : null}
       </ScrollView>
     </Common>
   );

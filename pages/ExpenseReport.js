@@ -18,6 +18,7 @@ const ExpenseReport = () => {
 
   useEffect(() => {
     fetchData("/expense", false);
+    return () => store.setLoading(false);
   }, [store.updateExpense]);
 
   async function fetchData(url, pending) {

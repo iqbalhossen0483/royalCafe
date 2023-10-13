@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, TextInput, View, Image } from "react-native";
+import { Text, TextInput, View, Image, Keyboard } from "react-native";
 import { Common } from "../App";
 import Button from "../components/utilitise/Button";
 import { commonStyles } from "../css/common";
@@ -39,6 +39,7 @@ const AddUser = ({ route, navigation }) => {
 
   async function onSubmit() {
     try {
+      Keyboard.dismiss();
       store.setLoading(true);
       if (!route.params?.user && form.password.length < 6)
         throw {
@@ -50,7 +51,6 @@ const AddUser = ({ route, navigation }) => {
           message: "Phone number is invalid",
           type: "alert",
         };
-
       //save user;
       if (!route.params?.edit) {
         const { message } = await Fetch("/user", "POST", form);
@@ -63,6 +63,8 @@ const AddUser = ({ route, navigation }) => {
           form.existedImg = form.profile;
           form.profile = profile;
         }
+        delete form.money_transactions;
+        delete form.targets;
         const formData = new FormData();
         Object.entries(form).forEach(([key, value]) => {
           formData.append(key, value);
@@ -82,6 +84,7 @@ const AddUser = ({ route, navigation }) => {
   const data = [
     { key: 1, value: "Sales Man" },
     { key: 2, value: "Admin" },
+    { key: 3, value: "Engineer" },
   ];
 
   return (

@@ -12,8 +12,8 @@ const Product = ({ products, setForm }) => {
       const filtered = prev.products.filter((p) => p[id] !== item[id]);
       prev.products = filtered;
       if (item.id) {
-        if (prev.deleteProduct) prev.deleteProduct.push(id);
-        else prev.deleteProduct = [id];
+        if (prev.deleteProduct) prev.deleteProduct.push(item.id);
+        else prev.deleteProduct = [item.id];
       }
       prev.totalSale = parseInt(prev.totalSale) - parseInt(item.total);
       return { ...prev };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Common } from "../App";
+import { Common, socket } from "../App";
 import { TextInput, View } from "react-native";
 import { Text } from "react-native";
 import { commonStyles } from "../css/common";
@@ -25,9 +25,11 @@ const BalanceTransfer = ({ route }) => {
       try {
         store.setLoading(true);
         const users = await Fetch("/user", "GET");
-        const supplier = await Fetch("/supplier", "GET");
         const rest = users.filter((item) => item.id !== user.id);
-        setUsers([...rest, ...supplier]);
+        if (store.user.designation === "Admin") {
+          const supplier = await Fetch("/supplier", "GET");
+          setUsers([...rest, ...supplier]);
+        } else setUsers(rest);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
       } finally {
@@ -46,6 +48,16 @@ const BalanceTransfer = ({ route }) => {
       delete body.restAmount;
       const res = await Fetch("/user/balance_transfer", "POST", body);
       store.setMessage({ msg: res.message, type: "success" });
+      if (socket) {
+        socket.send(
+          JSON.stringify({
+            type: "balance_transfer_request",
+            from: store.user.id,
+            to: form.to.userId,
+            formName: store.user.name,
+          })
+        );
+      }
       store.setUpdateUser((prev) => !prev);
     } catch (error) {
       setForm((prev) => {
@@ -58,6 +70,17 @@ const BalanceTransfer = ({ route }) => {
   }
 
   if (store.loading) return null;
+  const options = [
+    { id: 1, name: "Balance Transfer" },
+    { id: 2, name: "Debt Payment" },
+  ];
+  if (store.user.designation === "Admin") {
+    options.push(
+      { id: 3, name: "Purchase Product" },
+      { id: 4, name: "Salary" },
+      { id: 5, name: "Incentive" }
+    );
+  }
   return (
     <Common>
       <View style={commonStyles.formContainer}>
@@ -81,13 +104,7 @@ const BalanceTransfer = ({ route }) => {
                 return { ...prev, purpose: info.name };
               })
             }
-            options={[
-              { id: 1, name: "Balance Transfer" },
-              { id: 2, name: "Debt Payment" },
-              { id: 3, name: "Purchase Product" },
-              { id: 4, name: "Salary" },
-              { id: 5, name: "Incentive" },
-            ]}
+            options={options}
           />
           <TextInput
             defaultValue={form.phone?.toString()}

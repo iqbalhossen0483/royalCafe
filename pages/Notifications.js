@@ -18,7 +18,7 @@ import useStore from "../context/useStore";
 import { Fetch, serverUrl } from "../services/common";
 import { alert } from "../components/utilitise/Alert";
 
-const Notifications = ({ navigation }) => {
+const NotificationsPage = ({ navigation }) => {
   const [showDetails, setShowDetails] = useState(-1);
   const [showDeleteBtn, setShowDeleteBtn] = useState(-1);
   const [orders, setOrders] = useState(null);
@@ -126,7 +126,7 @@ const Notifications = ({ navigation }) => {
             </View>
 
             {/* delete btn */}
-            {showDeleteBtn && (store.user.designation === "Admin") === i ? (
+            {showDeleteBtn === i && store.user.designation === "Admin" ? (
               <View style={style.deleteBtn}>
                 <Button
                   onPress={() => removeOrder(item.id)}
@@ -191,4 +191,4 @@ const Notifications = ({ navigation }) => {
   );
 };
 
-export default Notifications;
+export default NotificationsPage;
