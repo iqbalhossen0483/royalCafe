@@ -3,40 +3,43 @@ import { Text, View } from "react-native";
 import BDT from "../utilitise/BDT";
 import { commonStyles } from "../../css/common";
 import { styles } from "../../css/profile";
+import P from "../utilitise/P";
 
 const Summery = ({ user }) => {
   return (
     <>
-      <Text style={commonStyles.heading}>Summery</Text>
+      <P bold={500} style={commonStyles.heading}>
+        Summery
+      </P>
       <View style={styles.workContainer}>
         <View>
-          <Text style={{ ...styles.workText, color: "#191ce3" }}>
+          <P color='lightBlue'>
             Balance: <BDT amount={user.haveMoney} />
-          </Text>
-          <Text style={{ ...styles.workText, color: "#e319a6" }}>
+          </P>
+          <P color='red'>
             Debt: <BDT amount={user.debt} />
-          </Text>
-          <Text style={styles.workText}>
-            Got Salary: <BDT amount={user.get_salary} bdtSign={false} />
-          </Text>
-          <Text style={styles.workText}>
-            Got Incentive: <BDT amount={user.incentive} bdtSign={false} />
-          </Text>
+          </P>
+          <P>
+            Got Salary: <BDT amount={user.get_salary} />
+          </P>
+          <P>
+            Got Incentive: <BDT amount={user.incentive} />
+          </P>
         </View>
         <View>
-          <Text style={styles.workText}>
+          <P>
             Delivered Order:
             <BDT amount={user.delivered_order} bdtSign={false} />
-          </Text>
-          <Text style={styles.workText}>
+          </P>
+          <P>
             Total Sale: <BDT amount={user.total_sale} bdtSign={false} />
-          </Text>
-          <Text style={styles.workText}>
+          </P>
+          <P>
             Due Sale: <BDT amount={user.due_sale} bdtSign={false} />
-          </Text>
-          <Text style={styles.workText}>
-            Due Collection: <BDT amount={user.due_collection} bdtSign={false} />
-          </Text>
+          </P>
+          <P>
+            Due Coll: <BDT amount={user.due_collection} bdtSign={false} />
+          </P>
         </View>
       </View>
     </>

@@ -1,12 +1,13 @@
-import { TextInput, View } from "react-native";
-import { styles } from "../../css/orderDetails";
-import { commonStyles } from "../../css/common";
 import { Ionicons } from "@expo/vector-icons";
-import Button from "../utilitise/Button";
 import { useState } from "react";
+import { Keyboard, TextInput, View } from "react-native";
+
 import useStore from "../../context/useStore";
+import { commonStyles } from "../../css/common";
+import { styles } from "../../css/orderDetails";
 import { Fetch } from "../../services/common";
-import { Text } from "react-native";
+import Button from "../utilitise/Button";
+import P from "../utilitise/P";
 
 const CollectionForm = ({ setShow, data }) => {
   const [payment, setPayment] = useState(0);
@@ -15,6 +16,7 @@ const CollectionForm = ({ setShow, data }) => {
   async function getCollection(discount, due) {
     try {
       store.setLoading(true);
+      Keyboard.dismiss();
       const peyload = {
         payment,
         due,
@@ -65,9 +67,9 @@ const CollectionForm = ({ setShow, data }) => {
             alignItems: "center",
           }}
         >
-          <Text style={{ fontWeight: 500, fontSize: 18, color: "#dc2626" }}>
+          <P size={17} bold={500} style={{ color: "#dc2626" }}>
             Due: {data.due - payment}৳
-          </Text>
+          </P>
         </View>
         <TextInput
           style={{ ...commonStyles.input, marginVertical: 20 }}
@@ -83,7 +85,7 @@ const CollectionForm = ({ setShow, data }) => {
           }}
         >
           <Button
-            disabled={disable}
+            disabled={disable || store.loading}
             onPress={() =>
               getCollection(
                 data.totalSale - data.payment - parseInt(payment),
@@ -94,7 +96,7 @@ const CollectionForm = ({ setShow, data }) => {
           />
           <Button
             onPress={() => getCollection(0, data.due - parseInt(payment))}
-            disabled={!payment || payment >= data.due}
+            disabled={!payment || payment >= data.due || store.loading}
             title='Continue with due'
           />
         </View>

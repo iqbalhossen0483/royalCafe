@@ -1,20 +1,25 @@
-import React from "react";
-import Button from "./Button";
-import { Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import mime from "mime";
+import React from "react";
 
-const FileInput = ({ setImage }) => {
+import Button from "./Button";
+
+const FileInput = ({
+  setImage,
+  title = null,
+  disable = false,
+  aspect = true,
+}) => {
   async function handler() {
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
-        aspect: [4, 3],
         quality: 1,
+        aspect: aspect ? [4, 3] : undefined,
       });
 
-      if (result.assets[0]) {
+      if (result?.assets[0]) {
         const image = result.assets[0];
         const imageUri = "file:///" + image.uri.split("file:/").join("");
         setImage({
@@ -23,13 +28,16 @@ const FileInput = ({ setImage }) => {
           name: imageUri.split("/").pop(),
         });
       }
-    } catch (error) {
-      Alert.alert(error);
-    }
+    } catch (error) {}
   }
 
   return (
-    <Button style={{ width: 150 }} onPress={handler} title='Choose Image' />
+    <Button
+      style={{ width: 150 }}
+      onPress={handler}
+      disabled={disable}
+      title={title || "Choose Image"}
+    />
   );
 };
 

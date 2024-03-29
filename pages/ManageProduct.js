@@ -1,23 +1,22 @@
+import { AntDesign, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { Dimensions, FlatList, Pressable } from "react-native";
-import { Image } from "react-native";
-import { Text, View } from "react-native";
-import { Common } from "../App";
-import Button from "../components/utilitise/Button";
-import { color } from "../components/utilitise/colors";
-import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import { alert } from "../components/utilitise/Alert";
-import { styles } from "../css/manageProduct";
+import { FlatList, Image, Pressable, View } from "react-native";
+
+import { Common } from "../components/Common";
 import Drawar from "../components/Drawar";
 import SubMenu from "../components/footer/SubMenu";
+import { alert } from "../components/utilitise/Alert";
+import Button from "../components/utilitise/Button";
+import P from "../components/utilitise/P";
+import { color } from "../components/utilitise/colors";
 import useStore from "../context/useStore";
+import { styles } from "../css/manageProduct";
 import { Fetch, serverUrl } from "../services/common";
 
 const ManageProduct = ({ navigation }) => {
   const [showForm, setShowFrom] = useState(null);
   const [products, setProducts] = useState(null);
   const { setMessage, setLoading, updateProduct } = useStore();
-  const height = Dimensions.get("window").height;
 
   useEffect(() => {
     (async () => {
@@ -60,33 +59,31 @@ const ManageProduct = ({ navigation }) => {
         <Button
           style={{ width: 40, height: 40, borderRadius: 100 }}
           title={
-            <Ionicons
+            <AntDesign
               onPress={() => navigation.navigate("addProduct")}
-              name='ios-add-circle-sharp'
-              size={24}
+              name='pluscircle'
+              size={22}
               color='#fff'
             />
           }
         />
       </View>
       <FlatList
-        style={{ marginBottom: height - height * 0.86 }}
+        style={{ marginBottom: 57 }}
         data={products}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.contentContainer}
         ItemSeparatorComponent={() => <View style={{ marginBottom: 6 }} />}
-        ListEmptyComponent={() => (
-          <Text style={{ textAlign: "center" }}>No product</Text>
-        )}
+        ListEmptyComponent={() => <P align='center'>No product</P>}
         renderItem={({ item }) => (
           <Pressable
             style={styles.itemContainer}
             onPress={() => setShowFrom(item)}
           >
             <View style={{ flexDirection: "row", gap: 7 }}>
-              {item.profile ? (
+              {item.profile !== "null" ? (
                 <Image
-                  style={{ width: 40, height: 55, borderRadius: 5 }}
+                  style={{ width: 40, height: 65, borderRadius: 5 }}
                   source={{ uri: serverUrl + item.profile }}
                   alt=''
                 />
@@ -98,12 +95,13 @@ const ManageProduct = ({ navigation }) => {
                 />
               )}
               <View>
-                <Text style={{ fontSize: 15, fontWeight: 500 }}>
+                <P size={15} bold={500}>
                   {item.name}
-                </Text>
-                <Text>Total Purchased: {item.purchased}</Text>
-                <Text>Total Sold: {item.sold}</Text>
-                <Text>Remain Stock: {item.stock}</Text>
+                </P>
+                <P>Price: {item.price}</P>
+                <P>Total Purchased: {item.purchased}</P>
+                <P>Total Sold: {item.sold}</P>
+                <P>Remain Stock: {item.stock}</P>
               </View>
             </View>
           </Pressable>

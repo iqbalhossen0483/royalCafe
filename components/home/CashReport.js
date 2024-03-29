@@ -1,15 +1,17 @@
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import React, { useEffect, useState } from "react";
-import { Text, View } from "react-native";
-import { commonStyles } from "../../css/common";
-import BDT from "../utilitise/BDT";
-import Button from "../utilitise/Button";
-import Select from "../utilitise/Select";
-import { style } from "../../css/home";
+import { View } from "react-native";
+
 import useStore from "../../context/useStore";
+import { commonStyles } from "../../css/common";
+import { style } from "../../css/home";
 import { Fetch } from "../../services/common";
 import { modifyCashReport } from "../../services/report";
+import BDT from "../utilitise/BDT";
+import Button from "../utilitise/Button";
 import { LoadingOnComponent } from "../utilitise/Loading";
+import P from "../utilitise/P";
+import Select from "../utilitise/Select";
 
 const CashReport = ({ data }) => {
   const [date, setDate] = useState(null);
@@ -71,23 +73,26 @@ const CashReport = ({ data }) => {
 
   return (
     <View style={style.totalReportContainer}>
-      <Text style={{ ...commonStyles.heading, width: "100%", marginTop: 0 }}>
+      <P
+        bold={500}
+        style={{ ...commonStyles.heading, width: "100%", marginTop: 0 }}
+      >
         At a glance your business Of {"\n"}
-        <Text style={{ color: "#8f1391" }}>
+        <P size={15} style={{ color: "#8f1391" }}>
           {date ? prittyDate(date, methods) : prittyDate(new Date(), methods)}
-        </Text>
-      </Text>
+        </P>
+      </P>
       {report &&
         report.map((item) => (
           <View
             style={{ ...style.totalReportItem, backgroundColor: item.bgColor }}
             key={item.id}
           >
-            <Text style={{ ...style.totalReportName, color: item.textColor }}>
+            <P bold={500} style={{ color: item.textColor }}>
               {item.name}
-            </Text>
+            </P>
             <BDT
-              style={{ fontSize: 15, color: item.textColor }}
+              style={{ fontSize: 16, color: item.textColor }}
               amount={item.amount}
             />
           </View>
@@ -113,6 +118,7 @@ const CashReport = ({ data }) => {
           editable={false}
           top={true}
           placeholder='Select method'
+          height={140}
           options={[
             { name: "Days" },
             { name: "Month" },

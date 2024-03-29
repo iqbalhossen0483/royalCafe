@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { Text } from "react-native";
-import { View } from "react-native";
-import Button from "../components/utilitise/Button";
-import { styles } from "../css/orderDetails";
-import { Common } from "../App";
-import BDT from "../components/utilitise/BDT";
-import useStore from "../context/useStore";
-import { Fetch, dateFormatter } from "../services/common";
+import { Text, View } from "react-native";
+
+import { Common } from "../components/Common";
 import CollectionForm from "../components/order/CollectionForm";
 import SeeCollectionList from "../components/order/SeeCollectionList";
+import BDT from "../components/utilitise/BDT";
+import Button from "../components/utilitise/Button";
+import P from "../components/utilitise/P";
+import useStore from "../context/useStore";
 import { commonStyles } from "../css/common";
+import { styles } from "../css/orderDetails";
+import { Fetch, dateFormatter } from "../services/common";
 
 const OrderDetails = ({ route }) => {
   const [showCollnForm, setShowCollForm] = useState(false);
@@ -32,56 +33,85 @@ const OrderDetails = ({ route }) => {
   }, [route.params?.id, store.updateOrder]);
 
   if (!data) return null;
-  const tablerowStyle = { width: "25%", textAlign: "center" };
-  const tableheaderStyle = {
-    fontWeight: 500,
-    ...tablerowStyle,
+
+  const rowstyles = {
+    width: "25%",
+    borderRightWidth: 1,
+    borderRightColor: "#d1d5db",
   };
 
   return (
     <Common>
       <View style={styles.container}>
         <View style={styles.headerWrapper}>
-          <Text style={styles.header}>M/S Hazera Enterprise</Text>
-          <Text style={styles.address}>
-            Dharmopur, College Reoad, Adarsha Sadar, Cumilla.
-          </Text>
+          <P align='center' bold={500} size={18} style={{ color: "#4b5cbf" }}>
+            {store?.siteInfo?.name}
+          </P>
+          <P align='center' style={{ color: "#4b5cbf" }}>
+            {store?.siteInfo?.address}
+          </P>
         </View>
         <View style={{ paddingHorizontal: 15, paddingVertical: 10 }}>
           <View style={styles.dateNbill}>
-            <Text>
-              <Text style={{ fontWeight: 500 }}>Bill No:</Text> {data.billno}
-            </Text>
-            <Text>
-              <Text style={{ fontWeight: 500 }}>Date: </Text>
+            <P>
+              <P size={13} bold={500}>
+                Bill No:
+              </P>{" "}
+              {data.billno}
+            </P>
+            <P>
+              <P size={13} bold={500}>
+                Date:{" "}
+              </P>
               {dateFormatter(data.date)}
-            </Text>
+            </P>
           </View>
 
           <View style={{ flexDirection: "row", columnGap: 5, marginTop: 5 }}>
-            <Text style={{ fontWeight: 500 }}>Name:</Text>
-            <Text style={styles.shopNameNaddress}>{data.shopName}</Text>
+            <P size={13} bold={500}>
+              Name:
+            </P>
+            <P style={styles.shopNameNaddress}>{data.shopName}</P>
           </View>
           <View style={{ flexDirection: "row", columnGap: 5 }}>
-            <Text style={{ fontWeight: 500 }}>Address:</Text>
-            <Text style={styles.shopNameNaddress}>{data.address}</Text>
+            <P size={13} bold={500}>
+              Address:
+            </P>
+            <P style={styles.shopNameNaddress}>{data.address}</P>
           </View>
 
           {/* details */}
           <View style={styles.detailsWrapper}>
             <View style={commonStyles.tableRow}>
-              <Text style={tableheaderStyle}>Product</Text>
-              <Text style={tableheaderStyle}>Qty</Text>
-              <Text style={tableheaderStyle}>Price</Text>
-              <Text style={tableheaderStyle}>Total</Text>
+              <P align='center' bold={500} style={{ width: "25%" }}>
+                Product
+              </P>
+              <P align='center' bold={500} style={{ width: "25%" }}>
+                Qty
+              </P>
+              <P align='center' bold={500} style={{ width: "25%" }}>
+                Price
+              </P>
+              <P align='center' bold={500} style={{ width: "25%" }}>
+                Total
+              </P>
             </View>
-            {data.products.length ? (
+            {data.products?.length ? (
               data.products.map((item) => (
                 <View key={item.id} style={commonStyles.tableRow}>
-                  <Text style={tablerowStyle}>{item.name.split(" ")[0]}</Text>
-                  <Text style={tablerowStyle}>{item.qty}</Text>
-                  <Text style={tablerowStyle}>{item.price}</Text>
-                  <BDT style={tableheaderStyle} amount={item.total} />
+                  <P align='center' style={rowstyles}>
+                    {item?.name}
+                  </P>
+                  <P align='center' style={rowstyles}>
+                    {item.qty}
+                  </P>
+                  <P align='center' style={rowstyles}>
+                    {item.price}
+                  </P>
+                  <BDT
+                    style={{ width: "25%", textAlign: "center" }}
+                    amount={item.total}
+                  />
                 </View>
               ))
             ) : (
@@ -113,7 +143,7 @@ const OrderDetails = ({ route }) => {
                   title='Get Collection'
                 />
               )}
-              {data.collections.length !== 0 && (
+              {data.collections?.length !== 0 && (
                 <Button
                   onPress={() => setShowCollInfo(true)}
                   title='See Collection Info'
@@ -151,7 +181,9 @@ function Account({ name, amount, width, style }) {
         paddingBottom: 4,
       }}
     >
-      <Text style={{ fontWeight: 500, marginRight: 4, ...style }}>{name}:</Text>
+      <P bold={500} style={{ marginRight: 4, ...style }}>
+        {name}:
+      </P>
       <BDT style={style} amount={amount} />
     </View>
   );

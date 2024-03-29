@@ -5,6 +5,7 @@ import { Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { commonStyles } from "../../css/common";
 import { color } from "../utilitise/colors";
+import P from "../utilitise/P";
 
 const SubMenu = ({
   showModal,
@@ -31,7 +32,9 @@ const SubMenu = ({
   return (
     <Pressable onPress={handler} style={style.container}>
       <View style={iconStyle}>{icon}</View>
-      <Text style={style.name}>{name}</Text>
+      <P color='darkGray' bold={500} style={style.name}>
+        {name}
+      </P>
     </Pressable>
   );
 };
@@ -45,12 +48,9 @@ const style = StyleSheet.create({
     columnGap: 4,
   },
   name: {
-    fontSize: 16,
-    color: color.darkGray,
-    fontWeight: 500,
     minWidth: 130,
     borderBottomWidth: 1,
-    borderColor: color.darkGray,
+    borderColor: "#b3b3b3",
     paddingBottom: 4,
   },
 });

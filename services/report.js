@@ -44,20 +44,6 @@ export function modifyCashReport(data) {
       textColor: "#8f1391",
     },
     {
-      id: 6,
-      name: "Cash In",
-      amount: data.cashIn,
-      textColor: "#1ba10e",
-      bgColor: "#d7edd5",
-    },
-    {
-      id: 7,
-      name: "Cash Out",
-      amount: data.cashIn,
-      textColor: "#8581e6",
-      bgColor: "#dbdaf2",
-    },
-    {
       id: 8,
       name: "Market Due",
       amount: data.marketDue,
@@ -76,18 +62,18 @@ export function modifyCashReport(data) {
 
 export function modifyStockReport(products, report) {
   const demo = [];
-  products.forEach((item) => {
-    const product = report.find((d) => item.id === d.productId);
-    if (product) demo.push(product);
+  products.forEach((product) => {
+    const productReport = report.find((d) => product.id === d.productId);
+    if (productReport) demo.push(productReport);
     else {
       demo.push({
-        name: item.name,
-        productId: item.id,
+        name: product.shortName,
+        productId: product.id,
         date: "",
-        previousStock: item.stock,
+        previousStock: product.stock,
         purchase: 0,
         totalSold: 0,
-        remainingStock: item.stock,
+        remainingStock: product.stock,
       });
     }
   });

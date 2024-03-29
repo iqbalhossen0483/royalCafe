@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { Text, View } from "react-native";
-import { commonStyles } from "../../css/common";
-import { color } from "../utilitise/colors";
-import { styles } from "../../css/profile";
+import { Pressable, View } from "react-native";
+
 import useStore from "../../context/useStore";
+import { commonStyles } from "../../css/common";
+import { styles } from "../../css/profile";
 import { Fetch } from "../../services/common";
-import Button from "../utilitise/Button";
+import { socket } from "../Layout";
 import BDT from "../utilitise/BDT";
-import { Pressable } from "react-native";
-import { socket } from "../../App";
+import Button from "../utilitise/Button";
+import P from "../utilitise/P";
+import { color } from "../utilitise/colors";
 
 const MoneyReport = ({ transactions, user }) => {
   const [showDate, setShowDate] = useState(-1);
@@ -40,6 +41,7 @@ const MoneyReport = ({ transactions, user }) => {
 
   async function declineRequest(id, fromUser) {
     try {
+      store.setLoading(true);
       const result = await Fetch(`/user/decline_balance?id=${id}`, "DELETE");
       store.setMessage({ msg: result.message, type: "success" });
       if (socket) {
@@ -55,13 +57,17 @@ const MoneyReport = ({ transactions, user }) => {
       store.setUpdateUser((prev) => !prev);
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
+    } finally {
+      store.setLoading(false);
     }
   }
 
   return (
-    <>
-      <Text style={commonStyles.heading}>Money Report</Text>
-      <View style={{ ...styles.workContainer, marginBottom: 20 }}>
+    <View>
+      <P bold={500} style={commonStyles.heading}>
+        Money Report
+      </P>
+      <View style={{ ...styles.workContainer }}>
         <View style={{ width: "100%" }}>
           <View
             style={{
@@ -69,15 +75,13 @@ const MoneyReport = ({ transactions, user }) => {
               justifyContent: "space-between",
             }}
           >
-            <Text style={{ fontWeight: 500 }}>From User</Text>
-            <Text style={{ fontWeight: 500 }}>To User</Text>
-            <Text style={{ fontWeight: 500 }}>Purpose</Text>
-            <Text style={{ fontWeight: 500 }}>Amount</Text>
+            <P bold={500}>From User</P>
+            <P bold={500}>To User</P>
+            <P bold={500}>Purpose</P>
+            <P bold={500}>Amount</P>
           </View>
           {!transactions.length ? (
-            <Text style={{ textAlign: "center" }}>
-              No money transition pending{" "}
-            </Text>
+            <P align='center'>No money transition pending </P>
           ) : (
             transactions.map((trs, i) => {
               return (
@@ -103,17 +107,15 @@ const MoneyReport = ({ transactions, user }) => {
                       backgroundColor: "#e3ac07",
                     }}
                   >
-                    <Text>{trs.fromUsername}</Text>
-                    <Text>{trs.toUsername}</Text>
-                    <Text>{trs.purpose}</Text>
+                    <P>{trs.fromUsername}</P>
+                    <P>{trs.toUsername}</P>
+                    <P>{trs.purpose}</P>
                     <BDT amount={trs.amount} />
                   </View>
                   {showDate === i ? (
-                    <Text
-                      style={{ textAlign: "center", color: color.darkGray }}
-                    >
+                    <P align='center' color='darkGray'>
                       Req Time: {new Date(trs.transfer_time).toLocaleString()}
-                    </Text>
+                    </P>
                   ) : null}
                   {trs.toUser === user.id ? (
                     <View
@@ -125,11 +127,13 @@ const MoneyReport = ({ transactions, user }) => {
                       }}
                     >
                       <Button
+                        disabled={store.loading}
                         onPress={() => achieveBalance(trs)}
                         style={{ paddingVertical: 3, width: "45%" }}
                         title='Achieve'
                       />
                       <Button
+                        disabled={store.loading}
                         onPress={() => declineRequest(trs.id, trs.fromUser)}
                         style={{
                           paddingVertical: 3,
@@ -146,7 +150,7 @@ const MoneyReport = ({ transactions, user }) => {
           )}
         </View>
       </View>
-    </>
+    </View>
   );
 };
 

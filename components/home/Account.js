@@ -1,32 +1,54 @@
 import { View } from "react-native";
-import { Text } from "react-native";
+
 import { commonStyles } from "../../css/common";
 import { style } from "../../css/home";
 import BDT from "../utilitise/BDT";
+import P from "../utilitise/P";
 
 const Account = ({ users }) => {
   const styles = { width: "30%" };
-  const headerStyle = { width: "30%", fontWeight: 500 };
+
   return (
     <View style={style.accountContainer}>
-      <Text style={{ ...commonStyles.heading, marginTop: 0, marginBottom: 15 }}>
+      <P
+        bold={500}
+        style={{
+          ...commonStyles.heading,
+          marginTop: 0,
+          width: "100%",
+          marginBottom: 15,
+        }}
+      >
         Account of Money
-      </Text>
+      </P>
       <View style={commonStyles.tableRow}>
-        <Text style={headerStyle}>Name</Text>
-        <Text style={headerStyle}>Debt</Text>
-        <Text style={headerStyle}>Balance</Text>
+        <P
+          style={{
+            width: "40%",
+          }}
+          bold={500}
+        >
+          Name
+        </P>
+        <P style={styles} bold={500}>
+          Debt
+        </P>
+        <P style={styles} bold={500}>
+          Balance
+        </P>
       </View>
       {users && users.length ? (
         users.map((item) => (
           <View style={commonStyles.tableRow} key={item.id}>
-            <Text style={styles}>{item.name}</Text>
+            <P style={{ width: "40%" }}>{item.name}</P>
             <BDT style={styles} amount={item.debt} />
             <BDT style={styles} amount={item.haveMoney} />
           </View>
         ))
       ) : (
-        <Text style={{ textAlign: "center", marginTop: 4 }}>No Balance</Text>
+        <P align='center' style={{ marginTop: 4 }}>
+          No Balance
+        </P>
       )}
     </View>
   );

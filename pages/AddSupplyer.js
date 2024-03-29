@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Image, Text, TextInput, View } from "react-native";
-import { Common } from "../App";
+import { Image, Keyboard, TextInput, View } from "react-native";
+
+import { Common } from "../components/Common";
 import Button from "../components/utilitise/Button";
 import FileInput from "../components/utilitise/FileInput";
+import P from "../components/utilitise/P";
+import useStore from "../context/useStore";
 import { commonStyles } from "../css/common";
 import { Fetch, serverUrl } from "../services/common";
-import useStore from "../context/useStore";
 
 const AddSupplyer = ({ route, navigation }) => {
   const [profile, setProfile] = useState(null);
-  const { setMessage, setLoading, setUpdateSupplier } = useStore();
+  const { setMessage, setLoading, setUpdateSupplier, loading } = useStore();
   const [form, setForm] = useState({
     name: "",
     address: "",
@@ -31,6 +33,7 @@ const AddSupplyer = ({ route, navigation }) => {
 
   async function onSubmit() {
     setLoading(true);
+    Keyboard.dismiss();
     if (!profile?.edit) {
       if (route.params?.edit) form.existedImg = form.profile;
       form.profile = profile;
@@ -52,19 +55,20 @@ const AddSupplyer = ({ route, navigation }) => {
     }
   }
 
+  const disabled = !form.name || !form.address;
   return (
     <Common>
       <View style={commonStyles.formContainer}>
-        <Text style={commonStyles.formHeader}>
+        <P bold={500} style={commonStyles.formHeader}>
           {route.params?.edit ? "Edit" : "Add"} Supplyer
-        </Text>
+        </P>
 
         <View style={{ rowGap: 9 }}>
           <TextInput
             defaultValue={form.name}
             onChangeText={(value) => handleChange("name", value)}
             style={commonStyles.input}
-            placeholder='Suppyer name'
+            placeholder='Supplier name'
           />
           <TextInput
             defaultValue={form.address}
@@ -82,7 +86,7 @@ const AddSupplyer = ({ route, navigation }) => {
 
           <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
             <View>
-              <FileInput setImage={setProfile} />
+              <FileInput setImage={setProfile} aspect={false} />
             </View>
             {profile && (
               <Image
@@ -97,7 +101,7 @@ const AddSupplyer = ({ route, navigation }) => {
             )}
           </View>
           <Button
-            disabled={!form.name || !form.address || !form.phone || !profile}
+            disabled={loading || disabled}
             onPress={onSubmit}
             title='Submit'
           />

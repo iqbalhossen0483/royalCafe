@@ -6,6 +6,7 @@ import TimerComponent from "./TimerComponent";
 import { color } from "../utilitise/colors";
 import BDT from "../utilitise/BDT";
 import Button from "../utilitise/Button";
+import P from "../utilitise/P";
 
 const Target = ({ commision, activeUser, user }) => {
   const targets = {
@@ -29,16 +30,16 @@ const Target = ({ commision, activeUser, user }) => {
 
   return (
     <>
-      <Text style={commonStyles.heading}>Targets</Text>
+      <P bold={500} style={commonStyles.heading}>
+        Targets
+      </P>
       <View style={styles.workContainer}>
         <View>
-          <Text style={{ textAlign: "center", fontWeight: 500 }}>
-            Targets Report
-          </Text>
-          <Text style={{ color: "#946f09" }}>Pending: {targets.pending}</Text>
-          <Text style={{ color: "#75850c" }}>Running: {targets.running}</Text>
-          <Text style={{ color: "#038a0a" }}>Achieved: {targets.achieved}</Text>
-          <Text style={{ color: "#946f09" }}>Failed: {targets.failed}</Text>
+          <P>Targets Report</P>
+          <P style={{ color: "#946f09" }}>Pending: {targets.pending}</P>
+          <P style={{ color: "#75850c" }}>Running: {targets.running}</P>
+          <P style={{ color: "#038a0a" }}>Achieved: {targets.achieved}</P>
+          <P style={{ color: "#946f09" }}>Failed: {targets.failed}</P>
         </View>
         {pendingTarget || runningTarget ? (
           <TimerComponent
@@ -49,20 +50,20 @@ const Target = ({ commision, activeUser, user }) => {
 
         {commision ? (
           <View>
-            <Text style={{ fontWeight: 500 }}>Pending Commission</Text>
-            <Text>
+            <P bold={500}>Pending Commission</P>
+            <P>
               Targeted Amount: <BDT amount={commision.targetedAmount} />
-            </Text>
-            <Text>
+            </P>
+            <P>
               Got Commission: <BDT amount={commision.commission} />
-            </Text>
-            <Text>
-              Status: <Text style={{ color: color.green }}>Achieve</Text>{" "}
-            </Text>
+            </P>
+            <P>
+              Status: <P color='green'>Achieve</P>
+            </P>
             {activeUser.designation === "Admin" ? (
               <Button style={{ paddingVertical: 3 }} title='Give Commission' />
             ) : (
-              <Text style={{ color: color.orange }}>Waiting to achieve</Text>
+              <P color='orange'>Waiting to achieve</P>
             )}
           </View>
         ) : null}

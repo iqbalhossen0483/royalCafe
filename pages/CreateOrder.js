@@ -1,20 +1,24 @@
+import { AntDesign } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { ScrollView, Text, TextInput, View } from "react-native";
-import { Common, socket } from "../App";
-import Button from "../components/utilitise/Button";
-import Select from "../components/utilitise/Select";
-import { commonStyles } from "../css/common";
-import { Ionicons } from "@expo/vector-icons";
-import BDT from "../components/utilitise/BDT";
-import useStore from "../context/useStore";
-import { Fetch } from "../services/common";
+import { ScrollView, TextInput, View } from "react-native";
+
+import { Common } from "../components/Common";
+import { socket } from "../components/Layout";
 import AddProduct from "../components/createorder/AddProduct";
 import PreviousOrder from "../components/createorder/PreviousOrder";
 import Product from "../components/createorder/Product";
+import BDT from "../components/utilitise/BDT";
+import Button from "../components/utilitise/Button";
+import P from "../components/utilitise/P";
+import Select from "../components/utilitise/Select";
+import useStore from "../context/useStore";
+import { commonStyles } from "../css/common";
+import { Fetch } from "../services/common";
 
 const CreateOrder = ({ route, navigation }) => {
   const [show, setShow] = useState(false);
   const store = useStore();
+
   const [form, setForm] = useState({
     shopInfo: {},
     products: [],
@@ -80,6 +84,8 @@ const CreateOrder = ({ route, navigation }) => {
           })
         );
       }
+      store.setUpdateOrder((prev) => !prev);
+      store.setUpNotification((prev) => !prev);
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {
@@ -97,9 +103,9 @@ const CreateOrder = ({ route, navigation }) => {
     <Common>
       <ScrollView>
         <View style={commonStyles.formContainer}>
-          <Text style={commonStyles.formHeader}>
+          <P bold={500} style={commonStyles.formHeader}>
             {route.params?.edit ? "Edit" : "Create"} Order
-          </Text>
+          </P>
           <View style={{ rowGap: 5, overflow: "visible" }}>
             <Select
               name='shopInfo'
@@ -156,7 +162,7 @@ const CreateOrder = ({ route, navigation }) => {
                 <View
                   style={{ flexDirection: "row", justifyContent: "flex-end" }}
                 >
-                  <Text>Total: </Text>
+                  <P>Total: </P>
                   <BDT amount={form.totalSale} />
                 </View>
               </>
@@ -166,14 +172,14 @@ const CreateOrder = ({ route, navigation }) => {
               <Button
                 onPress={() => setShow((prev) => !prev)}
                 disabled={route.params?.edit ? false : !form.shopInfo?.id}
-                style={{ width: 40, height: 40, borderRadius: 100 }}
-                title={
-                  <Ionicons
-                    name='ios-add-circle-sharp'
-                    size={24}
-                    color='#fff'
-                  />
-                }
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 100,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                title={<AntDesign name='pluscircle' size={22} color='#fff' />}
               />
             </View>
 
@@ -184,7 +190,7 @@ const CreateOrder = ({ route, navigation }) => {
 
             {/* create order */}
             <Button
-              disabled={submitBtnDisable}
+              disabled={store.loading || submitBtnDisable}
               onPress={onSubmit}
               title='Submit'
             />

@@ -1,7 +1,8 @@
-import React from "react";
-import { commonStyles } from "../../css/common";
-import { Text, TextInput, View } from "react-native";
 import Checkbox from "expo-checkbox";
+import React from "react";
+import { View } from "react-native";
+
+import P from "../utilitise/P";
 
 const FreeProduct = ({ product, setProduct }) => {
   return (
@@ -15,6 +16,7 @@ const FreeProduct = ({ product, setProduct }) => {
         }}
       >
         <Checkbox
+          style={{ width: 18, height: 18 }}
           value={product.isFree === "true" ? true : false}
           color={product.isFree === "true" ? "green" : "gray"}
           onValueChange={() =>
@@ -24,7 +26,7 @@ const FreeProduct = ({ product, setProduct }) => {
             })
           }
         />
-        <Text style={{ fontSize: 16 }}>Free Product?</Text>
+        <P>Free Product?</P>
       </View>
     </>
   );

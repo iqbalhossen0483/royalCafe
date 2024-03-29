@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from "react";
-import {
-  Image,
-  Keyboard,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
-import { Common } from "../App";
+import { Image, Keyboard, ScrollView, TextInput, View } from "react-native";
+
+import { Common } from "../components/Common";
+import { socket } from "../components/Layout";
 import Button from "../components/utilitise/Button";
 import FileInput from "../components/utilitise/FileInput";
-import { commonStyles } from "../css/common";
-import useStore from "../context/useStore";
-import { Fetch, serverUrl } from "../services/common";
+import P from "../components/utilitise/P";
 import Select from "../components/utilitise/Select";
+import useStore from "../context/useStore";
+import { commonStyles } from "../css/common";
+import { Fetch, serverUrl } from "../services/common";
 
 const AddShop = ({ route, navigation }) => {
   const [profile, setProfile] = useState(null);
@@ -74,6 +70,15 @@ const AddShop = ({ route, navigation }) => {
       const { message } = await Fetch(url, method, formData, true);
       if (message) store.setMessage({ msg: message, type: "success" });
       store.setUpdateCustomer((prev) => !prev);
+      if (socket) {
+        socket.send(
+          JSON.stringify({
+            type: "shop_added",
+            id: store.user.id,
+            name: store.user?.name,
+          })
+        );
+      }
       navigation.goBack();
     } catch (error) {
       store.setMessage({ msg: error.message, type: error.type || "error" });
@@ -81,14 +86,20 @@ const AddShop = ({ route, navigation }) => {
       store.setLoading(false);
     }
   }
-
+  const disabled =
+    !form.owner ||
+    !form.address ||
+    !form.shopName ||
+    !form.phone ||
+    !form.machine_model ||
+    !form.machine_type;
   return (
     <Common>
       <ScrollView style={{ marginBottom: margin }}>
         <View style={commonStyles.formContainer}>
-          <Text style={commonStyles.formHeader}>
+          <P bold={500} style={commonStyles.formHeader}>
             {route.params?.edit ? "Edit" : "Add"} Shop
-          </Text>
+          </P>
           <View style={{ rowGap: 9 }}>
             <TextInput
               defaultValue={form.owner}
@@ -100,7 +111,6 @@ const AddShop = ({ route, navigation }) => {
               defaultValue={form.shopName}
               onChangeText={(value) => handleChange("shopName", value)}
               style={commonStyles.input}
-              maxLength={15}
               placeholder='Shop name'
             />
             <TextInput
@@ -129,6 +139,7 @@ const AddShop = ({ route, navigation }) => {
               defaultValue={form.machine_type}
               placeholder='Machine Type'
               header='type'
+              height='auto'
               options={[
                 { id: 1, type: "switchCafe" },
                 { id: 2, type: "others" },
@@ -145,7 +156,7 @@ const AddShop = ({ route, navigation }) => {
             />
             {store.user.designation === "Admin" ? (
               <TextInput
-                defaultValue={form.commission.toString()}
+                defaultValue={form.commission?.toString()}
                 onChangeText={(value) => handleChange("commission", value)}
                 style={commonStyles.input}
                 placeholder='How much commission you want to pay %'
@@ -171,14 +182,7 @@ const AddShop = ({ route, navigation }) => {
               ) : null}
             </View>
             <Button
-              disabled={
-                !form.owner ||
-                !form.address ||
-                !form.shopName ||
-                !form.phone ||
-                !form.machine_model ||
-                !form.machine_type
-              }
+              disabled={store.loading || disabled}
               onPress={onSubmit}
               title='Submit'
             />

@@ -1,25 +1,27 @@
 import { StyleSheet } from "react-native";
+
 import { color } from "../components/utilitise/colors";
 
 export const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
-    marginVertical: 5,
-    paddingVertical: 3,
+    paddingVertical: 10,
     paddingHorizontal: 7,
+    borderBottomColor: color.gray,
+    borderBottomWidth: 1,
   },
   profile: {
-    height: 60,
+    height: 50,
     width: 50,
-    borderRadius: 3,
+    borderRadius: 200,
+    objectFit: "contain",
   },
   amountWrapper: {
     paddingHorizontal: 8,
     paddingVertical: 5,
     borderRadius: 4,
   },
-  amountName: { fontWeight: 500, textAlign: "center", color: "#fff" },
-  amount: { textAlign: "center", color: "#fff", marginTop: 5 },
+  amount: { textAlign: "center", color: "#fff", marginTop: 5, fontSize: 13 },
   detailsContentContainer: {
     backgroundColor: "#fff",
     borderRadius: 5,
@@ -38,12 +40,6 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     columnGap: 5,
   },
-  shopName: {
-    textAlign: "center",
-    fontSize: 19,
-    fontWeight: 500,
-  },
-  address: { textAlign: "center", color: color.darkGray },
   amountContainer: {
     flexDirection: "row",
     justifyContent: "center",
@@ -63,11 +59,6 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     borderBottomWidth: 1,
     borderBottomColor: color.gray,
-  },
-  date: {
-    fontSize: 13,
-    marginTop: 3,
-    color: color.darkGray,
   },
   sign: {
     height: 8,

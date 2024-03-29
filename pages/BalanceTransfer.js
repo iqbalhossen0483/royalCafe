@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Common, socket } from "../App";
 import { TextInput, View } from "react-native";
-import { Text } from "react-native";
-import { commonStyles } from "../css/common";
+
+import { Common } from "../components/Common";
+import { socket } from "../components/Layout";
+import BDT from "../components/utilitise/BDT";
 import Button from "../components/utilitise/Button";
+import P from "../components/utilitise/P";
 import Select from "../components/utilitise/Select";
 import useStore from "../context/useStore";
+import { commonStyles } from "../css/common";
 import { Fetch } from "../services/common";
-import BDT from "../components/utilitise/BDT";
 
-const BalanceTransfer = ({ route }) => {
+const BalanceTransfer = ({ route, navigation }) => {
   const user = route.params.user;
   const [users, setUsers] = useState(null);
   const [form, setForm] = useState({
@@ -24,10 +26,10 @@ const BalanceTransfer = ({ route }) => {
     (async () => {
       try {
         store.setLoading(true);
-        const users = await Fetch("/user", "GET");
+        const users = await Fetch("/user?type=true", "GET");
         const rest = users.filter((item) => item.id !== user.id);
         if (store.user.designation === "Admin") {
-          const supplier = await Fetch("/supplier", "GET");
+          const supplier = await Fetch("/supplier?type=true", "GET");
           setUsers([...rest, ...supplier]);
         } else setUsers(rest);
       } catch (error) {
@@ -43,6 +45,7 @@ const BalanceTransfer = ({ route }) => {
       store.setLoading(true);
       form.fromUser = user.id;
       form.toUser = form.to.userId;
+      form.user_type = form.to.type;
       const body = { ...form };
       delete body.to;
       delete body.restAmount;
@@ -59,6 +62,7 @@ const BalanceTransfer = ({ route }) => {
         );
       }
       store.setUpdateUser((prev) => !prev);
+      navigation.goBack();
     } catch (error) {
       setForm((prev) => {
         return { ...prev, restAmount: user.haveMoney };
@@ -78,19 +82,22 @@ const BalanceTransfer = ({ route }) => {
     options.push(
       { id: 3, name: "Purchase Product" },
       { id: 4, name: "Salary" },
-      { id: 5, name: "Incentive" }
+      { id: 5, name: "Incentive" },
+      { id: 6, name: "Debt" }
     );
   }
+
+  const disabled = !form.amount || !form.to.userId || !form.purpose;
   return (
     <Common>
       <View style={commonStyles.formContainer}>
-        <Text style={commonStyles.formHeader}>Balance Transfer</Text>
+        <P bold={500} style={commonStyles.formHeader}>
+          Balance Transfer
+        </P>
         {form.purpose && form.purpose !== "Debt Payment" ? (
-          <Text
-            style={{ textAlign: "center", marginBottom: 5, fontWeight: 500 }}
-          >
+          <P style={{ marginBottom: 5 }}>
             {form.purpose}:<BDT amount={form.restAmount || user.haveMoney} />
-          </Text>
+          </P>
         ) : null}
         <View style={{ rowGap: 9 }}>
           <Select
@@ -99,6 +106,7 @@ const BalanceTransfer = ({ route }) => {
             header='name'
             zIndex={150}
             editable={false}
+            height={150}
             handler={(_, info) =>
               setForm((prev) => {
                 return { ...prev, purpose: info.name };
@@ -107,13 +115,13 @@ const BalanceTransfer = ({ route }) => {
             options={options}
           />
           <TextInput
-            defaultValue={form.phone?.toString()}
+            defaultValue={form.amount.toString()}
             onChangeText={(value) => {
               setForm((prev) => {
                 return {
                   ...prev,
-                  amount: parseInt(value),
-                  restAmount: user.haveMoney - parseInt(value),
+                  amount: parseInt(value || 0),
+                  restAmount: user.haveMoney - parseInt(value || 0),
                 };
               });
             }}
@@ -133,6 +141,7 @@ const BalanceTransfer = ({ route }) => {
                   to: {
                     userId: info.id,
                     name: info.name,
+                    type: info.type,
                   },
                 };
               })
@@ -140,7 +149,7 @@ const BalanceTransfer = ({ route }) => {
             options={users}
           />
           <Button
-            disabled={!form.amount || !form.to.userId || !form.purpose}
+            disabled={store.loading || disabled}
             onPress={onSubmit}
             title='Submit'
           />

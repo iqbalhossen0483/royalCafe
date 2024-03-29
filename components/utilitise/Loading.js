@@ -1,6 +1,6 @@
 import React from "react";
-import { Image } from "react-native";
-import { View } from "react-native";
+import { Image, View } from "react-native";
+
 import useStore from "../../context/useStore";
 
 const Loading = () => {

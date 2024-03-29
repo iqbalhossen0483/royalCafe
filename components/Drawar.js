@@ -1,8 +1,9 @@
-import React from "react";
-import Modal from "react-native-modal";
-import { styles } from "../css/footer";
-import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { View } from "react-native";
+import Modal from "react-native-modal";
+
+import { styles } from "../css/footer";
 
 const Drawar = ({
   setShowModal,

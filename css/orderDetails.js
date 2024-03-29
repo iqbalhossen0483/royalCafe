@@ -1,27 +1,20 @@
 import { StyleSheet } from "react-native";
-import { color } from "../components/utilitise/colors";
 
 export const styles = StyleSheet.create({
   container: {
     marginHorizontal: 15,
     marginVertical: 10,
     backgroundColor: "#fff",
-    borderRadius: 5,
+    borderRadius: 8,
     marginTop: 20,
+    position: "relative",
   },
   headerWrapper: {
-    backgroundColor: "#737272",
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
-    paddingVertical: 5,
+    backgroundColor: "#dadded",
+    borderTopRightRadius: 8,
+    borderTopLeftRadius: 8,
+    paddingVertical: 7,
   },
-  header: {
-    fontSize: 19,
-    fontWeight: 500,
-    textAlign: "center",
-    color: "#f0e9e9",
-  },
-  address: { marginTop: -2, textAlign: "center", color: "#f0e9e9" },
   dateNbill: {
     flexDirection: "row",
     justifyContent: "space-between",

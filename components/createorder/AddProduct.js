@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { Alert, Text, TextInput } from "react-native";
-import Select from "../utilitise/Select";
-import Button from "../utilitise/Button";
-import { commonStyles } from "../../css/common";
-import FreeProduct from "./FreeProduct";
-import Drawar from "../Drawar";
+import { Alert, TextInput } from "react-native";
 
-const AddProduct = ({ show, setForm, setShow, products }) => {
+import { commonStyles } from "../../css/common";
+import Drawar from "../Drawar";
+import Button from "../utilitise/Button";
+import P from "../utilitise/P";
+import Select from "../utilitise/Select";
+import FreeProduct from "./FreeProduct";
+
+const AddProduct = ({ show, setForm, setShow, products, options }) => {
   const [product, setProduct] = useState({ isFree: "false" });
 
   function addToListProduct() {
@@ -17,7 +19,7 @@ const AddProduct = ({ show, setForm, setShow, products }) => {
     setForm((prev) => {
       if (!product.qty) product.qty = 1;
       if (product.isFree === "false") {
-        product.total = product.qty * product.price;
+        product.total = Math.floor(product.qty * product.price);
         prev.totalSale += product.total;
       }
       prev.products.push(product);
@@ -34,20 +36,15 @@ const AddProduct = ({ show, setForm, setShow, products }) => {
       coverScreen={true}
       bottom={20}
     >
-      <Text
-        style={{
-          textAlign: "center",
-          fontWeight: 500,
-          marginBottom: 4,
-        }}
-      >
+      <P align='center' bold={500} style={{ marginBottom: 4 }}>
         Add a product
-      </Text>
+      </P>
       <Select
         placeholder='Select Product'
         url='/product?opt=id,name,price'
         header='name'
         search={true}
+        height='auto'
         handler={(_, info) =>
           setProduct({
             productId: info.id,

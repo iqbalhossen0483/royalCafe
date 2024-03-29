@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+
 import { color } from "../components/utilitise/colors";
 
 export const styles = StyleSheet.create({
@@ -21,23 +22,11 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5.62,
     elevation: 8,
+    marginBottom: 10,
   },
   profileWrapper: {
     flexDirection: "row",
     columnGap: 10,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: 500,
-    color: color.green,
-  },
-  designation: {
-    color: color.darkGray,
-    fontWeight: 500,
-    fontSize: 14,
-  },
-  phone: {
-    color: color.darkGray,
   },
   workContainer: {
     backgroundColor: "#fff",
@@ -48,20 +37,12 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  workText: {
-    fontWeight: 500,
-    color: color.darkGray,
-  },
   noteContainer: {
     backgroundColor: "#fff",
     paddingVertical: 10,
     borderRadius: 10,
     paddingHorizontal: 15,
     marginTop: 10,
-  },
-  noteHeader: {
-    fontWeight: 500,
-    fontSize: 16,
   },
   noteItem: {
     borderBottomColor: color.darkGray,
@@ -74,8 +55,11 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 3,
   },
-  date: {
-    fontSize: 13,
-    color: color.darkGray,
+  orderContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: color.gray,
+    backgroundColor: "#fff",
+    paddingVertical: 5,
+    paddingHorizontal: 7,
   },
 });

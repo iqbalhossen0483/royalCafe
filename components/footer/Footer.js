@@ -1,7 +1,6 @@
 import { View } from "react-native";
 import { styles } from "../../css/footer";
 import {
-  Ionicons,
   FontAwesome5,
   Foundation,
   MaterialIcons,
@@ -11,7 +10,7 @@ import {
   AntDesign,
   Octicons,
 } from "@expo/vector-icons";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import Menu from "./Menu";
 import { color } from "../utilitise/colors";
@@ -19,7 +18,7 @@ import Drawar from "../Drawar";
 import SubMenu from "./SubMenu";
 import useStore from "../../context/useStore";
 
-const Footer = () => {
+function Footer() {
   const store = useStore();
 
   return store?.user?.designation === "Admin" ? (
@@ -27,7 +26,7 @@ const Footer = () => {
   ) : (
     <NormalFooter />
   );
-};
+}
 
 function AdminFooter() {
   const [createModal, setCreateModal] = useState(false);
@@ -41,14 +40,14 @@ function AdminFooter() {
         name='Home'
         navigate='home'
         Icon={
-          <Ionicons
+          <Entypo
             style={[
               route.name === "home"
                 ? { color: color.green }
                 : { color: "#4b5563" },
               { fontSize: 20 },
             ]}
-            name='md-home'
+            name='home'
             size={24}
             color='black'
           />
@@ -80,10 +79,10 @@ function AdminFooter() {
         navigate={false}
         showModal={setCreateModal}
         Icon={
-          <Ionicons
+          <AntDesign
             style={{ color: "#4b5563" }}
-            name='ios-add-circle-sharp'
-            size={40}
+            name='pluscircle'
+            size={35}
             color='black'
           />
         }
@@ -222,6 +221,14 @@ function AdminFooter() {
           showModal={setMoreOption}
           icon={<AntDesign name='pay-circle-o1' size={24} color='#c912ae' />}
         />
+        <SubMenu
+          name='Settings'
+          url='settings'
+          bgColor='#afc8f0'
+          border
+          showModal={setMoreOption}
+          icon={<AntDesign name='setting' size={20} color='#1f69e0' />}
+        />
       </Drawar>
     </View>
   );
@@ -238,13 +245,13 @@ function NormalFooter() {
         name='Home'
         navigate='profile'
         Icon={
-          <Ionicons
+          <Entypo
             style={[
               route.name === "profile"
                 ? { color: color.green }
                 : { color: "#4b5563" },
             ]}
-            name='md-home'
+            name='home'
             size={21}
           />
         }
@@ -339,6 +346,14 @@ function NormalFooter() {
           showModal={setMoreOption}
           border
           icon={<MaterialIcons name='note-add' size={18} color='#fff' />}
+        />
+        <SubMenu
+          name='Expense Report'
+          url='expenseReport'
+          bgColor='#ebc19b'
+          border
+          showModal={setMoreOption}
+          icon={<MaterialIcons name='report' size={24} color='#a14f03' />}
         />
       </Drawar>
     </View>

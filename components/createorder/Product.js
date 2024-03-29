@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Pressable, Text, View } from "react-native";
+
 import { styles } from "../../css/createOrder";
 import BDT from "../utilitise/BDT";
+import P from "../utilitise/P";
 
 const Product = ({ products, setForm }) => {
   const [showDelete, setShowDelete] = useState(-1);
@@ -24,10 +26,18 @@ const Product = ({ products, setForm }) => {
   return (
     <>
       <View style={styles.productTableHeader}>
-        <Text style={{ width: "40%" }}>Name</Text>
-        <Text style={{ width: "20%", textAlign: "center" }}>Qty</Text>
-        <Text style={{ width: "20%", textAlign: "center" }}>Price</Text>
-        <Text style={{ width: "20%", textAlign: "center" }}>Total</Text>
+        <P bold={500} style={{ width: "40%" }}>
+          Name
+        </P>
+        <P align='center' bold={500} style={{ width: "20%" }}>
+          Qty
+        </P>
+        <P align='center' bold={500} style={{ width: "20%" }}>
+          Price
+        </P>
+        <P align='center' bold={500} style={{ width: "20%" }}>
+          Total
+        </P>
       </View>
       {products.map((item, index) => (
         <Pressable
@@ -36,13 +46,13 @@ const Product = ({ products, setForm }) => {
           onPress={() => setShowDelete(-1)}
           style={styles.productTableItem}
         >
-          <Text style={{ width: "40%" }}>{item.name}</Text>
-          <Text style={{ width: "20%", textAlign: "center" }}>{item.qty}</Text>
-          <Text style={{ width: "20%", textAlign: "center" }}>
+          <P style={{ width: "40%" }}>{item.name}</P>
+          <P style={{ width: "20%", textAlign: "center" }}>{item.qty}</P>
+          <P style={{ width: "20%", textAlign: "center" }}>
             {item.isFree === "false" ? item.price : "Free"}
-          </Text>
+          </P>
           <BDT
-            style={{ fontWeight: "normal", width: "20%", textAlign: "center" }}
+            style={{ width: "20%", textAlign: "center" }}
             amount={item.total}
           />
 

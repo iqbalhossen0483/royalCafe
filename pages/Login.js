@@ -40,7 +40,7 @@ const Login = ({ navigation }) => {
     <View style={{ ...commonStyles.formContainer, marginTop: 100 }}>
       <Text style={commonStyles.formHeader}>Login</Text>
 
-      <View style={{ rowGap: 9 }}>
+      <View style={{ rowGap: 12 }}>
         <TextInput
           onChangeText={(value) => handleChange("phone", value)}
           style={commonStyles.input}

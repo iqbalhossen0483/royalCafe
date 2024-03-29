@@ -1,7 +1,9 @@
-import React from "react";
-import { commonStyles } from "../../css/common";
-import { Text, TextInput, View } from "react-native";
 import Checkbox from "expo-checkbox";
+import React from "react";
+import { TextInput, View } from "react-native";
+
+import { commonStyles } from "../../css/common";
+import P from "../utilitise/P";
 
 const PreviousOrder = ({ form, setForm }) => {
   return (
@@ -29,6 +31,7 @@ const PreviousOrder = ({ form, setForm }) => {
       >
         <Checkbox
           value={form.prevSale}
+          style={{ width: 15, height: 15 }}
           color={form.prevSale ? "green" : "gray"}
           onValueChange={() =>
             setForm((prev) => {
@@ -36,7 +39,7 @@ const PreviousOrder = ({ form, setForm }) => {
             })
           }
         />
-        <Text style={{ fontSize: 16 }}>Previous sold order?</Text>
+        <P size={15}>Previous sold order?</P>
       </View>
     </>
   );

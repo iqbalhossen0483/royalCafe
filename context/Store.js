@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { Fetch } from "../services/common";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { useEffect, useState } from "react";
+
+import { Fetch } from "../services/common";
 
 const Store = () => {
   const [updateProduct, setUpdateProduct] = useState(false);
@@ -16,6 +16,9 @@ const Store = () => {
   const [user, setUser] = useState(null);
   const [updateReport, setUpdateReport] = useState(false);
   const [upNotification, setUpNotification] = useState(false);
+  const [updatePurchase, setUpdatePurchase] = useState(false);
+  const [siteInfo, SetSiteInfo] = useState(null);
+  const [appIsReady, setAppIsReady] = useState(false);
   const [message, setMessage] = useState({
     msg: "",
     type: "",
@@ -40,6 +43,17 @@ const Store = () => {
       }
     })();
   }, [updateUser]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const siteInfo = await Fetch(`/siteinfo`, "GET");
+        SetSiteInfo(siteInfo);
+      } catch (error) {
+        setMessage({ msg: error.message, type: "error" });
+      }
+    })();
+  }, []);
 
   return {
     message,
@@ -67,6 +81,9 @@ const Store = () => {
     setUpNotification,
     updateExpense,
     setUpdateExpense,
+    updatePurchase,
+    setUpdatePurchase,
+    siteInfo,
   };
 };
 

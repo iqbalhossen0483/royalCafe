@@ -22,7 +22,7 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.19,
     shadowRadius: 5.62,
     elevation: 6,
-    height: "7%",
+    height: 57,
   },
   iconWrapper: {
     display: "flex",

@@ -1,3 +1,5 @@
+import { Linking } from "react-native";
+
 const ngrok = "https://server.switchcafebd.com";
 
 export async function Fetch(url, method, body, formData = false) {
@@ -20,6 +22,7 @@ export async function Fetch(url, method, body, formData = false) {
     if (!res.ok) throw result;
     else return result;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
@@ -33,4 +36,8 @@ export function prittyPrint(obj) {
 export function dateFormatter(date) {
   const d = new Date(date);
   return d.toLocaleDateString("en-GB");
+}
+
+export function openNumber(number) {
+  Linking.openURL(`tel:${number}`);
 }

@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, Image, Pressable, Text, View } from "react-native";
-import { styles } from "../css/customer";
-import { MaterialIcons } from "@expo/vector-icons";
-import { Common } from "../App";
-import SearchFilter from "../components/SearchFilter";
-import { color } from "../components/utilitise/colors";
-import BDT from "../components/utilitise/BDT";
-import { Fetch, dateFormatter, serverUrl } from "../services/common";
-import useStore from "../context/useStore";
+import { Pressable, Text, View } from "react-native";
 import { IOScrollView, InView } from "react-native-intersection-observer";
+
+import { Common } from "../components/Common";
+import SearchFilter from "../components/SearchFilter";
+import Avater from "../components/utilitise/Avater";
+import BDT from "../components/utilitise/BDT";
+import P from "../components/utilitise/P";
+import { color } from "../components/utilitise/colors";
+import useStore from "../context/useStore";
+import { styles } from "../css/customer";
+import { Fetch, dateFormatter, openNumber } from "../services/common";
 
 const Customers = ({ navigation }) => {
   const [customers, setCustomers] = useState(null);
-  const store = useStore();
-  const height = Dimensions.get("window").height;
   const [page, setPage] = useState(0);
+  const store = useStore();
 
   useEffect(() => {
-    if (page > 0 && customers?.count !== customers?.data?.length) {
+    if (page > 0) {
       fetchData(`/customer?page=${page}`, true);
     }
 
@@ -50,15 +51,22 @@ const Customers = ({ navigation }) => {
 
   return (
     <Common>
-      <IOScrollView style={{ marginBottom: height - height * 0.79 }}>
-        <SearchFilter url='/customer' setData={setCustomers} filter={false} />
+      <IOScrollView style={{ marginBottom: 57 }}>
+        <SearchFilter
+          placeholder='Shop name Or nddress'
+          url='/customer'
+          setData={setCustomers}
+          filter={false}
+        />
         {customers?.data?.length ? (
           customers.data.map((item, i, arr) => (
             <InView
               key={item.id}
-              onChange={() =>
-                i === arr.length - 1 ? setPage((prev) => prev + 1) : null
-              }
+              onChange={() => {
+                if (customers?.count !== customers?.data?.length) {
+                  i === arr.length - 1 ? setPage((prev) => prev + 1) : null;
+                }
+              }}
             >
               <Pressable
                 onPress={() =>
@@ -72,57 +80,48 @@ const Customers = ({ navigation }) => {
                 }}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  {item.profile ? (
-                    <Image
-                      style={styles.profile}
-                      source={{ uri: serverUrl + item.profile }}
-                      alt=''
-                    />
-                  ) : (
-                    <Image
-                      style={styles.profile}
-                      source={require("../assets/no-photo.png")}
-                      alt=''
-                    />
-                  )}
+                  <Avater url={item.profile} />
+
                   <View
                     style={{ marginLeft: 6, flexDirection: "row", gap: 10 }}
                   >
-                    <View>
-                      <Text style={{ fontSize: 16, fontWeight: 500 }}>
+                    <View style={{ width: "50%" }}>
+                      <P size={15} bold={500}>
                         {item.shopName}
-                      </Text>
-                      <Text style={{ color: color.darkGray }}>
+                      </P>
+                      <P size={13} color='darkGray'>
                         {item.address}
-                      </Text>
-                      <Text style={{ color: color.darkGray }}>
-                        {item.phone}
-                      </Text>
+                      </P>
+                      <Pressable
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          openNumber(item.phone);
+                        }}
+                      >
+                        <P size={13} color='green'>
+                          {item.phone}
+                        </P>
+                      </Pressable>
                     </View>
 
                     <View>
                       {item.lastOrder ? (
-                        <Text style={{ color: color.darkGray }}>
+                        <P color='darkGray' size={13}>
                           Last Order: {dateFormatter(item.lastOrder)}
-                        </Text>
+                        </P>
                       ) : null}
-                      <Text>Added By: {item.added_by_name}</Text>
+                      <P size={13}>Added By: {item.added_by_name}</P>
                       {item.due ? (
-                        <Text style={{ fontWeight: 500, color: color.orange }}>
-                          Due: <BDT amount={item.due} />
-                        </Text>
+                        <P color='orange' size={13} bold={500}>
+                          Due:
+                          <BDT
+                            style={{ color: color.orange }}
+                            amount={item.due}
+                          />
+                        </P>
                       ) : null}
                     </View>
                   </View>
-                </View>
-
-                <View>
-                  <MaterialIcons
-                    style={{ color: color.darkGray }}
-                    name='keyboard-arrow-right'
-                    size={24}
-                    color='black'
-                  />
                 </View>
               </Pressable>
             </InView>

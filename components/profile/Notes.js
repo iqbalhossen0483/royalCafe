@@ -1,17 +1,20 @@
+import { AntDesign, Entypo, MaterialIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+
+import useStore from "../../context/useStore";
 import { commonStyles } from "../../css/common";
 import { styles } from "../../css/profile";
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
-import useStore from "../../context/useStore";
 import { Fetch, dateFormatter } from "../../services/common";
 import { alert } from "../utilitise/Alert";
+import P from "../utilitise/P";
 import { color } from "../utilitise/colors";
 
 const Notes = ({ navigation, id }) => {
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState(null);
   const store = useStore();
+  const [showNotes, setShowNotes] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -41,13 +44,25 @@ const Notes = ({ navigation, id }) => {
   }
 
   return (
-    <>
-      <Text style={commonStyles.heading}>Your Notes</Text>
+    <View>
+      <P bold={500} style={commonStyles.heading}>
+        Your Notes
+      </P>
+
+      <Pressable
+        onPress={() => setShowNotes((prev) => !prev)}
+        style={{ position: "absolute", right: 15, top: 20 }}
+      >
+        {showNotes ? (
+          <Entypo name='eye' size={24} color={color.green} />
+        ) : (
+          <Entypo name='eye-with-line' size={24} color={color.green} />
+        )}
+      </Pressable>
+
       <View style={styles.noteContainer}>
-        {loading ? (
-          <Text style={{ textAlign: "center" }}>Loading...</Text>
-        ) : null}
-        {notes && notes.length ? (
+        {loading ? <P align='center'>Loading...</P> : null}
+        {showNotes && notes && notes.length ? (
           notes.map((item, i, arr) => (
             <View
               key={item.id}
@@ -55,9 +70,20 @@ const Notes = ({ navigation, id }) => {
             >
               <View style={styles.headingContainer}>
                 <View>
-                  <Text style={styles.noteHeader}>{item.heading}</Text>
-                  <Text style={styles.date}>{dateFormatter(item.date)}</Text>
-                  <Text>{item.description}</Text>
+                  <P
+                    bold={500}
+                    color='green'
+                    style={{
+                      borderBottomWidth: 1,
+                      borderBottomColor: color.green,
+                    }}
+                  >
+                    {item.heading}
+                  </P>
+                  <P color='darkGray' size={13}>
+                    {dateFormatter(item.date)}
+                  </P>
+                  <P>{item.description}</P>
                 </View>
 
                 <View style={{ rowGap: 5 }}>
@@ -83,10 +109,12 @@ const Notes = ({ navigation, id }) => {
             </View>
           ))
         ) : (
-          <Text style={{ textAlign: "center" }}>No notes</Text>
+          <Text style={{ textAlign: "center" }}>
+            {showNotes ? "No notes" : "Notes are hidden"}
+          </Text>
         )}
       </View>
-    </>
+    </View>
   );
 };
 

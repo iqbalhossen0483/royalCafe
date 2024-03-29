@@ -1,6 +1,8 @@
 import React from "react";
-import { Pressable, Text } from "react-native";
+import { Pressable } from "react-native";
+
 import { color } from "./colors";
+import P from "./P";
 
 const Button = ({ title, style, onPress, disabled }) => {
   return (
@@ -12,19 +14,14 @@ const Button = ({ title, style, onPress, disabled }) => {
         paddingHorizontal: 9,
         paddingVertical: 7,
         borderRadius: 4,
+        justifyContent: "center",
+        alignItems: "center",
         ...style,
       }}
     >
-      <Text
-        style={{
-          color: "#fff",
-          textAlign: "center",
-          fontWeight: 500,
-          fontSize: 16,
-        }}
-      >
+      <P color='light' bold={500} size={15} align='center'>
         {title}
-      </Text>
+      </P>
     </Pressable>
   );
 };

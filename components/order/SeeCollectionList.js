@@ -36,19 +36,12 @@ const SeeCollectionList = ({ setShow, data }) => {
             style={{ ...commonStyles.tableRow, paddingVertical: 7 }}
             key={item.id}
           >
-            <Text style={tablerowStyle}>{item.receiver_name}</Text>
+            <Text style={tablerowStyle}>{item.name}</Text>
             <Text style={tablerowStyle}>{item.amount}</Text>
             <Text style={tablerowStyle}>{dateFormatter(item.date)}</Text>
           </View>
         )}
       />
-      {/* {data.map((coll) => (
-        <View style={commonStyles.tableRow} key={coll.id}>
-          <Text style={tablerowStyle}>{coll.receiver_name}</Text>
-          <Text style={tablerowStyle}>{coll.amount}</Text>
-          <Text style={tablerowStyle}>{dateFormatter(coll.date)}</Text>
-        </View>
-      ))} */}
     </View>
   );
 };

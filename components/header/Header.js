@@ -1,13 +1,16 @@
-import { Image, Pressable, Text, View } from "react-native";
-import { styles } from "../../css/header";
 import { Ionicons } from "@expo/vector-icons";
-import { commonStyles } from "../../css/common";
 import { useNavigation } from "@react-navigation/native";
-import { color } from "../utilitise/colors";
-import BDT from "../utilitise/BDT";
+import React, { useEffect, useState } from "react";
+import { Pressable, View } from "react-native";
+
 import useStore from "../../context/useStore";
-import { Fetch, serverUrl } from "../../services/common";
-import { useEffect, useState } from "react";
+import { commonStyles } from "../../css/common";
+import { styles } from "../../css/header";
+import { Fetch } from "../../services/common";
+import Avater from "../utilitise/Avater";
+import BDT from "../utilitise/BDT";
+import P from "../utilitise/P";
+import { color } from "../utilitise/colors";
 
 const Header = () => {
   const navigation = useNavigation();
@@ -24,7 +27,6 @@ const Header = () => {
       }
     })();
   }, [upNotification]);
-
   if (!user) return null;
   return (
     <View style={styles.container}>
@@ -34,24 +36,19 @@ const Header = () => {
           navigation.navigate("profile", { userId: user.id, edit: true })
         }
       >
-        {user.profile ? (
-          <Image
-            style={{ width: 40, height: 40, borderRadius: 100 }}
-            source={{ uri: serverUrl + user.profile }}
-            resizeMode='cover'
-          />
-        ) : (
-          <Image
-            style={{ width: 40, height: 40, borderRadius: 100 }}
-            source={require("../../assets/no-photo.png")}
-            resizeMode='cover'
-          />
-        )}
+        <Avater url={user.profile} />
+
         <View style={{ marginLeft: 5 }}>
-          <Text style={styles.name}>{user.name}</Text>
-          <Text style={{ color: "#e6e6f2" }}>
-            AC: <BDT amount={user?.haveMoney || 0} />
-          </Text>
+          <P color='lightGray' bold={500} size={16}>
+            {user.name}
+          </P>
+          <P color='lightGray' size={13}>
+            AC:{" "}
+            <BDT
+              style={{ color: "#edeef5", fontSize: 13 }}
+              amount={user?.haveMoney || 0}
+            />
+          </P>
         </View>
       </Pressable>
       <View

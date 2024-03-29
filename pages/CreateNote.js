@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Text, TextInput, View } from "react-native";
-import { Common } from "../App";
+import { Keyboard, TextInput, View } from "react-native";
+
+import { Common } from "../components/Common";
 import Button from "../components/utilitise/Button";
-import { commonStyles } from "../css/common";
+import P from "../components/utilitise/P";
 import useStore from "../context/useStore";
+import { commonStyles } from "../css/common";
 import { Fetch } from "../services/common";
 
 const CreateNote = ({ route, navigation }) => {
@@ -16,8 +18,8 @@ const CreateNote = ({ route, navigation }) => {
   async function onSubmit() {
     try {
       store.setLoading(true);
+      Keyboard.dismiss();
       notes.userId = store.user.id;
-      notes.date = new Date().toISOString();
       const method = route.params?.edit ? "PUT" : "POST";
       const url = route.params?.edit ? `/notes?id=${notes.id}` : "/notes";
       const { message } = await Fetch(url, method, notes);
@@ -36,13 +38,13 @@ const CreateNote = ({ route, navigation }) => {
       setNotes(route.params.data);
     }
   }, [route.params]);
-
+  const disabled = !notes.heading || !notes.description;
   return (
     <Common>
       <View style={commonStyles.formContainer}>
-        <Text style={commonStyles.formHeader}>
+        <P bold={500} style={commonStyles.formHeader}>
           {route.params?.edit ? "Edit" : "Create"} Note
-        </Text>
+        </P>
         <View style={{ rowGap: 8 }}>
           <TextInput
             onChangeText={(value) =>
@@ -75,7 +77,7 @@ const CreateNote = ({ route, navigation }) => {
         <Button
           style={{ marginTop: 10 }}
           onPress={onSubmit}
-          disabled={!notes.heading || !notes.description}
+          disabled={store.loading || disabled}
           title='Save'
         />
       </View>

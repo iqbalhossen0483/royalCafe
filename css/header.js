@@ -7,11 +7,6 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  name: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: "#fff",
-  },
   container: {
     backgroundColor: color.green,
     paddingVertical: 7,

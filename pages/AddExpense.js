@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import { Keyboard, Text, TextInput, View } from "react-native";
-import { Common } from "../App";
-import { commonStyles } from "../css/common";
-import Select from "../components/utilitise/Select";
+import { Keyboard, TextInput, View } from "react-native";
+
+import { Common } from "../components/Common";
+import { socket } from "../components/Layout";
 import Button from "../components/utilitise/Button";
+import P from "../components/utilitise/P";
+import Select from "../components/utilitise/Select";
 import useStore from "../context/useStore";
+import { commonStyles } from "../css/common";
 import { Fetch } from "../services/common";
 
-const AddExpense = () => {
+const AddExpense = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     type: "",
@@ -22,23 +25,36 @@ const AddExpense = () => {
       data.amount = parseInt(data.amount);
       data.created_by = store.user.id;
       data.userDesignation = store.user.designation;
-      data.date = new Date().toISOString();
       const { message } = await Fetch("/expense", "POST", data);
       store.setMessage({ msg: message, type: "success" });
+      navigation.goBack();
       store.setUpdateUser((prev) => !prev);
-      store.setUpdateReport((prev) => !prev);
-      store.setUpdateExpense((prev) => !prev);
+      if (store.user.designation === "Admin") {
+        store.setUpdateReport((prev) => !prev);
+        store.setUpdateExpense((prev) => !prev);
+      } else {
+        if (socket) {
+          socket.send(
+            JSON.stringify({
+              type: "expense_req_sent",
+              name: store.user.name,
+            })
+          );
+        }
+      }
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {
       setLoading(false);
     }
   }
-
+  const disabled = !data.type || !data.amount;
   return (
     <Common>
       <View style={commonStyles.formContainer}>
-        <Text style={commonStyles.formHeader}>Add Expense</Text>
+        <P bold={500} style={commonStyles.formHeader}>
+          Add Expense
+        </P>
 
         <View style={{ rowGap: 10 }}>
           <Select
@@ -64,7 +80,7 @@ const AddExpense = () => {
           />
           <Button
             title={loading ? "Saving..." : "Save"}
-            disabled={!data.type || !data.amount}
+            disabled={loading || disabled}
             onPress={onSubmit}
           />
         </View>

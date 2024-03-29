@@ -1,15 +1,18 @@
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
-import { style } from "../css/home";
-import { commonStyles } from "../css/common";
-import Button from "./utilitise/Button";
-import Select from "./utilitise/Select";
-import BDT from "./utilitise/BDT";
+import { View } from "react-native";
+
 import useStore from "../context/useStore";
+import { commonStyles } from "../css/common";
+import { style } from "../css/home";
 import { Fetch } from "../services/common";
 import { modifyStockReport } from "../services/report";
+import BDT from "./utilitise/BDT";
+import Button from "./utilitise/Button";
 import { LoadingOnComponent } from "./utilitise/Loading";
+import P from "./utilitise/P";
+import Select from "./utilitise/Select";
+import { color } from "./utilitise/colors";
 
 const StockReport = ({ data }) => {
   const [date, setDate] = useState(null);
@@ -52,8 +55,7 @@ const StockReport = ({ data }) => {
               })}&year=${date.getFullYear()}`)
             : (base += `method=year&date=${date.getFullYear()}`);
         const report = await Fetch(url, "GET");
-        const modified = modifyStockReport(data.products, report);
-        setReport(modified);
+        setReport(report);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
       } finally {
@@ -71,50 +73,52 @@ const StockReport = ({ data }) => {
     }
   }, [methods.name]);
 
-  const styles = { width: "17%", textAlign: "center" };
+  const styles = { width: "20%", textAlign: "center" };
+  const rowStyles = {
+    ...styles,
+    borderRightWidth: 1,
+    borderRightColor: color.gray,
+  };
   return (
     <View style={{ ...style.totalReportContainer, marginBottom: 10 }}>
-      <Text style={{ ...commonStyles.heading, width: "100%", marginTop: 0 }}>
+      <P
+        bold={500}
+        style={{ ...commonStyles.heading, width: "100%", marginTop: 0 }}
+      >
         Stock Report Of {"\n"}
-        <Text style={{ color: "#8f1391" }}>
+        <P size={15} style={{ color: "#8f1391" }}>
           {date ? prittyDate(date, methods) : prittyDate(new Date(), methods)}
-        </Text>
-      </Text>
+        </P>
+      </P>
 
-      <View style={{ alignItems: "center", width: "100%" }}>
+      <View style={{ width: "100%" }}>
         <View style={commonStyles.tableRow}>
-          <Text style={{ ...styles, fontWeight: 500 }}>Name</Text>
-          <Text style={{ ...styles, fontWeight: 500 }}>Previous</Text>
-          <Text style={{ ...styles, fontWeight: 500 }}>Purchase</Text>
-          <Text style={{ width: "15%", textAlign: "center", fontWeight: 500 }}>
-            Sale
-          </Text>
-          <Text style={{ width: "19%", textAlign: "center", fontWeight: 500 }}>
-            Remaining
-          </Text>
+          <P style={styles}>Name</P>
+          <P style={styles}>Previous</P>
+          <P style={styles}>Purchase</P>
+          <P style={styles}>Sale</P>
+          <P style={styles}>Remain</P>
         </View>
         {report && report.length ? (
           report.map((item, i) => (
             <View style={commonStyles.tableRow} key={i}>
-              <Text style={styles}>
-                {item.name.length > 8 ? item.name.split(" ")[0] : item.name}
-              </Text>
-              <BDT bdtSign={false} style={styles} amount={item.previousStock} />
-              <BDT bdtSign={false} style={styles} amount={item.purchased} />
+              <P style={rowStyles}>{item.name}</P>
               <BDT
                 bdtSign={false}
-                style={{ width: "15%", textAlign: "center" }}
-                amount={item.totalSold}
+                style={rowStyles}
+                amount={item.previousStock}
               />
+              <BDT bdtSign={false} style={rowStyles} amount={item.purchased} />
+              <BDT bdtSign={false} style={rowStyles} amount={item.totalSold} />
               <BDT
                 bdtSign={false}
-                style={{ width: "19%", textAlign: "center" }}
+                style={styles}
                 amount={item.remainingStock}
               />
             </View>
           ))
         ) : (
-          <Text>No sales</Text>
+          <P>No sales</P>
         )}
       </View>
 
@@ -139,6 +143,7 @@ const StockReport = ({ data }) => {
             top={true}
             editable={false}
             placeholder='Select method'
+            height={140}
             options={[
               { name: "Days" },
               { name: "Month" },

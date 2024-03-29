@@ -1,29 +1,23 @@
-import { useEffect, useState } from "react";
-import {
-  Dimensions,
-  FlatList,
-  Image,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
-import { styles } from "../css/customer";
 import { MaterialIcons } from "@expo/vector-icons";
-import Button from "../components/utilitise/Button";
-import { Common } from "../App";
-import { color } from "../components/utilitise/colors";
-import BDT from "../components/utilitise/BDT";
-import { style } from "../css/notification";
-import useStore from "../context/useStore";
-import { Fetch, serverUrl } from "../services/common";
+import { useEffect, useState } from "react";
+import { FlatList, Image, Pressable, View } from "react-native";
+
+import { Common } from "../components/Common";
 import { alert } from "../components/utilitise/Alert";
+import BDT from "../components/utilitise/BDT";
+import Button from "../components/utilitise/Button";
+import P from "../components/utilitise/P";
+import { color } from "../components/utilitise/colors";
+import useStore from "../context/useStore";
+import { styles } from "../css/customer";
+import { style } from "../css/notification";
+import { Fetch, openNumber, serverUrl } from "../services/common";
 
 const NotificationsPage = ({ navigation }) => {
   const [showDetails, setShowDetails] = useState(-1);
   const [showDeleteBtn, setShowDeleteBtn] = useState(-1);
   const [orders, setOrders] = useState(null);
   const store = useStore();
-  const height = Dimensions.get("window").height;
 
   useEffect(() => {
     (async () => {
@@ -37,6 +31,8 @@ const NotificationsPage = ({ navigation }) => {
         store.setLoading(false);
       }
     })();
+
+    return () => store.setLoading(false);
   }, [store.updateOrder]);
 
   function removeOrder(id) {
@@ -46,6 +42,7 @@ const NotificationsPage = ({ navigation }) => {
         const { message } = await Fetch(`/order?id=${id}`, "DELETE");
         store.setMessage({ msg: message, type: "success" });
         setShowDeleteBtn(-1);
+        if (!orders.length) store.setNotification((prev) => !prev);
         store.setUpdateOrder((prev) => !prev);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
@@ -64,21 +61,25 @@ const NotificationsPage = ({ navigation }) => {
   return (
     <Common>
       <FlatList
-        style={{ marginBottom: height - height * 0.93 }}
+        style={{ marginBottom: 57 }}
         data={orders}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 5 }}
         ListEmptyComponent={() => (
-          <Text style={{ textAlign: "center" }}>There is no pending order</Text>
+          <P align='center'>There is no pending order</P>
         )}
         renderItem={({ item, index: i }) => (
           <View style={styles.container}>
             <View style={style.constainer}>
               <Pressable
-                style={{ flexDirection: "row", alignItems: "center" }}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  width: "52%",
+                }}
                 onPress={() => setShowDetails((prev) => (i === prev ? -1 : i))}
               >
-                {item.profile ? (
+                {item.profile && item.profile !== "null" ? (
                   <Image
                     style={styles.profile}
                     source={{ uri: serverUrl + item.profile }}
@@ -91,9 +92,9 @@ const NotificationsPage = ({ navigation }) => {
                 )}
                 <View style={{ marginLeft: 6 }}>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Text style={{ fontSize: 16, fontWeight: 500 }}>
+                    <P bold={500} size={15}>
                       {item.shopName}
-                    </Text>
+                    </P>
                     <MaterialIcons
                       name={
                         showDetails === i
@@ -104,24 +105,38 @@ const NotificationsPage = ({ navigation }) => {
                       color={color.darkGray}
                     />
                   </View>
-                  <Text>{item.phone}</Text>
-                  <Text>{item.address}</Text>
+                  <View style={{ flexDirection: "row" }}>
+                    <P size={13} style={{ flex: 1, flexWrap: "wrap" }}>
+                      {item.address}
+                    </P>
+                  </View>
+                  <Pressable
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      openNumber(item.phone);
+                    }}
+                  >
+                    <P color='green' size={13}>
+                      {item.phone}
+                    </P>
+                  </Pressable>
                 </View>
               </Pressable>
               <Pressable
                 onLongPress={() => setShowDeleteBtn(i)}
                 onPress={() => setShowDeleteBtn(-1)}
               >
-                <Text>
+                <P>
                   Bill no: <BDT amount={item.billno} bdtSign={false} />
-                </Text>
-                <Text>
+                </P>
+                <P>
                   Toal sale: <BDT amount={item.totalSale} />
-                </Text>
+                </P>
+                <P>Created By: {item.created_by?.split(" ")[0]}</P>
               </Pressable>
               <View>
-                <Text style={{ color: color.orange }}>{item.status}</Text>
-                <Text style={{ fontSize: 13 }}>{item.time}</Text>
+                <P color='orange'>{item.status}</P>
+                <P size={13}>{item.time}</P>
               </View>
             </View>
 
@@ -142,39 +157,40 @@ const NotificationsPage = ({ navigation }) => {
                   {item.products.length ? (
                     <>
                       <View key={item.id} style={style.detailsTableHeader}>
-                        <Text style={{ fontWeight: 500, width: "40%" }}>
+                        <P bold={500} style={{ width: "40%" }}>
                           Name
-                        </Text>
-                        <Text style={tableheaderStyle}>Qty</Text>
-                        <Text style={tableheaderStyle}>Price</Text>
-                        <Text style={tableheaderStyle}>Total</Text>
+                        </P>
+                        <P style={tableheaderStyle}>Qty</P>
+                        <P style={tableheaderStyle}>Price</P>
+                        <P style={tableheaderStyle}>Total</P>
                       </View>
                       {item.products.map((item) => (
                         <View key={item.id} style={style.detailsItem}>
-                          <Text style={{ width: "40%" }}>{item.name}</Text>
-                          <Text style={tablerowStyle}>{item.qty}</Text>
-                          <Text style={tablerowStyle}>
+                          <P style={{ width: "40%" }}>{item.name}</P>
+                          <P style={tablerowStyle}>{item.qty}</P>
+                          <P style={tablerowStyle}>
                             {item.isFree === "false" ? item.price : "Free"}
-                          </Text>
+                          </P>
                           <BDT style={tablerowStyle} amount={item.total} />
                         </View>
                       ))}
                     </>
                   ) : (
-                    <Text style={{ textAlign: "center" }}>No product</Text>
+                    <P align='center'>No product</P>
                   )}
 
                   <View style={style.bottomContainer}>
                     <View style={style.bottomItem}>
                       <View style={style.totalWrapper}>
-                        <Text style={style.totalText}>Total:</Text>
+                        <P bold={500}>Total: </P>
                         <BDT amount={item.totalSale} />
                       </View>
                       <View>
                         <Button
-                          onPress={() =>
-                            navigation.navigate("completeOrder", item)
-                          }
+                          onPress={() => {
+                            setShowDetails(-1);
+                            navigation.navigate("completeOrder", item);
+                          }}
                           style={{ marginTop: 4 }}
                           title='Complete'
                         />

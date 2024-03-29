@@ -1,26 +1,33 @@
+import { AntDesign, Feather, MaterialIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { Image, Text, View, Pressable, Dimensions } from "react-native";
-import { Common } from "../App";
-import BDT from "../components/utilitise/BDT";
-import { color } from "../components/utilitise/colors";
-import { styles } from "../css/customer";
-import { MaterialIcons, Feather, AntDesign } from "@expo/vector-icons";
-import { Fetch, dateFormatter, serverUrl } from "../services/common";
-import useStore from "../context/useStore";
-import { alert } from "../components/utilitise/Alert";
-import { LoadingOnComponent } from "../components/utilitise/Loading";
+import { Image, Pressable, View } from "react-native";
 import { IOScrollView, InView } from "react-native-intersection-observer";
+
+import { Common } from "../components/Common";
+import { alert } from "../components/utilitise/Alert";
+import BDT from "../components/utilitise/BDT";
+import { LoadingOnComponent } from "../components/utilitise/Loading";
+import P from "../components/utilitise/P";
+import { color } from "../components/utilitise/colors";
+import useStore from "../context/useStore";
+import { styles } from "../css/customer";
+import {
+  Fetch,
+  dateFormatter,
+  openNumber,
+  serverUrl,
+} from "../services/common";
 
 const CustomerDetails = ({ route, navigation }) => {
   const [customers, setCustomers] = useState(null);
   const store = useStore();
-  const shopData = { ...customers };
+  const shopData = { ...customers?.data };
   delete shopData?.orders;
-  const height = Dimensions.get("window").height;
+
   const [page, setPage] = useState(0);
 
   useEffect(() => {
-    if (page > 0 && customers?.count !== customers?.data?.orders?.length) {
+    if (page > 0) {
       fetchData(`/customer?id=${route.params.id}&page=${page}`, true);
     }
   }, [page]);
@@ -35,7 +42,8 @@ const CustomerDetails = ({ route, navigation }) => {
       const data = await Fetch(url, "GET");
       if (page) {
         setCustomers((prev) => {
-          prev.orders = [...prev.orders, data?.data.orders];
+          prev.count = data.count;
+          prev.data.orders = [...prev.data.orders, ...data.data.orders];
           return { ...prev };
         });
       } else {
@@ -43,6 +51,7 @@ const CustomerDetails = ({ route, navigation }) => {
       }
       store.setLoading(false);
     } catch (error) {
+      console.log(error);
       store.setLoading(false);
       store.setMessage({ msg: error.message, type: "error" });
     }
@@ -67,7 +76,7 @@ const CustomerDetails = ({ route, navigation }) => {
   if (!customers?.data?.id) return <LoadingOnComponent />;
   return (
     <Common>
-      <IOScrollView style={{ marginBottom: height - height * 0.93 }}>
+      <IOScrollView style={{ marginBottom: 57 }}>
         <View style={styles.detailsContentContainer}>
           <View style={styles.customerProfile}>
             {customers.data.profile ? (
@@ -85,7 +94,9 @@ const CustomerDetails = ({ route, navigation }) => {
             )}
             <View>
               <View style={styles.nameWrapper}>
-                <Text style={styles.shopName}>{customers.data.shopName}</Text>
+                <P align='center' size={18} bold={500}>
+                  {customers.data.shopName}
+                </P>
                 <Pressable
                   style={{ height: 20, width: 27 }}
                   onPress={() =>
@@ -99,6 +110,7 @@ const CustomerDetails = ({ route, navigation }) => {
                 </Pressable>
                 {store.user.designation === "Admin" ? (
                   <Pressable
+                    disabled={store.loading}
                     style={{ height: 20, width: 27 }}
                     onPress={() => deleteCustomer(customers.data.id)}
                   >
@@ -107,30 +119,33 @@ const CustomerDetails = ({ route, navigation }) => {
                 ) : null}
               </View>
 
-              <Text style={styles.address}>{customers.data.address}</Text>
-              <Text style={{ textAlign: "center", marginBottom: 8 }}>
-                {customers.data.phone}
-              </Text>
+              <P color='darkGray' align='center'>
+                {customers.data.address}
+              </P>
+              <Pressable onPress={() => openNumber(customers.data.phone)}>
+                <P align='center' color='green'>
+                  {customers.data.phone}
+                </P>
+              </Pressable>
             </View>
             <View
               style={{
                 flexDirection: "row",
-                justifyContent: "space-around",
                 columnGap: 10,
+                flexWrap: "wrap",
               }}
             >
-              <Text>
-                <Text style={{ fontWeight: 500 }}>Model:</Text>{" "}
-                {customers.data.machine_model || "N/A"},
-              </Text>
-              <Text>
-                <Text style={{ fontWeight: 500 }}>Type:</Text>{" "}
-                {customers.data.machine_type || "N/A"},
-              </Text>
-              <Text>
-                <Text style={{ fontWeight: 500 }}>Product info:</Text>{" "}
+              <P>
+                <P bold={500}>Model:</P> {customers.data.machine_model || "N/A"}
+                ,
+              </P>
+              <P>
+                <P bold={500}>Type:</P> {customers.data.machine_type || "N/A"},
+              </P>
+              <P>
+                <P bold={500}>Product info:</P>{" "}
                 {customers.data.product_info || "N/A"},
-              </Text>
+              </P>
             </View>
           </View>
           <View style={styles.amountContainer}>
@@ -160,9 +175,11 @@ const CustomerDetails = ({ route, navigation }) => {
             customers.data.orders.map((item, i, arr) => (
               <InView
                 key={item.id}
-                onChange={() =>
-                  i === arr.length - 1 ? setPage((prev) => prev + 1) : null
-                }
+                onChange={() => {
+                  if (customers?.count !== customers?.data?.orders?.length) {
+                    i === arr.length - 1 ? setPage((prev) => prev + 1) : null;
+                  }
+                }}
               >
                 <Pressable
                   onPress={() => navigation.navigate("orderDetails", item)}
@@ -170,29 +187,27 @@ const CustomerDetails = ({ route, navigation }) => {
                 >
                   <View>
                     <View style={{ marginLeft: 6 }}>
-                      <Text style={{ fontSize: 16, fontWeight: 500 }}>
+                      <P bold={500} size={15}>
                         {item.shopName}
-                      </Text>
-                      <Text style={{ color: color.darkGray }}>
-                        {item.address}
-                      </Text>
-                      <Text style={styles.date}>
+                      </P>
+                      <P color='darkGray'>{item.address}</P>
+                      <P color='darkGray' size={13}>
                         {dateFormatter(item.date)}
-                      </Text>
+                      </P>
                     </View>
                   </View>
                   <View>
                     <View style={{ flexDirection: "row" }}>
-                      <Text>Bill no: </Text>
-                      <Text style={{ fontWeight: 500 }}>{item.billno}</Text>
+                      <P>Bill no: </P>
+                      <P bold={500}>{item.billno}</P>
                     </View>
-                    <Text>
+                    <P>
                       Sale: <BDT amount={item.totalSale} />
-                    </Text>
-                    <Text>
+                    </P>
+                    <P>
                       Due:{" "}
                       <BDT style={{ color: color.orange }} amount={item.due} />
-                    </Text>
+                    </P>
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <View
@@ -212,7 +227,7 @@ const CustomerDetails = ({ route, navigation }) => {
               </InView>
             ))
           ) : (
-            <Text style={{ textAlign: "center" }}>No Orders</Text>
+            <P align='center'>No Orders</P>
           )}
         </View>
       </IOScrollView>
@@ -225,7 +240,9 @@ export default CustomerDetails;
 function Amount({ name, amount, colors }) {
   return (
     <View style={{ ...styles.amountWrapper, backgroundColor: colors }}>
-      <Text style={styles.amountName}>{name}</Text>
+      <P bold={500} align='center' color='light'>
+        {name}
+      </P>
       <BDT style={styles.amount} amount={amount} />
     </View>
   );

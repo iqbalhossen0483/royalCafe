@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+
 import { color } from "../components/utilitise/colors";
 
 export const style = StyleSheet.create({
@@ -21,7 +22,10 @@ export const style = StyleSheet.create({
     elevation: 8,
   },
   profile: { width: 60, height: 60, borderRadius: 200 },
-  name: { fontSize: 17, fontWeight: 500, color: color.green },
+  name: {
+    fontSize: 17,
+    color: color.green,
+  },
   reportContainer: {
     backgroundColor: "#fff",
     marginVertical: 20,
@@ -30,12 +34,10 @@ export const style = StyleSheet.create({
     borderRadius: 10,
   },
   workText: {
-    fontWeight: 500,
     color: color.darkGray,
   },
   subHeader: {
     fontSize: 13,
-    fontWeight: 500,
     marginTop: 15,
     color: color.green,
   },
@@ -50,7 +52,6 @@ export const style = StyleSheet.create({
     top: 20,
   },
   monthName: {
-    fontWeight: 500,
     color: color.darkGray,
   },
 });

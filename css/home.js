@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+
 import { color } from "../components/utilitise/colors";
 
 export const style = StyleSheet.create({
@@ -19,10 +20,6 @@ export const style = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 5,
     alignItems: "center",
-  },
-  totalReportName: {
-    fontWeight: 500,
-    fontSize: 15,
   },
   accountContainer: {
     backgroundColor: "#fff",

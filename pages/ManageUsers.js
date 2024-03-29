@@ -1,37 +1,39 @@
-import React, { useEffect, useState } from "react";
 import {
-  Dimensions,
-  FlatList,
-  Keyboard,
-  Pressable,
-  TextInput,
-} from "react-native";
-import { Image } from "react-native";
-import { Text, View } from "react-native";
-import { Common, socket } from "../App";
-import Button from "../components/utilitise/Button";
-import { color } from "../components/utilitise/colors";
-import {
-  Ionicons,
+  AntDesign,
   Feather,
   MaterialCommunityIcons,
   Octicons,
 } from "@expo/vector-icons";
-import { alert } from "../components/utilitise/Alert";
-import { styles } from "../css/manageProduct";
-import Drawar from "../components/Drawar";
-import SubMenu from "../components/footer/SubMenu";
-import useStore from "../context/useStore";
-import { Fetch, serverUrl } from "../services/common";
-import { commonStyles } from "../css/common";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import React, { useEffect, useState } from "react";
+import {
+  FlatList,
+  Keyboard,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+
+import { Common } from "../components/Common";
+import Drawar from "../components/Drawar";
+import { socket } from "../components/Layout";
+import SubMenu from "../components/footer/SubMenu";
 import Commission from "../components/manageUser/Commission";
+import { alert } from "../components/utilitise/Alert";
+import Avater from "../components/utilitise/Avater";
+import Button from "../components/utilitise/Button";
+import P from "../components/utilitise/P";
+import { color } from "../components/utilitise/colors";
+import useStore from "../context/useStore";
+import { commonStyles } from "../css/common";
+import { styles } from "../css/manageProduct";
+import { Fetch, openNumber } from "../services/common";
 
 const ManageUsers = ({ navigation }) => {
   const [showForm, setShowFrom] = useState(null);
   const [users, setUsers] = useState(null);
   const [targetForm, setTargetForm] = useState(null);
-  const height = Dimensions.get("window").height;
 
   const store = useStore();
   const [data, setData] = useState({
@@ -131,21 +133,17 @@ const ManageUsers = ({ navigation }) => {
         <Button
           onPress={() => navigation.navigate("addUser")}
           style={{ width: 40, height: 40, borderRadius: 100 }}
-          title={
-            <Ionicons name='ios-add-circle-sharp' size={24} color='#fff' />
-          }
+          title={<AntDesign name='pluscircle' size={22} color='#fff' />}
         />
       </View>
 
       <FlatList
-        style={{ marginBottom: height - height * 0.93 }}
+        style={{ marginBottom: 57 }}
         data={users}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.contentContainer}
         ItemSeparatorComponent={() => <View style={{ marginBottom: 6 }} />}
-        ListEmptyComponent={() => (
-          <Text style={{ textAlign: "center" }}>No user</Text>
-        )}
+        ListEmptyComponent={() => <P align='center'>No user</P>}
         ListHeaderComponent={() => <Commission store={store} />}
         renderItem={({ item: user }) => {
           const targets = {
@@ -166,45 +164,35 @@ const ManageUsers = ({ navigation }) => {
               onPress={() => setShowFrom(user)}
             >
               <View style={{ flexDirection: "row", gap: 7 }}>
-                {user.profile ? (
-                  <Image
-                    style={{ width: 40, height: 55, borderRadius: 5 }}
-                    source={{ uri: serverUrl + user.profile }}
-                    alt=''
-                  />
-                ) : (
-                  <Image
-                    style={{ width: 40, height: 55, borderRadius: 5 }}
-                    source={require("../assets/no-photo.png")}
-                    alt=''
-                  />
-                )}
+                <Avater url={user.profile} />
+
                 <View>
-                  <Text style={{ fontSize: 16, fontWeight: 500 }}>
+                  <P size={15} bold={500}>
                     {user.name}
-                  </Text>
-                  <Text style={{ color: color.darkGray, fontWeight: 500 }}>
+                  </P>
+                  <P color='darkGray' size={13}>
                     {user.designation}
-                  </Text>
-                  <Text style={{ color: color.darkGray }}>{user.phone}</Text>
+                  </P>
+                  <Pressable
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      openNumber(user.phone);
+                    }}
+                  >
+                    <P color='green' size={13}>
+                      {user.phone}
+                    </P>
+                  </Pressable>
                 </View>
               </View>
               <View>
-                <Text style={{ textAlign: "center", fontWeight: 500 }}>
+                <P align='center' bold={500}>
                   Targets Report
-                </Text>
-                <Text style={{ color: "#946f09" }}>
-                  Pending: {targets.pending}
-                </Text>
-                <Text style={{ color: "#75850c" }}>
-                  Running: {targets.running}
-                </Text>
-                <Text style={{ color: "#038a0a" }}>
-                  Achieved: {targets.achieved}
-                </Text>
-                <Text style={{ color: "#946f09" }}>
-                  Failed: {targets.failed}
-                </Text>
+                </P>
+                <P style={{ color: "#946f09" }}>Pending: {targets.pending}</P>
+                <P style={{ color: "#75850c" }}>Running: {targets.running}</P>
+                <P style={{ color: "#038a0a" }}>Achieved: {targets.achieved}</P>
+                <P style={{ color: "#946f09" }}>Failed: {targets.failed}</P>
               </View>
             </Pressable>
           );

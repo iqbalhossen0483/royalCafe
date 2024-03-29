@@ -1,7 +1,15 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
+
 import { color } from "../components/utilitise/colors";
+import { moderateScale } from "../services/theme";
 
 export const commonStyles = StyleSheet.create({
+  body: {
+    marginTop: "6%",
+    backgroundColor: "#edeef5",
+    minHeight: Dimensions.get("window").height,
+    position: "relative",
+  },
   iconWrapper: {
     height: 30,
     width: 30,
@@ -43,7 +51,6 @@ export const commonStyles = StyleSheet.create({
   },
   formHeader: {
     fontSize: 18,
-    fontWeight: 500,
     textAlign: "center",
     marginBottom: 10,
   },
@@ -52,24 +59,16 @@ export const commonStyles = StyleSheet.create({
     left: 0,
     backgroundColor: "#fff",
     width: "100%",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
     elevation: 3,
     borderRadius: 5,
-    zIndex: 15,
-    maxHeight: 434,
-    overflow: "scroll",
+    zIndex: 100,
   },
   heading: {
-    fontSize: 18,
-    fontWeight: 500,
+    fontSize: moderateScale(18),
     marginTop: 15,
     color: "#4b5cbf",
     borderBottomColor: "#4b5cbf",
@@ -89,11 +88,11 @@ export const commonStyles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: "row",
-    columnGap: 15,
     justifyContent: "center",
     borderBottomColor: color.gray,
     borderBottomWidth: 1,
     paddingVertical: 5,
+    width: "100%",
   },
 
   sip: {

@@ -4,6 +4,7 @@ import { styles } from "../../css/footer";
 import { Pressable } from "react-native";
 import { Text } from "react-native";
 import React from "react";
+import P from "../utilitise/P";
 
 const Menu = ({ name, Icon, showModal, navigate = "" }) => {
   const navigation = useNavigation();
@@ -17,14 +18,9 @@ const Menu = ({ name, Icon, showModal, navigate = "" }) => {
       }
     >
       {Icon}
-      <Text
-        style={{
-          color: navigate === route.name ? color.green : "#4b5563",
-          fontWeight: 500,
-        }}
-      >
+      <P bold={500} color={navigate === route.name ? "green" : "darkGray"}>
         {name}
-      </Text>
+      </P>
     </Pressable>
   );
 };

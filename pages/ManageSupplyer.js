@@ -1,27 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { Dimensions, FlatList, Pressable } from "react-native";
-import { Image } from "react-native";
-import { Text, View } from "react-native";
-import { Common } from "../App";
-import Button from "../components/utilitise/Button";
-import { color } from "../components/utilitise/colors";
 import {
-  Ionicons,
+  AntDesign,
   Feather,
   MaterialCommunityIcons,
   Octicons,
 } from "@expo/vector-icons";
-import { alert } from "../components/utilitise/Alert";
-import { styles } from "../css/manageProduct";
+import React, { useEffect, useState } from "react";
+import { FlatList, Pressable, View } from "react-native";
+
+import { Common } from "../components/Common";
 import Drawar from "../components/Drawar";
 import SubMenu from "../components/footer/SubMenu";
+import { alert } from "../components/utilitise/Alert";
+import Avater from "../components/utilitise/Avater";
+import Button from "../components/utilitise/Button";
+import P from "../components/utilitise/P";
+import { color } from "../components/utilitise/colors";
 import useStore from "../context/useStore";
-import { Fetch, serverUrl } from "../services/common";
+import { styles } from "../css/manageProduct";
+import { Fetch, openNumber } from "../services/common";
 
 const ManageSupplyer = ({ navigation }) => {
   const [showForm, setShowFrom] = useState(null);
   const [suppliers, setSuppliers] = useState(null);
-  const height = Dimensions.get("window").height;
+
   const store = useStore();
 
   useEffect(() => {
@@ -61,10 +62,10 @@ const ManageSupplyer = ({ navigation }) => {
         <Button
           style={{ width: 40, height: 40, borderRadius: 100 }}
           title={
-            <Ionicons
+            <AntDesign
               onPress={() => navigation.navigate("addSupplyer")}
-              name='ios-add-circle-sharp'
-              size={24}
+              name='pluscircle'
+              size={22}
               color='#fff'
             />
           }
@@ -72,41 +73,36 @@ const ManageSupplyer = ({ navigation }) => {
       </View>
 
       <FlatList
-        style={{ marginBottom: height - height * 0.93 }}
+        style={{ marginBottom: 57 }}
         data={suppliers}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.contentContainer}
         ItemSeparatorComponent={() => <View style={{ marginBottom: 6 }} />}
-        ListEmptyComponent={() => (
-          <Text style={{ textAlign: "center" }}>no supplier</Text>
-        )}
+        ListEmptyComponent={() => <P align='center'>no supplier</P>}
         renderItem={({ item }) => (
           <Pressable
             style={styles.itemContainer}
             onPress={() => setShowFrom(item)}
           >
             <View style={{ flexDirection: "row", gap: 7 }}>
-              {item.profile ? (
-                <Image
-                  style={{ width: 40, height: 55, borderRadius: 5 }}
-                  source={{ uri: serverUrl + item.profile }}
-                  alt=''
-                />
-              ) : (
-                <Image
-                  style={{ width: 40, height: 55, borderRadius: 5 }}
-                  source={require("../assets/no-photo.png")}
-                  alt=''
-                />
-              )}
+              <Avater url={item.profile} />
               <View>
-                <Text style={{ fontSize: 16, fontWeight: 500 }}>
+                <P size={15} bold={500}>
                   {item.name}
-                </Text>
-                <Text style={{ color: color.darkGray, fontWeight: 500 }}>
+                </P>
+                <P size={13} color='darkGray'>
                   {item.address}
-                </Text>
-                <Text style={{ color: color.darkGray }}>{item.phone}</Text>
+                </P>
+                <Pressable
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    openNumber(item.phone);
+                  }}
+                >
+                  <P color='green' size={13}>
+                    {item.phone}
+                  </P>
+                </Pressable>
               </View>
             </View>
           </Pressable>

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Text, TextInput, View, Image, Keyboard } from "react-native";
-import { Common } from "../App";
+import { Image, Keyboard, TextInput, View } from "react-native";
+
+import { Common } from "../components/Common";
 import Button from "../components/utilitise/Button";
-import { commonStyles } from "../css/common";
-import Select from "../components/utilitise/Select";
 import FileInput from "../components/utilitise/FileInput";
-import { Fetch, serverUrl } from "../services/common";
+import P from "../components/utilitise/P";
+import Select from "../components/utilitise/Select";
 import useStore from "../context/useStore";
+import { commonStyles } from "../css/common";
+import { Fetch, serverUrl } from "../services/common";
 
 const initialState = {
   name: "",
@@ -87,12 +89,14 @@ const AddUser = ({ route, navigation }) => {
     { key: 3, value: "Engineer" },
   ];
 
+  const disabled =
+    !form.name || !form.address || !form.designation || !form.phone;
   return (
     <Common>
       <View style={commonStyles.formContainer}>
-        <Text style={commonStyles.formHeader}>
+        <P bold={500} style={commonStyles.formHeader}>
           {route.params?.edit ? "Edit" : "Add"} User
-        </Text>
+        </P>
 
         <View style={{ rowGap: 9 }}>
           <TextInput
@@ -116,33 +120,33 @@ const AddUser = ({ route, navigation }) => {
             maxLength={11}
           />
 
+          <TextInput
+            defaultValue={form.password}
+            onChangeText={(value) => handleChange("password", value)}
+            style={commonStyles.input}
+            placeholder='Password'
+            secureTextEntry={true}
+            textContentType={"password"}
+          />
+
           {!route.params?.user ? (
-            <>
-              <TextInput
-                defaultValue={form.password}
-                onChangeText={(value) => handleChange("password", value)}
-                style={commonStyles.input}
-                placeholder='Password'
-                secureTextEntry={true}
-                textContentType={"password"}
-              />
-              <Select
-                name='designation'
-                placeholder='Give a designation'
-                defaultValue={route.params?.edit ? form.designation : ""}
-                url=''
-                header='value'
-                handler={(_, info) =>
-                  setForm((prev) => {
-                    return {
-                      ...prev,
-                      designation: info.value,
-                    };
-                  })
-                }
-                options={data}
-              />
-            </>
+            <Select
+              name='designation'
+              placeholder='Give a designation'
+              defaultValue={route.params?.edit ? form.designation : ""}
+              url=''
+              header='value'
+              height='auto'
+              handler={(_, info) =>
+                setForm((prev) => {
+                  return {
+                    ...prev,
+                    designation: info.value,
+                  };
+                })
+              }
+              options={data}
+            />
           ) : (
             <View
               style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
@@ -165,9 +169,7 @@ const AddUser = ({ route, navigation }) => {
           )}
 
           <Button
-            disabled={
-              !form.name || !form.address || !form.designation || !form.phone
-            }
+            disabled={store.loading || disabled}
             onPress={onSubmit}
             title='Submit'
           />

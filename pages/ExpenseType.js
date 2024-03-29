@@ -1,22 +1,23 @@
+import { AntDesign, Feather, MaterialIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
-  Dimensions,
   FlatList,
   Keyboard,
   Pressable,
+  Text,
   TextInput,
+  View,
 } from "react-native";
-import { Text, View } from "react-native";
-import { Common } from "../App";
-import Button from "../components/utilitise/Button";
-import { Ionicons } from "@expo/vector-icons";
-import { alert } from "../components/utilitise/Alert";
-import { styles } from "../css/manageProduct";
+
+import { Common } from "../components/Common";
 import Drawar from "../components/Drawar";
+import { alert } from "../components/utilitise/Alert";
+import Button from "../components/utilitise/Button";
+import P from "../components/utilitise/P";
 import useStore from "../context/useStore";
-import { Fetch } from "../services/common";
 import { commonStyles } from "../css/common";
-import { Feather, MaterialIcons } from "@expo/vector-icons";
+import { styles } from "../css/manageProduct";
+import { Fetch } from "../services/common";
 
 const ExpenseType = () => {
   const [showForm, setShowFrom] = useState(false);
@@ -26,7 +27,6 @@ const ExpenseType = () => {
   const [data, setData] = useState({ id: null, title: "" });
   const [update, setUpdate] = useState(false);
   const store = useStore();
-  const height = Dimensions.get("window").height;
 
   useEffect(() => {
     const show = Keyboard.addListener("keyboardDidShow", () => {
@@ -92,14 +92,12 @@ const ExpenseType = () => {
         <Button
           onPress={() => setShowFrom(true)}
           style={{ width: 40, height: 40, borderRadius: 100 }}
-          title={
-            <Ionicons name='ios-add-circle-sharp' size={24} color='#fff' />
-          }
+          title={<AntDesign name='pluscircle' size={22} color='#fff' />}
         />
       </View>
 
       <FlatList
-        style={{ marginBottom: height - height * 0.93 }}
+        style={{ marginBottom: 57 }}
         data={expenses}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.contentContainer}
@@ -109,9 +107,9 @@ const ExpenseType = () => {
         )}
         renderItem={({ item, index }) => (
           <Pressable style={styles.itemContainer}>
-            <Text style={{ fontWeight: 500 }}>
+            <P bold={500}>
               {index + 1}: {item.title}
-            </Text>
+            </P>
             <View style={{ flexDirection: "row", gap: 6 }}>
               <Pressable
                 onPress={() => {
@@ -136,16 +134,14 @@ const ExpenseType = () => {
         bottom={keyboard ? 350 : 300}
       >
         <View style={{ rowGap: 9 }}>
-          <Text
-            style={{
-              textAlign: "center",
-              fontSize: 17,
-              fontWeight: "500",
-              textDecorationLine: "underline",
-            }}
+          <P
+            align='center'
+            size={17}
+            bold={500}
+            style={{ textDecorationLine: "underline" }}
           >
             Add Expense Type
-          </Text>
+          </P>
           <TextInput
             defaultValue={data.title}
             onChangeText={(value) =>

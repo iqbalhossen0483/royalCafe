@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-import { Image } from "react-native";
-import { Text } from "react-native";
-import { View } from "react-native";
+import { Image, Text, View } from "react-native";
+
 import useStore from "../../context/useStore";
 
 const Message = () => {

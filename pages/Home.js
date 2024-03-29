@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
-import { Common } from "../App";
+import { ScrollView, View } from "react-native";
+
+import { Common } from "../components/Common";
 import StockReport from "../components/StockReport";
 import Account from "../components/home/Account";
 import CashReport from "../components/home/CashReport";
-import { Dimensions, ScrollView } from "react-native";
-import { Fetch } from "../services/common";
-import useStore from "../context/useStore";
-import { modifyCashReport } from "../services/report";
 import { LoadingOnComponent } from "../components/utilitise/Loading";
+import useStore from "../context/useStore";
+import { Fetch } from "../services/common";
+import { modifyCashReport } from "../services/report";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
   const store = useStore();
-  const height = Dimensions.get("window").height;
 
   useEffect(() => {
     (async () => {
@@ -31,15 +31,17 @@ const Home = () => {
 
   if (loading) return <LoadingOnComponent />;
   return (
-    <Common>
-      <ScrollView style={{ marginBottom: height - height * 0.93 }}>
-        <CashReport data={modifyCashReport(data.cashReport)} />
-        <Account users={data.users} />
-        <StockReport
-          data={{ products: data.products, stockReport: data.stockReport }}
-        />
-      </ScrollView>
-    </Common>
+    <View>
+      <Common>
+        <ScrollView style={{ marginBottom: 57 }}>
+          <CashReport data={modifyCashReport(data.cashReport)} />
+          <Account users={data.users} />
+          <StockReport
+            data={{ products: data.products, stockReport: data.stockReport }}
+          />
+        </ScrollView>
+      </Common>
+    </View>
   );
 };
 

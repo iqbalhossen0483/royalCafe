@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Image, Text, TextInput, View } from "react-native";
-import { Common } from "../App";
+import { Image, Keyboard, TextInput, View } from "react-native";
+
+import { Common } from "../components/Common";
 import Button from "../components/utilitise/Button";
 import FileInput from "../components/utilitise/FileInput";
-import { commonStyles } from "../css/common";
+import P from "../components/utilitise/P";
 import useStore from "../context/useStore";
+import { commonStyles } from "../css/common";
 import { Fetch, serverUrl } from "../services/common";
 
 const AddProduct = ({ route, navigation }) => {
   const [image, setImage] = useState(null);
-  const { setMessage, setLoading, setUpdateProduct } = useStore();
+  const { setMessage, setLoading, setUpdateProduct, loading } = useStore();
   const [form, setForm] = useState({
     name: "",
     price: "",
+    shortName: "",
   });
 
   function handleChange(name, value) {
@@ -23,8 +26,8 @@ const AddProduct = ({ route, navigation }) => {
 
   useEffect(() => {
     if (route.params?.edit) {
-      const { id, name, price, profile } = route.params.data;
-      setForm({ id, name, price, profile });
+      const { id, name, price, profile, shortName } = route.params.data;
+      setForm({ id, name, price, profile, shortName });
       setImage({ uri: serverUrl + profile, edit: true });
     }
   }, [route.params]);
@@ -32,6 +35,7 @@ const AddProduct = ({ route, navigation }) => {
   async function onSubmit() {
     try {
       setLoading(true);
+      Keyboard.dismiss();
       if (!image?.edit) {
         if (route.params?.edit) form.existedImg = form.profile;
         form.profile = image;
@@ -53,12 +57,13 @@ const AddProduct = ({ route, navigation }) => {
     }
   }
 
+  const disabled = !form.name || !form.price || !form.shortName;
   return (
     <Common>
       <View style={commonStyles.formContainer}>
-        <Text style={commonStyles.formHeader}>
+        <P bold={500} style={commonStyles.formHeader}>
           {route.params?.edit ? "Edit" : "Add"} Product
-        </Text>
+        </P>
 
         <View style={{ rowGap: 9 }}>
           <TextInput
@@ -66,6 +71,12 @@ const AddProduct = ({ route, navigation }) => {
             onChangeText={(value) => handleChange("name", value)}
             style={commonStyles.input}
             placeholder='Product name'
+          />
+          <TextInput
+            defaultValue={form.shortName}
+            onChangeText={(value) => handleChange("shortName", value)}
+            style={commonStyles.input}
+            placeholder='Product short name'
           />
           <TextInput
             defaultValue={form.price.toString()}
@@ -77,7 +88,7 @@ const AddProduct = ({ route, navigation }) => {
 
           <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
             <View>
-              <FileInput setImage={setImage} />
+              <FileInput setImage={setImage} aspect={false} />
             </View>
             {image && image.uri && (
               <Image
@@ -92,7 +103,7 @@ const AddProduct = ({ route, navigation }) => {
             )}
           </View>
           <Button
-            disabled={!form.name || !form.price}
+            disabled={loading || disabled}
             onPress={onSubmit}
             title='Submit'
           />

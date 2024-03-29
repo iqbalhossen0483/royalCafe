@@ -1,25 +1,35 @@
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text } from "react-native";
-import { Common } from "../App";
-import { View } from "react-native";
-import { commonStyles } from "../css/common";
-import { TextInput } from "react-native";
-import useStore from "../context/useStore";
-import Button from "../components/utilitise/Button";
-import { Fetch } from "../services/common";
-import Select from "../components/utilitise/Select";
+import {
+  Image,
+  Keyboard,
+  Pressable,
+  ScrollView,
+  TextInput,
+  View,
+} from "react-native";
+
+import { Common } from "../components/Common";
 import { alert } from "../components/utilitise/Alert";
-import { Ionicons } from "@expo/vector-icons";
-import { Keyboard } from "react-native";
+import Button from "../components/utilitise/Button";
+import FileInput from "../components/utilitise/FileInput";
+import P from "../components/utilitise/P";
+import Select from "../components/utilitise/Select";
+import { color } from "../components/utilitise/colors";
+import useStore from "../context/useStore";
+import { commonStyles } from "../css/common";
+import { Fetch } from "../services/common";
 
 const PurchaseProduct = ({ navigation }) => {
   const [data, setData] = useState({ supplier: null, products: null });
   const [numOfShow, setNumOfShow] = useState(1);
-  const [bottomMargin, setBottomMargin] = useState(0);
+  const [bottomMargin, setBottomMargin] = useState(57);
   const [supplier, setSupplier] = useState({
     supplierId: 0,
     totalPurchased: 0,
     giveAmount: 0,
+    payment_info: "",
+    files: [],
   });
   const [form, setForm] = useState([]);
   const store = useStore();
@@ -36,6 +46,7 @@ const PurchaseProduct = ({ navigation }) => {
       } finally {
         store.setLoading(false);
       }
+      return () => store.setLoading(false);
     })();
   }, []);
 
@@ -44,7 +55,7 @@ const PurchaseProduct = ({ navigation }) => {
       setBottomMargin(event.endCoordinates.height);
     });
     const hide = Keyboard.addListener("keyboardDidHide", () => {
-      setBottomMargin(0);
+      setBottomMargin(57);
     });
 
     return () => {
@@ -65,7 +76,16 @@ const PurchaseProduct = ({ navigation }) => {
           product: form,
           userId: store.user.id,
         };
-        const { message } = await Fetch("/purchase", "POST", data);
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+          if (key === "files") {
+            value.forEach((file) => formData.append("files", file));
+          } else if (key === "product") {
+            formData.append("product", JSON.stringify(value));
+          } else formData.append(key, value);
+        });
+
+        const { message } = await Fetch("/purchase", "POST", formData, true);
         store.setMessage({ msg: message, type: "success" });
         store.setUpdateReport((prev) => !prev);
         store.setUpdateUser((prev) => !prev);
@@ -78,12 +98,30 @@ const PurchaseProduct = ({ navigation }) => {
     });
   }
 
+  function addfile(file) {
+    setSupplier((prev) => {
+      file.id = prev.files.length;
+      prev.files.push(file);
+      return { ...prev };
+    });
+  }
+
+  function removeFile(id) {
+    setSupplier((prev) => {
+      const rest = prev.files.filter((file) => file.id !== id);
+      prev.files = rest;
+      return { ...prev };
+    });
+  }
+
   if (!data.products || !data.supplier) return null;
   return (
     <Common>
       <ScrollView style={{ marginBottom: bottomMargin }}>
         <View style={commonStyles.formContainer}>
-          <Text style={commonStyles.formHeader}>Purchase Product</Text>
+          <P bold={500} style={commonStyles.formHeader}>
+            Purchase Product
+          </P>
           <View style={{ rowGap: 10 }}>
             <Select
               header='name'
@@ -91,6 +129,7 @@ const PurchaseProduct = ({ navigation }) => {
               name='supplier'
               placeholder='Select supplier'
               options={data.supplier}
+              height='auto'
               handler={(_, info) =>
                 setSupplier((prev) => {
                   return { ...prev, supplierId: info.id };
@@ -122,9 +161,9 @@ const PurchaseProduct = ({ navigation }) => {
                 alignSelf: "flex-end",
               }}
               title={
-                <Ionicons
+                <AntDesign
                   onPress={() => setNumOfShow((prev) => prev + 1)}
-                  name='ios-add-circle-sharp'
+                  name='pluscircle'
                   size={18}
                   color='#fff'
                 />
@@ -151,12 +190,61 @@ const PurchaseProduct = ({ navigation }) => {
               keyboardType='phone-pad'
             />
 
+            <TextInput
+              onChangeText={(value) =>
+                setSupplier((prev) => {
+                  return { ...prev, payment_info: value };
+                })
+              }
+              editable={supplier.giveAmount ? true : false}
+              style={{
+                textAlignVertical: "top",
+                ...commonStyles.input,
+                paddingTop: 5,
+                height: 100,
+              }}
+              placeholder='Payment Information'
+              multiline
+            />
+            {supplier.files.length ? (
+              <View style={{ flexDirection: "row", gap: 5, flexWrap: "wrap" }}>
+                {supplier.files.map((file) => (
+                  <Pressable key={file.id} onPress={() => removeFile(file.id)}>
+                    <Image
+                      source={{ uri: file.uri }}
+                      style={{
+                        width: 100,
+                        height: 60,
+                        resizeMode: "cover",
+                      }}
+                    />
+                    <Ionicons
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        backgroundColor: color.gray,
+                      }}
+                      name='close-sharp'
+                      size={20}
+                      color='black'
+                    />
+                  </Pressable>
+                ))}
+              </View>
+            ) : null}
+            <FileInput
+              disable={!supplier.payment_info}
+              setImage={(file) => addfile(file)}
+              title='Add file +'
+            />
+
             <Button
               title='Submit'
               onPress={onSubmit}
               disabled={
+                store.loading ||
                 !supplier.supplierId ||
-                !supplier.giveAmount ||
                 !supplier.totalPurchased ||
                 !form.length
               }
@@ -183,6 +271,7 @@ function PurchaseInput({ arr, i, setForm, products, form }) {
     };
     setForm(() => [...rest, data]);
   }
+
   return (
     <React.Fragment>
       <Select
@@ -190,8 +279,11 @@ function PurchaseInput({ arr, i, setForm, products, form }) {
         header='name'
         name='product'
         placeholder='Select product'
+        height={200}
         options={products}
-        handler={(_, info) => setProduct({ id: info.id, name: info.name })}
+        handler={(_, info) =>
+          setProduct({ id: info.id, name: info.name, stock: info.stock })
+        }
       />
 
       <TextInput

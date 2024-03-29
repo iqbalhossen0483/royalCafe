@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
-import { Keyboard, Pressable, Text, TextInput, View } from "react-native";
-import { Common, socket } from "../App";
-import Button from "../components/utilitise/Button";
-import { color } from "../components/utilitise/colors";
-import { commonStyles } from "../css/common";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
+import { Keyboard, Pressable, TextInput, View } from "react-native";
+
+import { Common } from "../components/Common";
+import { socket } from "../components/Layout";
 import BDT from "../components/utilitise/BDT";
-import { Fetch, dateFormatter } from "../services/common";
-import { styles } from "../css/orderDetails";
+import Button from "../components/utilitise/Button";
+import P from "../components/utilitise/P";
+import { color } from "../components/utilitise/colors";
 import useStore from "../context/useStore";
+import { commonStyles } from "../css/common";
+import { styles } from "../css/orderDetails";
+import { Fetch, dateFormatter } from "../services/common";
 
 const CompleteOrder = ({ route, navigation }) => {
   const [payment, setPayment] = useState(0);
@@ -64,6 +67,10 @@ const CompleteOrder = ({ route, navigation }) => {
           })
         );
       }
+      store.setUpdateOrder((prev) => !prev);
+      store.setUpdateReport((prev) => !prev);
+      store.setUpdateUser((prev) => !prev);
+      store.setUpNotification((prev) => !prev);
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {
@@ -79,29 +86,29 @@ const CompleteOrder = ({ route, navigation }) => {
     <Common>
       <View style={styles.container}>
         <View style={styles.headerWrapper}>
-          <Text style={styles.header}>M/S Hazera Enterprise</Text>
-          <Text style={styles.address}>
-            Dharmopur, College Reoad, Adarsha Sadar, Cumilla.
-          </Text>
+          <P align='center' bold={500} size={18} style={{ color: "#4b5cbf" }}>
+            {store.siteInfo.name}
+          </P>
+          <P align='center' style={{ color: "#4b5cbf" }}>
+            {store.siteInfo.address}
+          </P>
         </View>
         <View style={{ padding: 15 }}>
           <View style={styles.shopwrapper}>
             <View>
-              <Text style={{ fontSize: 16, fontWeight: 500 }}>
+              <P size={15} bold={500}>
                 {data.shopName}
-              </Text>
-              <Text style={{ color: color.darkGray }}>{data.address}</Text>
+              </P>
+              <P color='darkGray'>{data.address}</P>
             </View>
             <View>
               <View style={{ flexDirection: "row", gap: 5 }}>
-                <Text style={{ color: color.darkGray }}>Bill no:</Text>
-                <Text style={{ color: color.darkGray }}>{data.billno}</Text>
+                <P color='darkGray'>Bill no:</P>
+                <P color='darkGray'>{data.billno}</P>
               </View>
               <View style={{ flexDirection: "row", gap: 5 }}>
-                <Text style={{ color: color.darkGray }}>Date:</Text>
-                <Text style={{ color: color.darkGray }}>
-                  {dateFormatter(data.date)}
-                </Text>
+                <P color='darkGray'>Date:</P>
+                <P color='darkGray'>{dateFormatter(data.date)}</P>
               </View>
             </View>
           </View>
@@ -124,15 +131,13 @@ const CompleteOrder = ({ route, navigation }) => {
                 }
               >
                 <View style={{ flexDirection: "row", gap: 3 }}>
-                  <Text>Total Amount:</Text>
+                  <P>Total Amount:</P>
                   <BDT amount={data.totalSale} />
                 </View>
 
                 <FontAwesome5 name='edit' size={16} color={color.orange} />
               </Pressable>
-              {payment ? (
-                <Text>Due Amount: {data.totalSale - payment}৳</Text>
-              ) : null}
+              {payment ? <P>Due Amount: {data.totalSale - payment}৳</P> : null}
             </View>
           </View>
 
@@ -152,12 +157,12 @@ const CompleteOrder = ({ route, navigation }) => {
           >
             <Button
               onPress={() => completeOrder(data.totalSale - payment, 0)}
-              disabled={disable}
+              disabled={store.loading || disable}
               title={payment >= data.totalSale ? "Complete" : "Discount"}
             />
             <Button
               onPress={() => completeOrder(0, data.totalSale - payment)}
-              disabled={payment >= data.totalSale}
+              disabled={store.loading || payment >= data.totalSale}
               title='Continue with due'
             />
           </View>

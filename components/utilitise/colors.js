@@ -5,4 +5,8 @@ export const color = {
   green: "#16a34a",
   lightOrange: "#fef9c3",
   orange: "#ca8a04",
+  light: "#f1f1f1",
+  lightBlue: "#191ce3",
+  red: "#e319a6",
+  black: "#333",
 };

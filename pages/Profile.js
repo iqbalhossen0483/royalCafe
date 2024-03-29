@@ -1,23 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { Common } from "../App";
-import { Dimensions, Image, Text, View } from "react-native";
-import { styles } from "../css/profile";
-import Button from "../components/utilitise/Button";
-import { alert } from "../components/utilitise/Alert";
-import { Fetch, serverUrl } from "../services/common";
-import useStore from "../context/useStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ScrollView } from "react-native";
-import { LoadingOnComponent } from "../components/utilitise/Loading";
-import Summery from "../components/profile/Summery";
-import Notes from "../components/profile/Notes";
-import Target from "../components/profile/Target";
+import React, { useEffect, useState } from "react";
+import { Pressable, ScrollView, View } from "react-native";
+
+import { Common } from "../components/Common";
 import MoneyReport from "../components/profile/MoneyReport";
+import Notes from "../components/profile/Notes";
+import RecentActivity from "../components/profile/RecentActivity";
+import Summery from "../components/profile/Summery";
+import Target from "../components/profile/Target";
+import { alert } from "../components/utilitise/Alert";
+import Avater from "../components/utilitise/Avater";
+import Button from "../components/utilitise/Button";
+import { LoadingOnComponent } from "../components/utilitise/Loading";
+import P from "../components/utilitise/P";
+import useStore from "../context/useStore";
+import { styles } from "../css/profile";
+import { Fetch, openNumber } from "../services/common";
 
 const Profile = ({ route, navigation }) => {
   const store = useStore();
   const [user, setUser] = useState(null);
-  const height = Dimensions.get("window").height;
+
   function goForEdit() {
     navigation.navigate("addUser", {
       edit: true,
@@ -53,26 +56,20 @@ const Profile = ({ route, navigation }) => {
 
   return (
     <Common>
-      <ScrollView
-        style={{ ...styles.container, marginBottom: height - height * 0.93 }}
-      >
+      <ScrollView style={{ ...styles.container, marginBottom: 57 }}>
         <View style={styles.profileContainer}>
           <View style={styles.profileWrapper}>
-            {user.profile ? (
-              <Image
-                style={styles.profile}
-                source={{ uri: serverUrl + user.profile }}
-              />
-            ) : (
-              <Image
-                style={styles.profile}
-                source={require("../assets/no-photo.png")}
-              />
-            )}
+            <Avater url={user.profile} />
             <View>
-              <Text style={styles.name}>{user.name}</Text>
-              <Text style={styles.designation}>{user.designation}</Text>
-              <Text style={styles.phone}>{user.phone}</Text>
+              <P bold={500} size={16} color='green'>
+                {user.name}
+              </P>
+              <P bold={500} size={13} color='darkGray'>
+                {user.designation}
+              </P>
+              <Pressable onPress={() => openNumber(user.phone)}>
+                <P color='green'>{user.phone}</P>
+              </Pressable>
             </View>
           </View>
           <View style={{ marginTop: 8, flexDirection: "row", columnGap: 10 }}>
@@ -116,6 +113,8 @@ const Profile = ({ route, navigation }) => {
             />
           </>
         ) : null}
+
+        <RecentActivity navigation={navigation} />
       </ScrollView>
     </Common>
   );

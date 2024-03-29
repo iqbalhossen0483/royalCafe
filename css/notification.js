@@ -44,7 +44,6 @@ export const style = StyleSheet.create({
     justifyContent: "flex-end",
   },
   totalText: {
-    fontWeight: 500,
     marginRight: 4,
   },
   deleteBtn: {

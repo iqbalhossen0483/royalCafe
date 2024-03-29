@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+
 import { color } from "../components/utilitise/colors";
 
 export const styles = StyleSheet.create({
@@ -57,6 +58,5 @@ export const styles = StyleSheet.create({
   deleteBtnText: {
     textAlign: "center",
     color: "#fff",
-    fontWeight: 500,
   },
 });
