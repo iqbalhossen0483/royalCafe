@@ -1,22 +1,23 @@
-import { View } from "react-native";
-import { styles } from "../../css/footer";
 import {
-  FontAwesome5,
-  Foundation,
-  MaterialIcons,
+  AntDesign,
   Entypo,
   FontAwesome,
+  FontAwesome5,
   Fontisto,
-  AntDesign,
+  Foundation,
+  MaterialIcons,
   Octicons,
 } from "@expo/vector-icons";
-import React, { useState } from "react";
 import { useRoute } from "@react-navigation/native";
-import Menu from "./Menu";
-import { color } from "../utilitise/colors";
-import Drawar from "../Drawar";
-import SubMenu from "./SubMenu";
+import React, { useState } from "react";
+import { View } from "react-native";
+
 import useStore from "../../context/useStore";
+import { styles } from "../../css/footer";
+import Drawar from "../Drawar";
+import { color } from "../utilitise/colors";
+import Menu from "./Menu";
+import SubMenu from "./SubMenu";
 
 function Footer() {
   const store = useStore();
@@ -24,7 +25,7 @@ function Footer() {
   return store?.user?.designation === "Admin" ? (
     <AdminFooter />
   ) : (
-    <NormalFooter />
+    <UserFooter />
   );
 }
 
@@ -234,7 +235,7 @@ function AdminFooter() {
   );
 }
 
-function NormalFooter() {
+function UserFooter() {
   const [moreOption, setMoreOption] = useState(false);
   const route = useRoute();
 
@@ -260,11 +261,11 @@ function NormalFooter() {
       {/* customer */}
       <Menu
         name='Customer'
-        navigate='addshop'
+        navigate='customer'
         Icon={
           <FontAwesome5
             style={[
-              route.name === "addshop"
+              route.name === "customer"
                 ? { color: color.green }
                 : { color: "#4b5563" },
             ]}
@@ -324,14 +325,6 @@ function NormalFooter() {
       {/* more modal */}
       <Drawar setShowModal={() => setMoreOption(false)} show={moreOption}>
         <SubMenu
-          name='Notes'
-          url='createNote'
-          bgColor='#2c8c06'
-          showModal={setMoreOption}
-          border
-          icon={<MaterialIcons name='note-add' size={18} color='#fff' />}
-        />
-        <SubMenu
           name='Orders'
           url='order'
           bgColor='#05b5a6'
@@ -339,14 +332,24 @@ function NormalFooter() {
           border
           icon={<MaterialIcons name='note-add' size={18} color='#fff' />}
         />
+
         <SubMenu
-          name='Customers'
-          url='customer'
-          bgColor='#9205b5'
+          name='Notes'
+          url='createNote'
+          bgColor='#2c8c06'
           showModal={setMoreOption}
           border
           icon={<MaterialIcons name='note-add' size={18} color='#fff' />}
         />
+
+        <SubMenu
+          name='Add Shop'
+          url='addshop'
+          bgColor='#d1fae5'
+          showModal={setMoreOption}
+          icon={<Entypo name='shop' size={20} color='#10b981' />}
+        />
+
         <SubMenu
           name='Expense Report'
           url='expenseReport'
@@ -354,6 +357,14 @@ function NormalFooter() {
           border
           showModal={setMoreOption}
           icon={<MaterialIcons name='report' size={24} color='#a14f03' />}
+        />
+        <SubMenu
+          name='Transition History'
+          url='transitions'
+          bgColor='#faeeca'
+          border
+          showModal={setMoreOption}
+          icon={<Octicons name='history' size={16} color='#806003' />}
         />
       </Drawar>
     </View>

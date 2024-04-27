@@ -15,48 +15,43 @@ import { Fetch, dateFormatter } from "../services/common";
 
 const ExpenseReport = () => {
   const [expense, setExpense] = useState({});
-  const store = useStore();
   const [page, setPage] = useState(0);
+  const store = useStore();
+  const [searchVlue, setSearchvalue] = useState("");
 
   useEffect(() => {
-    if (page > 0) {
+    if (searchVlue) search(searchVlue);
+    else {
       const url =
         store.user.designation === "Admin"
           ? `/expense?page=${page}`
-          : `/expense?page=${page}&userId=${store.user.id}`;
-      fetchData(url, true);
+          : `/expense?page=${page}&user_id=${store.user.id}`;
+      fetchData(url);
     }
     return () => store.setLoading(false);
-  }, [page]);
+  }, [store.updateExpense, page]);
 
-  useEffect(() => {
-    const url =
-      store.user.designation === "Admin"
-        ? `/expense`
-        : `/expense?userId=${store.user.id}`;
-    fetchData(url, false);
-    return () => store.setLoading(false);
-  }, [store.updateExpense]);
-
-  async function fetchData(url, page) {
+  async function fetchData(url) {
     try {
       store.setLoading(true);
-      const expenses = await Fetch(url, "GET");
+      setSearchvalue("");
+
+      const res = await Fetch(url, "GET");
       if (page) {
         setExpense({
-          count: expenses.count || 0,
-          pendingExpense: expenses.pendingExpense,
-          data: [...expense.data, ...expenses.data],
+          count: res.count || 0,
+          pendingExpense: res.pendingExpense,
+          data: [...expense.data, ...res.data],
         });
-      } else if (expenses.type) {
+      } else if (res.type) {
         setExpense({
-          count: expenses.data.length || 0,
-          pendingExpense: expenses.pendingExpense,
-          data: expenses.data,
-          type: expenses.type,
+          count: res.data.length || 0,
+          pendingExpense: res.pendingExpense,
+          data: res.data,
+          type: res.type,
         });
       } else {
-        setExpense(expenses);
+        setExpense(res);
       }
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
@@ -112,19 +107,47 @@ const ExpenseReport = () => {
     }
   }
 
+  async function search(value, initPage) {
+    try {
+      store.setLoading(true);
+
+      const res = await Fetch(
+        `/expense?${value}&page=${initPage ? 0 : page}`,
+        "GET"
+      );
+      if (!initPage && page)
+        setExpense({ count: res.count, data: [...expense.data, ...res.data] });
+      else setExpense(res);
+      setSearchvalue(value);
+    } catch (error) {
+      store.setMessage({ msg: error.message, type: "error" });
+    } finally {
+      store.setLoading(false);
+    }
+  }
+
+  function initSearch(value) {
+    setPage(0);
+    let txt = value;
+    if (store.user.designation !== "Admin") {
+      if (!txt) txt = `user_id=${store.user.id}`;
+      else txt = value.replace("search=", `search=${store.user.name}`);
+    }
+    search(txt, true);
+  }
+
   return (
     <Common>
       <IOScrollView style={{ marginBottom: 57 }}>
         <SearchFilter
-          url='/expense'
           placeholder='Name Or type'
-          setData={setExpense}
-          searchfeild={store.user.desigantion === "Admin" ? true : false}
+          searchfeild={store.user.designation === "Admin" ? true : false}
+          search={initSearch}
         />
         {store.user.designation === "Admin" ? (
           <View>
             {expense?.type === "pending" ? (
-              <Pressable onPress={() => fetchData(`/expense`)}>
+              <Pressable onPress={() => fetchData("/expense?page=0")}>
                 <P size={15} bold={500}>
                   See all expense reports
                 </P>
@@ -139,14 +162,27 @@ const ExpenseReport = () => {
             )}
           </View>
         ) : null}
+
+        {!store.loading && expense?.count ? (
+          <View style={{ marginVertical: 4 }}>
+            <P size={13}>
+              Showing Result {expense?.data?.length} Of {expense?.count}
+            </P>
+          </View>
+        ) : null}
+
         {expense?.data?.length ? (
           expense.data.map((item, i, arr) => (
             <InView
               key={item.id}
               style={styles.container}
               onChange={() => {
-                if (expense?.count !== expense?.data?.length) {
-                  i === arr.length - 1 ? setPage((prev) => prev + 1) : null;
+                if (
+                  expense?.count &&
+                  expense?.count !== expense?.data?.length &&
+                  i === arr.length - 1
+                ) {
+                  setPage((prev) => prev + 1);
                 }
               }}
             >

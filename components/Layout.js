@@ -155,7 +155,7 @@ export function Layout() {
                       name='manageSupplyer'
                       component={ManageSupplyer}
                     />
-                    <Stack.Screen name='transitions' component={Transitions} />
+
                     <Stack.Screen name='purchase' component={PurchaseProduct} />
                     <Stack.Screen name='expenseType' component={ExpenseType} />
                     <Stack.Screen
@@ -188,6 +188,7 @@ export function Layout() {
                 <Stack.Screen name='addshop' component={AddShop} />
                 <Stack.Screen name='addUser' component={AddUser} />
                 <Stack.Screen name='customer' component={Customers} />
+                <Stack.Screen name='transitions' component={Transitions} />
               </>
             ) : (
               <Stack.Screen name='login' component={Login} />

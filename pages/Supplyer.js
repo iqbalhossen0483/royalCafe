@@ -17,83 +17,87 @@ import {
 } from "../services/common";
 
 const Supplyer = ({ route, navigation }) => {
-  const [data, setData] = useState(null);
+  const [suplier, setSuplier] = useState(null);
   const store = useStore();
   const id = route.params.id;
   const [page, setPage] = useState(0);
 
   useEffect(() => {
-    if (page > 0) {
-      fetchData(`/supplier?id=${id}&page=${page}`, true);
-    }
-  }, [page]);
-
-  useEffect(() => {
-    fetchData(`/supplier?id=${id}`, false);
-  }, [id]);
-
-  async function fetchData(url, page) {
-    try {
-      store.setLoading(true);
-      const data = await Fetch(url, "GET");
-      if (page) {
-        setData((prev) => {
-          prev.orders = [...prev.orders, data?.data.orders];
-          return { ...prev };
-        });
-      } else {
-        setData(data);
+    (async () => {
+      try {
+        store.setLoading(true);
+        const data = await Fetch(`/supplier?id=${id}&page=${page}`, "GET");
+        if (page) {
+          setSuplier((prev) => {
+            prev.orders = [...prev.orders, data?.data.orders];
+            return { ...prev };
+          });
+        } else {
+          setSuplier(data);
+        }
+        store.setLoading(false);
+      } catch (error) {
+        store.setLoading(false);
+        store.setMessage({ msg: error.message, type: "error" });
       }
-      store.setLoading(false);
-    } catch (error) {
-      store.setLoading(false);
-      store.setMessage({ msg: error.message, type: "error" });
-    }
-  }
+    })();
+  }, [page, id]);
 
-  if (!data?.data) return null;
+  if (!suplier?.data) return null;
   return (
     <Common>
-      <IOScrollView style={{ ...styles.container, marginBottom: 57 }}>
+      <IOScrollView style={{ ...styles.container, marginBottom: 63 }}>
         <View style={styles.profileContainer}>
           <View style={styles.profileWrapper}>
             <Image
               style={styles.profile}
-              source={{ uri: serverUrl + data.data.profile }}
+              source={{ uri: serverUrl + suplier.data.profile }}
             />
             <View>
               <P size={15} bold={500}>
-                {data.data.name}
+                {suplier.data.name}
               </P>
-              <P size={13}>{data.data.address}</P>
-              <Pressable onPress={() => openNumber(data.data.phone)}>
-                <P style={styles.phone}>{data.data.phone}</P>
+              <P size={13}>{suplier.data.address}</P>
+              <Pressable onPress={() => openNumber(suplier.data.phone)}>
+                <P style={styles.phone}>{suplier.data.phone}</P>
               </Pressable>
             </View>
           </View>
 
           <View style={{ marginTop: 15 }}>
             <P style={{ color: "#1b39bf" }}>
-              Total Purchased: <BDT amount={data.data.totalPurchased} />
+              Total Purchased: <BDT amount={suplier.data.totalPurchased} />
             </P>
             <P color='green'>
-              Amount Given: <BDT amount={data.data.giveAmount} />
+              Amount Given: <BDT amount={suplier.data.giveAmount} />
             </P>
             <P color='orange'>
-              Debt Amount: <BDT amount={data.data.debtAmount} />
+              Debt Amount: <BDT amount={suplier.data.debtAmount} />
             </P>
             <P color='green'>
-              Got Discount: <BDT amount={data.data.discount} />
+              Got Discount: <BDT amount={suplier.data.discount} />
             </P>
           </View>
         </View>
-        {data.data.orders?.length ? (
-          data.data.orders.map((item, i, arr) => (
+
+        {!store.loading ? (
+          <View style={{ marginVertical: 4, marginLeft: 8 }}>
+            <P size={13}>
+              Showing Result {suplier.data.orders?.length} Of {suplier?.count}
+            </P>
+          </View>
+        ) : null}
+
+        {suplier.data.orders?.length ? (
+          suplier.data.orders.map((item, i, arr) => (
             <InView
               key={item.id}
               onChange={() => {
-                if (data?.count !== data?.data?.orders?.length) {
-                  i === arr.length - 1 ? setPage((prev) => prev + 1) : null;
+                if (
+                  suplier?.count !== suplier?.data?.orders?.length &&
+                  i === arr.length - 1
+                ) {
+                  setPage((prev) => prev + 1);
                 }
               }}
             >

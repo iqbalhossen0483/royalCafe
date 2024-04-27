@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, View } from "react-native";
+import { View } from "react-native";
+import { IOScrollView, InView } from "react-native-intersection-observer";
 
 import { Common } from "../components/Common";
 import SearchFilter from "../components/SearchFilter";
@@ -11,42 +12,92 @@ import { Fetch, dateFormatter } from "../services/common";
 
 const Transitions = () => {
   const [transitions, setTransition] = useState(null);
+  const [searchValue, setSearchvalue] = useState("");
+  const [page, setPage] = useState(0);
   const store = useStore();
 
   useEffect(() => {
-    (async () => {
-      try {
-        store.setLoading(true);
-        const result = await Fetch("/admin/transitions", "GET");
-        setTransition(result);
-      } catch (error) {
-        setMessage({ msg: error.message, type: "error" });
-      } finally {
-        store.setLoading(false);
-      }
-    })();
+    if (searchValue) search(searchValue);
+    else {
+      (async () => {
+        try {
+          store.setLoading(true);
+          setSearchvalue("");
+
+          const url =
+            store.user.designation === "Admin"
+              ? `/admin/transitions?page=${page}`
+              : `/admin/transitions?user_id=${store.user.id}&page=${page}`;
+
+          const res = await Fetch(url, "GET");
+          if (page) {
+            setTransition({
+              count: res.count,
+              data: [...transitions.data, ...res.data],
+            });
+          } else setTransition(res);
+        } catch (error) {
+          setMessage({ msg: error.message, type: "error" });
+        } finally {
+          store.setLoading(false);
+        }
+      })();
+    }
 
     return () => store.setLoading(false);
-  }, []);
+  }, [page]);
+
+  async function search(query, initPage) {
+    try {
+      store.setLoading(true);
+
+      const res = await Fetch(
+        `/admin/transitions?${query}&page=${initPage ? 0 : page}`,
+        "GET"
+      );
+
+      if (!initPage && page) {
+        setTransition({
+          count: res.count,
+          data: [...transitions.data, ...res.data],
+        });
+      } else setTransition(res);
+      setSearchvalue(query);
+    } catch (error) {
+      store.setMessage({ msg: error.message, type: "error" });
+    } finally {
+      store.setLoading(false);
+    }
+  }
+
+  function initSearch(value) {
+    setPage(0);
+    const url =
+      store.user.designation === "Admin"
+        ? value
+        : value + `&user_id=${store.user.id}`;
+    search(url, true);
+  }
 
   return (
     <Common>
-      <View style={{ marginBottom: 172 }}>
+      <IOScrollView style={{ marginBottom: 59 }}>
         <SearchFilter
+          searchfeild={store.user.designation === "Admin" ? true : false}
           placeholder='To user Or From user'
-          url='/admin/transitions'
-          setData={(result) => {
-            if (result.data) setTransition(result.data);
-            else setTransition(result);
-          }}
+          search={initSearch}
         />
-        <FlatList
-          data={transitions}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={{ margin: 15 }}
-          ListEmptyComponent={() => <P align='center'>No Transitions found</P>}
-          renderItem={({ item }) => (
-            <View
+        {!store.loading ? (
+          <View style={{ marginVertical: 4, marginLeft: 8 }}>
+            <P size={13}>
+              Showing Result {transitions?.data?.length} Of {transitions?.count}
+            </P>
+          </View>
+        ) : null}
+
+        {transitions?.data?.length ? (
+          transitions.data.map((item, i, arr) => (
+            <InView
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
@@ -55,6 +106,16 @@ const Transitions = () => {
                 borderBottomWidth: 1,
                 padding: 8,
               }}
+              onChange={() => {
+                if (
+                  transitions?.count &&
+                  transitions?.count !== transitions?.data?.length &&
+                  i === arr.length - 1
+                ) {
+                  setPage((prev) => prev + 1);
+                }
+              }}
+              key={item.id}
             >
               <View>
                 <P>From: {item.fromUserName}</P>
@@ -67,10 +128,12 @@ const Transitions = () => {
                 </P>
                 <P>Date: {dateFormatter(item.date)}</P>
               </View>
-            </View>
-          )}
-        />
-      </View>
+            </InView>
+          ))
+        ) : (
+          <P align='center'>No Transitions found</P>
+        )}
+      </IOScrollView>
     </Common>
   );
 };

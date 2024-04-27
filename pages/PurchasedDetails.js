@@ -35,11 +35,6 @@ const PurchasedDetails = ({ route }) => {
   }, [route.params?.id, store.updatePurchase]);
 
   if (!data) return null;
-  const tablerowStyle = { width: "25%" };
-  const tableheaderStyle = {
-    fontWeight: 500,
-    ...tablerowStyle,
-  };
 
   return (
     <Common>
@@ -77,10 +72,11 @@ const PurchasedDetails = ({ route }) => {
                 justifyContent: "space-between",
               }}
             >
-              <P style={tableheaderStyle}>Product</P>
-              <P style={tableheaderStyle}>Qty</P>
-              <P style={{ ...tableheaderStyle, textAlign: "right" }}>
-                Total TK
+              <P bold={500} style={{ width: "70%" }}>
+                Product
+              </P>
+              <P bold={500} style={{ width: "30%" }}>
+                Qty
               </P>
             </View>
             {data.products.length ? (
@@ -92,12 +88,8 @@ const PurchasedDetails = ({ route }) => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <P style={tablerowStyle}>{item.name.split(" ")[0]}</P>
-                  <P style={tablerowStyle}>{item.qty}</P>
-                  <BDT
-                    style={{ ...tableheaderStyle, textAlign: "right" }}
-                    amount={data.total_amount}
-                  />
+                  <P style={{ width: "70%" }}>{item.full_name}</P>
+                  <P style={{ width: "30%" }}>{item.qty}</P>
                 </View>
               ))
             ) : (
@@ -109,6 +101,7 @@ const PurchasedDetails = ({ route }) => {
                 alignItems: "flex-end",
               }}
             >
+              <Account name='Total' amount={data.total_amount} />
               <Account name='Payment' amount={data.payment} />
               <Account
                 style={{ color: data.due ? "#dc2626" : "#000" }}

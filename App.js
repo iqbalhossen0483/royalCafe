@@ -15,34 +15,35 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 }); //till;
+
 //background notification;
-const NOTIFICATION_TASK_NAME = "background-notification-task";
-TaskManager.defineTask(NOTIFICATION_TASK_NAME, ({ _, error }) => {
+const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
+
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error }) => {
   if (error) {
-    console.log("error occurred" + error.message);
+    console.log("error occurred");
+  }
+  if (data) {
+    console.log("data-----", data);
   }
 });
-Notifications.registerTaskAsync(NOTIFICATION_TASK_NAME);
 
 export default function App() {
   const [notificationPermissions, setNotificationPermissions] = useState(
     PermissionStatus.UNDETERMINED
   );
 
-  const requestNotificationPermissions = async () => {
-    const { status } = await Notifications.requestPermissionsAsync();
-    setNotificationPermissions(status);
-    return status;
-  };
-
   useEffect(() => {
-    requestNotificationPermissions();
+    (async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      setNotificationPermissions(status);
+    })();
   }, []);
 
   useEffect(() => {
     if (notificationPermissions !== PermissionStatus.GRANTED) return;
-    const listener = Notifications.addNotificationReceivedListener(() => {});
-    return () => listener.remove();
+    Notifications.addNotificationReceivedListener(() => {});
+    Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
   }, [notificationPermissions]);
 
   return (

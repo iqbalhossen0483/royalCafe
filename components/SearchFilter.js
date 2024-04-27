@@ -1,25 +1,30 @@
 import { FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-import React, { createRef, useState } from "react";
-import { Pressable, Text, View } from "react-native";
-import DelayInput from "react-native-debounce-input";
+import React, { useState } from "react";
+import {
+  Pressable,
+  Text,
+  TextInput,
+  TouchableHighlight,
+  View,
+} from "react-native";
 
 import { commonStyles } from "../css/common";
-import P from "./utilitise/P";
 import { color } from "./utilitise/colors";
+import P from "./utilitise/P";
 
 const SearchFilter = ({
-  search,
   filter = true,
   placeholder,
   searchfeild = true,
   orderPage = false,
+  search,
 }) => {
   const [fromDate, setFromDate] = useState(new Date());
   const [endDate, setendDate] = useState(new Date());
   const [dofilter, seDotFilter] = useState(false);
   const [highlight, setHighlight] = useState(1);
-  const inputRef = createRef();
+  const [inptVlue, setInputvalue] = useState("");
 
   const showDatepicker = (setDate, fn) => {
     DateTimePickerAndroid.open({
@@ -35,12 +40,12 @@ const SearchFilter = ({
   };
 
   function serchDate(date) {
-    search(`from=${fromDate.toISOString()}&end=${date.toISOString()}`);
+    search(
+      `search=${inptVlue}&from=${fromDate.toISOString()}&end=${date.toISOString()}`
+    );
   }
-  function searchInput(value) {
-    let url = `search=${value}`;
-    if (value) search(url);
-    else search(url, true);
+  function searchInput() {
+    search(`search=${inptVlue}`);
   }
 
   const iconcss = {
@@ -64,17 +69,27 @@ const SearchFilter = ({
     >
       {searchfeild ? (
         <View style={{ position: "relative", width: 200 }}>
-          <DelayInput
-            minLength={3}
-            inputRef={inputRef}
-            onChangeText={(value) => searchInput(value)}
-            delayTimeout={500}
+          <TextInput
+            onChangeText={(value) => setInputvalue(value)}
             placeholder={placeholder || "Search"}
-            style={{ ...commonStyles.input }}
+            style={commonStyles.input}
           />
-          <View style={{ position: "absolute", right: 5, top: 6 }}>
-            <Ionicons name='search-sharp' size={24} color={color.gray} />
-          </View>
+          <TouchableHighlight
+            underlayColor={color.gray}
+            onPress={searchInput}
+            style={{
+              borderBottomRightRadius: 5,
+              borderTopRightRadius: 5,
+              position: "absolute",
+              height: "100%",
+              right: 0,
+              width: 30,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Ionicons name='search-sharp' size={24} color={color.darkGray} />
+          </TouchableHighlight>
         </View>
       ) : null}
 
@@ -95,9 +110,10 @@ const SearchFilter = ({
                 All
               </P>
             </Pressable>
+
             <Pressable
               onPress={() => {
-                orderPage.myOrders();
+                orderPage.initCollSearch(`search=${inptVlue}`);
                 setHighlight(2);
               }}
               style={{
@@ -105,26 +121,10 @@ const SearchFilter = ({
                 backgroundColor: highlight === 2 ? color.green : color.gray,
               }}
             >
-              <FontAwesome
-                name='user'
-                size={20}
-                color={highlight === 2 ? "white" : "gray"}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                orderPage.myCollections();
-                setHighlight(3);
-              }}
-              style={{
-                ...iconcss,
-                backgroundColor: highlight === 3 ? color.green : color.gray,
-              }}
-            >
               <FontAwesome6
                 name='circle-dollar-to-slot'
                 size={20}
-                color={highlight === 3 ? "white" : "gray"}
+                color={highlight === 2 ? "white" : "gray"}
               />
             </Pressable>
           </>
@@ -133,15 +133,11 @@ const SearchFilter = ({
         {filter ? (
           <View>
             {!dofilter ? (
-              <Pressable
-                onPress={() => seDotFilter(true)}
-                style={{
-                  ...iconcss,
-                  backgroundColor: highlight === 4 ? color.green : color.gray,
-                }}
-              >
+              <Pressable onPress={() => seDotFilter(true)}>
                 {orderPage ? (
-                  <FontAwesome name='filter' size={20} color='gray' />
+                  <View style={iconcss}>
+                    <FontAwesome name='filter' size={20} color='gray' />
+                  </View>
                 ) : (
                   <P size={13} align='center' bold={500} color='darkGray'>
                     Filter
@@ -152,7 +148,7 @@ const SearchFilter = ({
               <Pressable
                 onPress={() => {
                   seDotFilter(false);
-                  search("", true);
+                  search("");
                 }}
               >
                 <P size={13} align='center' bold={500} color='darkGray'>

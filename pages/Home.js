@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 
 import { Common } from "../components/Common";
 import StockReport from "../components/StockReport";
@@ -31,17 +31,15 @@ const Home = () => {
 
   if (loading) return <LoadingOnComponent />;
   return (
-    <View>
-      <Common>
-        <ScrollView style={{ marginBottom: 57 }}>
-          <CashReport data={modifyCashReport(data.cashReport)} />
-          <Account users={data.users} />
-          <StockReport
-            data={{ products: data.products, stockReport: data.stockReport }}
-          />
-        </ScrollView>
-      </Common>
-    </View>
+    <Common>
+      <ScrollView style={{ marginBottom: 57 }}>
+        <CashReport data={modifyCashReport(data.cashReport)} />
+        <Account users={data.users} />
+        <StockReport
+          data={{ products: data.products, stockReport: data.stockReport }}
+        />
+      </ScrollView>
+    </Common>
   );
 };
 

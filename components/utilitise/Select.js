@@ -1,7 +1,13 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { Keyboard, Pressable, TextInput, View } from "react-native";
-import { RectButton, ScrollView } from "react-native-gesture-handler";
+import {
+  Keyboard,
+  Pressable,
+  TextInput,
+  TouchableHighlight,
+  View,
+} from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
 import { commonStyles } from "../../css/common";
 import { Fetch } from "../../services/common";
@@ -109,10 +115,13 @@ const Select = ({
             <P align='center'>Loading...</P>
           ) : data && data.length ? (
             data.map((item, i, arr) => (
-              <RectButton onPress={() => handleTuch(item)} key={i}>
+              <TouchableHighlight
+                onPress={() => handleTuch(item)}
+                key={i}
+                activeOpacity={0.5}
+                underlayColor={color.gray}
+              >
                 <View
-                  accessible
-                  accessibilityRole='button'
                   style={{
                     borderBottomWidth: arr.length - 1 !== i ? 0.5 : 0,
                     borderBottomColor: color.gray,
@@ -127,7 +136,7 @@ const Select = ({
                     </P>
                   ) : null}
                 </View>
-              </RectButton>
+              </TouchableHighlight>
             ))
           ) : (
             <P align='center'>no options</P>

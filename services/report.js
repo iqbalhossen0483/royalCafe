@@ -74,9 +74,11 @@ export function modifyStockReport(products, report) {
         purchase: 0,
         totalSold: 0,
         remainingStock: product.stock,
+        sl: product.sl,
       });
     }
   });
 
+  demo.sort((a, b) => a.sl - b.sl);
   return demo;
 }

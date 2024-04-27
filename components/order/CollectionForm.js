@@ -36,6 +36,7 @@ const CollectionForm = ({ setShow, data }) => {
       store.setUpdateOrder((prev) => !prev);
       store.setUpdateReport((prev) => !prev);
       store.setUpdateUser((prev) => !prev);
+      store.setUpdateCustomer((prev) => !prev);
       setShow(false);
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });

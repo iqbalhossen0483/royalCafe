@@ -16,29 +16,24 @@ import { Fetch, dateFormatter } from "../services/common";
 const Orders = ({ navigation }) => {
   const [orders, setOrders] = useState(null);
   const [coll, setColl] = useState(false);
-  const [myOrder, setMyOrder] = useState(false);
   const store = useStore();
   const [page, setPage] = useState(0);
+  const [searchtxt, setSearchText] = useState("");
 
   useEffect(() => {
-    if (page > 0) {
-      if (myOrder) myOrders(page);
-      else if (coll) myCollections(page);
-      else fetData(`/order?page=${page}`, true);
-    }
-    return () => store.setLoading(false);
-  }, [page]);
+    if (coll) collections(searchtxt);
+    else if (searchtxt) search(searchtxt);
+    else fetData(`/order?page=${page}`);
 
-  useEffect(() => {
-    fetData(`/order`, false);
     return () => store.setLoading(false);
-  }, [store.updateOrder]);
+  }, [page, store.updateOrder]);
 
-  async function fetData(url, page) {
+  async function fetData(url) {
     try {
       store.setLoading(true);
       setColl(false);
-      setMyOrder(false);
+      setSearchText("");
+
       const data = await Fetch(url, "GET");
       if (page) {
         setOrders({ count: data.count, data: [...orders.data, ...data.data] });
@@ -52,40 +47,34 @@ const Orders = ({ navigation }) => {
     }
   }
 
-  async function myOrders(page = 0) {
+  async function collections(url, initPage) {
     try {
       store.setLoading(true);
-      setColl(false);
-      const data = await Fetch(
-        `/user/recentactivity?user_id=${store.user.id}&order=true`,
-        "GET"
-      );
-      if (page > 0) {
+
+      const data = await Fetch(`${url}&page=${initPage ? 0 : page}`, "GET");
+      if (!initPage && page) {
         setOrders({ count: data.count, data: [...orders.data, ...data.data] });
-      } else {
-        setOrders(data);
-      }
-      setMyOrder(true);
+      } else setOrders({ count: data.count, data: data.data });
+      setColl(true);
+      setSearchText(url);
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {
       store.setLoading(false);
     }
   }
-  async function myCollections(page = 0) {
+  async function search(query, initPage) {
     try {
       store.setLoading(true);
-      setMyOrder(false);
-      const data = await Fetch(
-        `/user/recentactivity?user_id=${store.user.id}&coll=true`,
+
+      const res = await Fetch(
+        `/order?${query}&page=${initPage ? 0 : page}`,
         "GET"
       );
-      if (page > 0) {
-        setOrders({ count: data.count, data: [...orders.data, ...data.data] });
-      } else {
-        setOrders(data);
-      }
-      setColl(true);
+      if (!initPage && page) {
+        setOrders({ count: res.count, data: [...orders.data, ...res.data] });
+      } else setOrders({ count: res.count, data: res.data });
+      setSearchText(query);
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {
@@ -93,27 +82,28 @@ const Orders = ({ navigation }) => {
     }
   }
 
-  async function search(value, count = false) {
-    try {
-      store.setLoading(true);
-      setMyOrder(false);
-      setColl(false);
-      setPage(0);
-      const data = await Fetch(`/order?${value}`, "GET");
-      if (count) setOrders(data);
-      else setOrders({ count: data?.length, data });
-    } catch (error) {
-      store.setMessage({ msg: error.message, type: "error" });
-    } finally {
-      store.setLoading(false);
-    }
+  function initialsearch(value) {
+    setPage(0);
+    if (coll) initCollSearch(value);
+    else search(value, true);
+  }
+
+  function initCollSearch(search) {
+    setPage(0);
+    const cmmurl = `/user/recentactivity?coll=true&${search}`;
+    const url =
+      store.user.designation === "Admin"
+        ? cmmurl
+        : cmmurl + `&user_id=${store.user.id}`;
+    collections(url, true);
   }
 
   async function seeAll() {
-    setMyOrder(false);
     setColl(false);
+    setSearchText("");
     setPage(0);
-    fetData(`/order`, false);
+
+    fetData(`/order?page=0`);
   }
 
   return (
@@ -121,16 +111,29 @@ const Orders = ({ navigation }) => {
       <IOScrollView style={{ marginBottom: 57 }}>
         <SearchFilter
           placeholder='Shop name Or nddress'
-          orderPage={{ myOrders, myCollections, seeAll }}
-          search={search}
+          orderPage={{ initCollSearch, seeAll }}
+          search={initialsearch}
         />
+
+        {!store.loading ? (
+          <View style={{ marginVertical: 4, marginLeft: 8 }}>
+            <P size={13}>
+              Showing Result {orders?.data?.length} Of {orders?.count}
+            </P>
+          </View>
+        ) : null}
+
         {orders?.data?.length ? (
           orders.data.map((item, i, arr) => (
             <InView
-              key={i}
+              key={item.id}
               onChange={() => {
-                if (orders?.count !== orders?.data?.length) {
-                  i === arr.length - 1 ? setPage((prev) => prev + 1) : null;
+                if (
+                  orders?.count &&
+                  orders?.count !== orders?.data?.length &&
+                  i === arr.length - 1
+                ) {
+                  setPage((prev) => prev + 1);
                 }
               }}
             >
@@ -167,44 +170,57 @@ const Orders = ({ navigation }) => {
                       </P>
                     </View>
                   </View>
-                  <View>
-                    <P>
-                      Bill no: <BDT amount={item.billno} bdtSign={false} />
-                    </P>
-                    <P>
-                      Toal {coll ? "Amount" : "sale"}:{" "}
-                      <BDT amount={item.totalSale} />
-                    </P>
-                    {coll ? (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      gap: 4,
+                    }}
+                  >
+                    <View>
                       <P>
-                        Collection: <BDT amount={item.payment} />
+                        Bill no: <BDT amount={item.billno} bdtSign={false} />
                       </P>
-                    ) : null}
-                    <P>
-                      Due:{" "}
-                      <BDT style={{ color: color.orange }} amount={item.due} />
-                    </P>
-                  </View>
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    {item.status === "delivered" ? (
-                      <View
-                        style={{
-                          height: 8,
-                          width: 8,
-                          backgroundColor: item.due ? "#dc2626" : "#22c55e",
-                          borderRadius: 50,
-                          marginRight: -5,
-                        }}
+                      <P>
+                        Toal {coll ? "Amount" : "sale"}:{" "}
+                        <BDT amount={item.totalSale} />
+                      </P>
+                      {coll ? (
+                        <P>
+                          Collection: <BDT amount={item.payment} />
+                        </P>
+                      ) : null}
+                      <P>
+                        Due:{" "}
+                        <BDT
+                          style={{ color: color.orange }}
+                          amount={item.due}
+                        />
+                      </P>
+                    </View>
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      {item.status === "delivered" ? (
+                        <View
+                          style={{
+                            height: 8,
+                            width: 8,
+                            backgroundColor: item.due ? "#dc2626" : "#22c55e",
+                            borderRadius: 50,
+                            marginRight: -5,
+                          }}
+                        />
+                      ) : (
+                        <P color='orange'>{item.status}</P>
+                      )}
+                      <MaterialIcons
+                        style={{ color: color.darkGray }}
+                        name='keyboard-arrow-right'
+                        size={20}
+                        color='black'
                       />
-                    ) : (
-                      <P color='orange'>{item.status}</P>
-                    )}
-                    <MaterialIcons
-                      style={{ color: color.darkGray }}
-                      name='keyboard-arrow-right'
-                      size={20}
-                      color='black'
-                    />
+                    </View>
                   </View>
                 </View>
                 <P color='darkGray' size={13}>

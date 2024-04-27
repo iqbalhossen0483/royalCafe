@@ -18,30 +18,33 @@ const Customers = ({ navigation }) => {
   const store = useStore();
 
   useEffect(() => {
-    if (page > 0) {
-      fetchData(`/customer?page=${page}`, true);
-    }
-
+    (async () => {
+      try {
+        store.setLoading(true);
+        const data = await Fetch(`/customer?page=${page}`, "GET");
+        if (page === 0) setCustomers(data);
+        else
+          setCustomers({
+            count: data.count,
+            data: [...customers.data, ...data.data],
+          });
+      } catch (error) {
+        store.setMessage({ msg: error.message, type: "error" });
+      } finally {
+        store.setLoading(false);
+      }
+    })();
     return () => store.setLoading(false);
-  }, [page]);
+  }, [store.updateCustomer, page]);
 
-  useEffect(() => {
-    fetchData("/customer", false);
-    return () => store.setLoading(false);
-  }, [store.updateCustomer]);
-
-  async function fetchData(url, page) {
+  async function search(query) {
     try {
       store.setLoading(true);
-      const data = await Fetch(url, "GET");
-      if (page) {
-        setCustomers({
-          count: data.count,
-          data: [...customers.data, ...data.data],
-        });
-      } else {
-        setCustomers(data);
-      }
+      setPage(0);
+      const value = query.split("=")[1];
+      const result = await Fetch(`/customer?${query}`, "GET");
+      if (value) setCustomers({ data: result });
+      else setCustomers(result);
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {
@@ -54,17 +57,28 @@ const Customers = ({ navigation }) => {
       <IOScrollView style={{ marginBottom: 57 }}>
         <SearchFilter
           placeholder='Shop name Or nddress'
-          url='/customer'
-          setData={setCustomers}
+          search={search}
           filter={false}
         />
+        {!store.loading ? (
+          <View style={{ marginVertical: 4, marginLeft: 8 }}>
+            <P size={13}>
+              Showing Result {customers?.data?.length} Of {customers?.count}
+            </P>
+          </View>
+        ) : null}
+
         {customers?.data?.length ? (
           customers.data.map((item, i, arr) => (
             <InView
               key={item.id}
               onChange={() => {
-                if (customers?.count !== customers?.data?.length) {
-                  i === arr.length - 1 ? setPage((prev) => prev + 1) : null;
+                if (
+                  customers?.count &&
+                  customers?.count !== customers?.data?.length + 1 &&
+                  i === arr.length - 1
+                ) {
+                  setPage((prev) => prev + 1);
                 }
               }}
             >

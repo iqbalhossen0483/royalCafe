@@ -54,6 +54,7 @@ const StockReport = ({ data }) => {
                 month: "long",
               })}&year=${date.getFullYear()}`)
             : (base += `method=year&date=${date.getFullYear()}`);
+
         const report = await Fetch(url, "GET");
         setReport(report);
       } catch (error) {

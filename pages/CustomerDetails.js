@@ -27,35 +27,29 @@ const CustomerDetails = ({ route, navigation }) => {
   const [page, setPage] = useState(0);
 
   useEffect(() => {
-    if (page > 0) {
-      fetchData(`/customer?id=${route.params.id}&page=${page}`, true);
-    }
-  }, [page]);
-
-  useEffect(() => {
-    fetchData(`/customer?id=${route.params.id}`, false);
-  }, [store.updateCustomer]);
-
-  async function fetchData(url, page) {
-    try {
-      store.setLoading(true);
-      const data = await Fetch(url, "GET");
-      if (page) {
-        setCustomers((prev) => {
-          prev.count = data.count;
-          prev.data.orders = [...prev.data.orders, ...data.data.orders];
-          return { ...prev };
-        });
-      } else {
-        setCustomers(data);
+    (async () => {
+      try {
+        store.setLoading(true);
+        const data = await Fetch(
+          `/customer?id=${route.params.id}&page=${page}`,
+          "GET"
+        );
+        if (page) {
+          setCustomers((prev) => {
+            prev.count = data.count;
+            prev.data.orders = [...prev.data.orders, ...data.data.orders];
+            return { ...prev };
+          });
+        } else {
+          setCustomers(data);
+        }
+        store.setLoading(false);
+      } catch (error) {
+        store.setLoading(false);
+        store.setMessage({ msg: error.message, type: "error" });
       }
-      store.setLoading(false);
-    } catch (error) {
-      console.log(error);
-      store.setLoading(false);
-      store.setMessage({ msg: error.message, type: "error" });
-    }
-  }
+    })();
+  }, [page, store.updateCustomer]);
 
   async function deleteCustomer(id) {
     alert("Are you sure you want to delete?", async () => {
@@ -76,7 +70,7 @@ const CustomerDetails = ({ route, navigation }) => {
   if (!customers?.data?.id) return <LoadingOnComponent />;
   return (
     <Common>
-      <IOScrollView style={{ marginBottom: 57 }}>
+      <IOScrollView style={{ marginBottom: 50 }}>
         <View style={styles.detailsContentContainer}>
           <View style={styles.customerProfile}>
             {customers.data.profile ? (
@@ -171,13 +165,31 @@ const CustomerDetails = ({ route, navigation }) => {
             />
           </View>
 
+          {!store.loading ? (
+            <View
+              style={{
+                marginVertical: 4,
+                marginLeft: 8,
+                backgroundColor: "#f2f2f2",
+              }}
+            >
+              <P size={13}>
+                Showing Result {customers?.data?.orders.length} Of{" "}
+                {customers?.count}
+              </P>
+            </View>
+          ) : null}
+
           {customers.data.orders?.length ? (
             customers.data.orders.map((item, i, arr) => (
               <InView
                 key={item.id}
                 onChange={() => {
-                  if (customers?.count !== customers?.data?.orders?.length) {
-                    i === arr.length - 1 ? setPage((prev) => prev + 1) : null;
+                  if (
+                    customers?.count !== customers?.data?.orders?.length &&
+                    i === arr.length - 1
+                  ) {
+                    setPage((prev) => prev + 1);
                   }
                 }}
               >
