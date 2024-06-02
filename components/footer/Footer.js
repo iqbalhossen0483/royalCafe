@@ -231,6 +231,7 @@ function AdminFooter() {
 function UserFooter() {
   const [moreOption, setMoreOption] = useState(false);
   const route = useRoute();
+  const store = useStore();
 
   return (
     <View style={styles.container}>
@@ -359,7 +360,7 @@ function UserFooter() {
           showModal={setMoreOption}
           icon={<Octicons name='history' size={16} color='#806003' />}
         />
-        {role.store_manager ? (
+        {store.user.designation === role.store_manager ? (
           <>
             <SubMenu
               name='Manage Users'
