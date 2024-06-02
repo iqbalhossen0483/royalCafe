@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Image, Keyboard, ScrollView, TextInput, View } from "react-native";
 
-import { Common } from "../components/Common";
-import { socket } from "../components/Layout";
-import Button from "../components/utilitise/Button";
-import FileInput from "../components/utilitise/FileInput";
-import P from "../components/utilitise/P";
-import Select from "../components/utilitise/Select";
-import useStore from "../context/useStore";
-import { commonStyles } from "../css/common";
-import { Fetch, serverUrl } from "../services/common";
+import { Common } from "../../components/Common";
+import { socket } from "../../components/Layout";
+import Button from "../../components/utilitise/Button";
+import FileInput from "../../components/utilitise/FileInput";
+import P from "../../components/utilitise/P";
+import Select from "../../components/utilitise/Select";
+import useStore from "../../context/useStore";
+import { commonStyles } from "../../css/common";
+import { Fetch, serverUrl } from "../../services/common";
 
 const AddShop = ({ route, navigation }) => {
   const [profile, setProfile] = useState(null);

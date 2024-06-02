@@ -2,16 +2,16 @@ import { AntDesign, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { FlatList, Image, Pressable, View } from "react-native";
 
-import { Common } from "../components/Common";
-import Drawar from "../components/Drawar";
-import SubMenu from "../components/footer/SubMenu";
-import { alert } from "../components/utilitise/Alert";
-import Button from "../components/utilitise/Button";
-import P from "../components/utilitise/P";
-import { color } from "../components/utilitise/colors";
-import useStore from "../context/useStore";
-import { styles } from "../css/manageProduct";
-import { Fetch, serverUrl } from "../services/common";
+import { Common } from "../../components/Common";
+import Drawar from "../../components/Drawar";
+import SubMenu from "../../components/footer/SubMenu";
+import { alert } from "../../components/utilitise/Alert";
+import Button from "../../components/utilitise/Button";
+import P from "../../components/utilitise/P";
+import { color } from "../../components/utilitise/colors";
+import useStore from "../../context/useStore";
+import { styles } from "../../css/manageProduct";
+import { Fetch, serverUrl } from "../../services/common";
 
 const ManageProduct = ({ navigation }) => {
   const [showForm, setShowFrom] = useState(null);
@@ -90,7 +90,7 @@ const ManageProduct = ({ navigation }) => {
               ) : (
                 <Image
                   style={{ width: 40, height: 55, borderRadius: 5 }}
-                  source={require("../assets/no-photo.png")}
+                  source={require("../../assets/no-photo.png")}
                   alt=''
                 />
               )}

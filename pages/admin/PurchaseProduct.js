@@ -9,16 +9,16 @@ import {
   View,
 } from "react-native";
 
-import { Common } from "../components/Common";
-import { alert } from "../components/utilitise/Alert";
-import Button from "../components/utilitise/Button";
-import FileInput from "../components/utilitise/FileInput";
-import P from "../components/utilitise/P";
-import Select from "../components/utilitise/Select";
-import { color } from "../components/utilitise/colors";
-import useStore from "../context/useStore";
-import { commonStyles } from "../css/common";
-import { Fetch } from "../services/common";
+import { Common } from "../../components/Common";
+import { alert } from "../../components/utilitise/Alert";
+import Button from "../../components/utilitise/Button";
+import FileInput from "../../components/utilitise/FileInput";
+import P from "../../components/utilitise/P";
+import Select from "../../components/utilitise/Select";
+import { color } from "../../components/utilitise/colors";
+import useStore from "../../context/useStore";
+import { commonStyles } from "../../css/common";
+import { Fetch } from "../../services/common";
 
 const PurchaseProduct = ({ navigation }) => {
   const [data, setData] = useState({ supplier: null, products: null });

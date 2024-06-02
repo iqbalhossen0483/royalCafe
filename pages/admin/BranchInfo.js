@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import { Common } from "../components/Common";
-import { View } from "react-native";
-import { commonStyles } from "../css/common";
-import Button from "../components/utilitise/Button";
-import { TextInput } from "react-native";
-import { Text } from "react-native";
-import { Fetch } from "../services/common";
-import useStore from "../context/useStore";
-import { Keyboard } from "react-native";
+import { Keyboard, Text, TextInput, View } from "react-native";
 
-const Settings = () => {
+import Button from "../../components/utilitise/Button";
+import useStore from "../../context/useStore";
+import { commonStyles } from "../../css/common";
+import { Fetch } from "../../services/common";
+import SettingHeader from "./SettingHeader";
+
+const BranchInfo = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({});
   const store = useStore();
@@ -18,7 +16,7 @@ const Settings = () => {
     try {
       setLoading(true);
       Keyboard.dismiss();
-      const result = await Fetch("/admin/settings", "PUT", data);
+      const result = await Fetch("/admin/siteInfo", "PUT", data);
       store.setMessage({ msg: result.message, type: "success" });
       store.setUpdateReport((prev) => !prev);
     } catch (error) {
@@ -29,10 +27,10 @@ const Settings = () => {
   }
   const siteInfo = store.siteInfo;
   return (
-    <Common>
+    <SettingHeader>
       <View style={commonStyles.formContainer}>
         <View style={{ rowGap: 10 }}>
-          <Text>Company Name:</Text>
+          <Text>Branch Name:</Text>
           <TextInput
             onChangeText={(value) =>
               setData((prev) => {
@@ -43,7 +41,7 @@ const Settings = () => {
             placeholder='Name'
             defaultValue={siteInfo.name || ""}
           />
-          <Text>Company Address:</Text>
+          <Text>Branch Address:</Text>
           <TextInput
             onChangeText={(value) =>
               setData((prev) => {
@@ -54,7 +52,7 @@ const Settings = () => {
             placeholder='Address'
             defaultValue={siteInfo.address || ""}
           />
-          <Text>Numbers:</Text>
+          <Text>Phone Number:</Text>
           <TextInput
             onChangeText={(value) =>
               setData((prev) => {
@@ -72,8 +70,8 @@ const Settings = () => {
           />
         </View>
       </View>
-    </Common>
+    </SettingHeader>
   );
 };
 
-export default Settings;
+export default BranchInfo;

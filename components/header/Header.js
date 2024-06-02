@@ -51,6 +51,7 @@ const Header = () => {
           </P>
         </View>
       </Pressable>
+
       <View
         onTouchStart={() => navigation.navigate("notification")}
         style={{ marginRight: 13, position: "relative" }}

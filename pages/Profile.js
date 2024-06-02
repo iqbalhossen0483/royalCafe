@@ -13,9 +13,10 @@ import Avater from "../components/utilitise/Avater";
 import Button from "../components/utilitise/Button";
 import { LoadingOnComponent } from "../components/utilitise/Loading";
 import P from "../components/utilitise/P";
+import Select from "../components/utilitise/Select";
 import useStore from "../context/useStore";
 import { styles } from "../css/profile";
-import { Fetch, openNumber } from "../services/common";
+import { Fetch, openNumber, role } from "../services/common";
 
 const Profile = ({ route, navigation }) => {
   const store = useStore();
@@ -72,49 +73,79 @@ const Profile = ({ route, navigation }) => {
               </Pressable>
             </View>
           </View>
-          <View style={{ marginTop: 8, flexDirection: "row", columnGap: 10 }}>
-            <Button
-              onPress={() =>
-                navigation.navigate("balanceTransfer", { user: user })
-              }
-              title='Money Transfer'
-            />
-            {user?.id === store?.user?.id ? (
-              <>
-                <Button onPress={goForEdit} title='Edit Profile' />
+          {user?.id === store?.user?.id ||
+          store.user.designation === role.admin ? (
+            <>
+              <View
+                style={{ marginTop: 8, flexDirection: "row", columnGap: 10 }}
+              >
                 <Button
-                  style={{ backgroundColor: "#e8a72e" }}
-                  onPress={logOut}
-                  title='LogOut'
+                  onPress={() =>
+                    navigation.navigate("balanceTransfer", { user: user })
+                  }
+                  title='Money Transfer'
+                />
+                {user?.id === store?.user?.id ? (
+                  <>
+                    <Button onPress={goForEdit} title='Edit Profile' />
+                    <Button
+                      style={{ backgroundColor: "#e8a72e" }}
+                      onPress={logOut}
+                      title='LogOut'
+                    />
+                  </>
+                ) : null}
+              </View>
+              {user.db_list.length ? (
+                <View style={{ marginTop: 8 }}>
+                  <Select
+                    placeholder={`You're now in ‟Your Database” AC     `}
+                    header='name'
+                    height='auto'
+                    editable={false}
+                    options={user.db_list}
+                    zIndex={50}
+                    handler={(_, info) => {
+                      console.log(info);
+                    }}
+                  />
+                </View>
+              ) : null}
+            </>
+          ) : null}
+        </View>
+
+        {user?.id === store?.user?.id ||
+        store.user.designation === role.admin ? (
+          <>
+            <Summery user={user} />
+
+            {/* notes  */}
+            <Notes id={user.id} navigation={navigation} />
+
+            {money_transactions ? (
+              <>
+                {/* target report */}
+                <Target
+                  commision={money_transactions?.commision}
+                  user={user}
+                  activeUser={store.user}
+                />
+
+                {/* money report */}
+                <MoneyReport
+                  transactions={money_transactions?.transactions}
+                  user={store.user}
                 />
               </>
             ) : null}
-          </View>
-        </View>
-
-        <Summery user={user} />
-
-        {/* notes  */}
-        <Notes id={user.id} navigation={navigation} />
-
-        {money_transactions ? (
-          <>
-            {/* target report */}
-            <Target
-              commision={money_transactions?.commision}
-              user={user}
-              activeUser={store.user}
-            />
-
-            {/* money report */}
-            <MoneyReport
-              transactions={money_transactions?.transactions}
-              user={store.user}
-            />
           </>
         ) : null}
 
-        <RecentActivity navigation={navigation} />
+        <RecentActivity
+          navigation={navigation}
+          id={route.params?.userId || store.user.id}
+        />
       </ScrollView>
     </Common>
   );

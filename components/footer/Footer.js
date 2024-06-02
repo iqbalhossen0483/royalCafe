@@ -14,6 +14,7 @@ import { View } from "react-native";
 
 import useStore from "../../context/useStore";
 import { styles } from "../../css/footer";
+import { role } from "../../services/common";
 import Drawar from "../Drawar";
 import { color } from "../utilitise/colors";
 import Menu from "./Menu";
@@ -22,7 +23,7 @@ import SubMenu from "./SubMenu";
 function Footer() {
   const store = useStore();
 
-  return store?.user?.designation === "Admin" ? (
+  return store?.user?.designation === role.admin ? (
     <AdminFooter />
   ) : (
     <UserFooter />
@@ -215,16 +216,8 @@ function AdminFooter() {
           icon={<Octicons name='history' size={16} color='#806003' />}
         />
         <SubMenu
-          name='Expense Types'
-          url='expenseType'
-          bgColor='#f2e4f0'
-          border
-          showModal={setMoreOption}
-          icon={<AntDesign name='pay-circle-o1' size={24} color='#c912ae' />}
-        />
-        <SubMenu
           name='Settings'
-          url='settings'
+          url='branchinfo'
           bgColor='#afc8f0'
           border
           showModal={setMoreOption}
@@ -366,6 +359,32 @@ function UserFooter() {
           showModal={setMoreOption}
           icon={<Octicons name='history' size={16} color='#806003' />}
         />
+        {role.store_manager ? (
+          <>
+            <SubMenu
+              name='Manage Users'
+              url='manageUsers'
+              bgColor='#e0f2fe'
+              border
+              showModal={setMoreOption}
+              icon={<FontAwesome5 name='users' size={16} color='#0284c7' />}
+            />
+            <SubMenu
+              name='Stock Report'
+              url='stock'
+              bgColor='#e0f2fe'
+              border
+              showModal={setMoreOption}
+              icon={
+                <MaterialIcons
+                  name='production-quantity-limits'
+                  size={18}
+                  color='#0284c7'
+                />
+              }
+            />
+          </>
+        ) : null}
       </Drawar>
     </View>
   );

@@ -7,17 +7,17 @@ import {
 import React, { useEffect, useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
 
-import { Common } from "../components/Common";
-import Drawar from "../components/Drawar";
-import SubMenu from "../components/footer/SubMenu";
-import { alert } from "../components/utilitise/Alert";
-import Avater from "../components/utilitise/Avater";
-import Button from "../components/utilitise/Button";
-import P from "../components/utilitise/P";
-import { color } from "../components/utilitise/colors";
-import useStore from "../context/useStore";
-import { styles } from "../css/manageProduct";
-import { Fetch, openNumber } from "../services/common";
+import { Common } from "../../components/Common";
+import Drawar from "../../components/Drawar";
+import SubMenu from "../../components/footer/SubMenu";
+import { alert } from "../../components/utilitise/Alert";
+import Avater from "../../components/utilitise/Avater";
+import Button from "../../components/utilitise/Button";
+import P from "../../components/utilitise/P";
+import { color } from "../../components/utilitise/colors";
+import useStore from "../../context/useStore";
+import { styles } from "../../css/manageProduct";
+import { Fetch, openNumber } from "../../services/common";
 
 const ManageSupplyer = ({ navigation }) => {
   const [showForm, setShowFrom] = useState(null);

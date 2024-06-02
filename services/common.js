@@ -1,6 +1,7 @@
 import { Linking } from "react-native";
 
-const ngrok = "https://server.switchcafebd.com";
+// const ngrok = "https://server.switchcafebd.com";
+const ngrok = "https://87e0-113-11-98-228.ngrok-free.app";
 
 export async function Fetch(url, method, body, formData = false) {
   try {
@@ -41,3 +42,9 @@ export function dateFormatter(date) {
 export function openNumber(number) {
   Linking.openURL(`tel:${number}`);
 }
+
+export const role = {
+  store_manager: "Store Manager",
+  sales_man: "Sales Man",
+  admin: "Admin",
+};

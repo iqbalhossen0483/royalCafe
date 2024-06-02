@@ -23,6 +23,7 @@ export const styles = StyleSheet.create({
     shadowRadius: 5.62,
     elevation: 8,
     marginBottom: 10,
+    zIndex: 60,
   },
   profileWrapper: {
     flexDirection: "row",

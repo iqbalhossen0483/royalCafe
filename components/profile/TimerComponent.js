@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
+
 import useStore from "../../context/useStore";
 import { Fetch } from "../../services/common";
-import { Text, View } from "react-native";
 import BDT from "../utilitise/BDT";
 
 function TimerComponent({ pendingTarget, runningTarget }) {
@@ -32,10 +33,18 @@ function TimerComponent({ pendingTarget, runningTarget }) {
         <View>
           <Text style={{ color: "#9e4c0d" }}>Ending In: {time}</Text>
           <Text>
-            Targeted Amount: <BDT amount={runningTarget.targetedAmount} />
+            Targeted Amnt: <BDT amount={runningTarget.targetedAmount} />
           </Text>
           <Text>
-            Remaining Amount: <BDT amount={runningTarget.remainingAmount} />
+            Achieved Amnt:{" "}
+            <BDT
+              amount={
+                runningTarget.targetedAmount - runningTarget.remainingAmount
+              }
+            />
+          </Text>
+          <Text>
+            Remaining Amnt: <BDT amount={runningTarget.remainingAmount} />
           </Text>
         </View>
       ) : null}

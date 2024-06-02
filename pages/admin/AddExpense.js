@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Keyboard, TextInput, View } from "react-native";
 
-import { Common } from "../components/Common";
-import { socket } from "../components/Layout";
-import Button from "../components/utilitise/Button";
-import P from "../components/utilitise/P";
-import Select from "../components/utilitise/Select";
-import useStore from "../context/useStore";
-import { commonStyles } from "../css/common";
-import { Fetch } from "../services/common";
+import { Common } from "../../components/Common";
+import { socket } from "../../components/Layout";
+import Button from "../../components/utilitise/Button";
+import P from "../../components/utilitise/P";
+import Select from "../../components/utilitise/Select";
+import useStore from "../../context/useStore";
+import { commonStyles } from "../../css/common";
+import { Fetch } from "../../services/common";
 
 const AddExpense = ({ navigation }) => {
   const [loading, setLoading] = useState(false);

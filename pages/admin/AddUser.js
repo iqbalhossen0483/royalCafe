@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Image, Keyboard, TextInput, View } from "react-native";
 
-import { Common } from "../components/Common";
-import Button from "../components/utilitise/Button";
-import FileInput from "../components/utilitise/FileInput";
-import P from "../components/utilitise/P";
-import Select from "../components/utilitise/Select";
-import useStore from "../context/useStore";
-import { commonStyles } from "../css/common";
-import { Fetch, serverUrl } from "../services/common";
+import { Common } from "../../components/Common";
+import Button from "../../components/utilitise/Button";
+import FileInput from "../../components/utilitise/FileInput";
+import P from "../../components/utilitise/P";
+import Select from "../../components/utilitise/Select";
+import useStore from "../../context/useStore";
+import { commonStyles } from "../../css/common";
+import { Fetch, role, serverUrl } from "../../services/common";
 
 const initialState = {
   name: "",
@@ -67,6 +67,8 @@ const AddUser = ({ route, navigation }) => {
         }
         delete form.money_transactions;
         delete form.targets;
+        delete form.primary_db;
+        delete form.db_list;
         const formData = new FormData();
         Object.entries(form).forEach(([key, value]) => {
           formData.append(key, value);
@@ -84,9 +86,9 @@ const AddUser = ({ route, navigation }) => {
   }
 
   const data = [
-    { key: 1, value: "Sales Man" },
-    { key: 2, value: "Admin" },
-    { key: 3, value: "Engineer" },
+    { key: 1, value: role.sales_man },
+    { key: 2, value: role.admin },
+    { key: 3, value: role.store_manager },
   ];
 
   const disabled =

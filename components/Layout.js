@@ -8,35 +8,42 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { color } from "../components/utilitise/colors";
 import useStore from "../context/useStore";
 import { commonStyles } from "../css/common";
-import PurchasedDetails from "../pages/PurchasedDetails";
-import Settings from "../pages/Settings";
-import { Home, Login } from "../screens";
+import BranchInfo from "../pages/admin/BranchInfo";
+import Branches from "../pages/admin/Branches";
+import PurchasedDetails from "../pages/admin/PurchasedDetails";
+import { role } from "../services/common";
 import { LoadingOnComponent } from "./utilitise/Loading";
 
+const Home = React.lazy(() => import("../pages/admin/Home"));
+const Login = React.lazy(() => import("../pages/Login"));
 const Customers = React.lazy(() => import("../pages/Customers"));
-const AddProduct = React.lazy(() => import("../pages/AddProduct"));
-const AddShop = React.lazy(() => import("../pages/AddShop"));
+const AddProduct = React.lazy(() => import("../pages/admin/AddProduct"));
+const AddShop = React.lazy(() => import("../pages/admin/AddShop"));
 const CompleteOrder = React.lazy(() => import("../pages/CompleteOrder"));
 const CreateNote = React.lazy(() => import("../pages/CreateNote"));
 const CreateOrder = React.lazy(() => import("../pages/CreateOrder"));
 const CustomerDetails = React.lazy(() => import("../pages/CustomerDetails"));
-const ManageMan = React.lazy(() => import("../pages/ManageUsers"));
+const ManageMan = React.lazy(() => import("../pages/admin/ManageUsers"));
 const NotificationsPage = React.lazy(() => import("../pages/Notifications"));
 const OrderDetails = React.lazy(() => import("../pages/OrderDetails"));
 const Orders = React.lazy(() => import("../pages/Orders"));
-const ManageProduct = React.lazy(() => import("../pages/ManageProduct"));
-const AddUser = React.lazy(() => import("../pages/AddUser"));
+const ManageProduct = React.lazy(() => import("../pages/admin/ManageProduct"));
+const AddUser = React.lazy(() => import("../pages/admin/AddUser"));
 const Profile = React.lazy(() => import("../pages/Profile"));
 const Transitions = React.lazy(() => import("../pages/Transitions"));
-const AddSupplyer = React.lazy(() => import("../pages/AddSupplyer"));
-const ManageSupplyer = React.lazy(() => import("../pages/ManageSupplyer"));
-const Supplyer = React.lazy(() => import("../pages/Supplyer"));
+const AddSupplyer = React.lazy(() => import("../pages/admin/AddSupplyer"));
+const ManageSupplyer = React.lazy(() =>
+  import("../pages/admin/ManageSupplyer")
+);
+const Supplyer = React.lazy(() => import("../pages/admin/Supplyer"));
 const BalanceTransfer = React.lazy(() => import("../pages/BalanceTransfer"));
 const Message = React.lazy(() => import("../components/utilitise/Message"));
 const Loading = React.lazy(() => import("../components/utilitise/Loading"));
-const PurchaseProduct = React.lazy(() => import("../pages/PurchaseProduct"));
-const ExpenseType = React.lazy(() => import("../pages/ExpenseType"));
-const AddExpense = React.lazy(() => import("../pages/AddExpense"));
+const PurchaseProduct = React.lazy(() =>
+  import("../pages/admin/PurchaseProduct")
+);
+const ExpenseType = React.lazy(() => import("../pages/admin/ExpenseType"));
+const AddExpense = React.lazy(() => import("../pages/admin/AddExpense"));
 const ExpenseReport = React.lazy(() => import("../pages/ExpenseReport"));
 
 //for routing;
@@ -140,11 +147,11 @@ export function Layout() {
               <Stack.Screen name='loading' component={LoadingOnComponent} />
             ) : store.user ? (
               <>
-                {store.user.designation === "Admin" ? (
+                {store.user.designation === role.admin ? (
                   <>
                     <Stack.Screen name='home' component={Home} />
                     <Stack.Screen name='addProduct' component={AddProduct} />
-                    <Stack.Screen name='manageUsers' component={ManageMan} />
+
                     <Stack.Screen
                       name='manageProduct'
                       component={ManageProduct}
@@ -162,7 +169,16 @@ export function Layout() {
                       name='purchasedDetails'
                       component={PurchasedDetails}
                     />
-                    <Stack.Screen name='settings' component={Settings} />
+                    <Stack.Screen name='branchinfo' component={BranchInfo} />
+
+                    <Stack.Screen name='braches' component={Branches} />
+                  </>
+                ) : null}
+                {store.user.designation === role.admin ||
+                store.user.designation === role.store_manager ? (
+                  <>
+                    <Stack.Screen name='stock' component={Home} />
+                    <Stack.Screen name='manageUsers' component={ManageMan} />
                   </>
                 ) : null}
                 <Stack.Screen name='profile' component={Profile} />

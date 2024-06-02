@@ -15,31 +15,31 @@ import {
   View,
 } from "react-native";
 
-import { Common } from "../components/Common";
-import Drawar from "../components/Drawar";
-import { socket } from "../components/Layout";
-import SubMenu from "../components/footer/SubMenu";
-import Commission from "../components/manageUser/Commission";
-import { alert } from "../components/utilitise/Alert";
-import Avater from "../components/utilitise/Avater";
-import Button from "../components/utilitise/Button";
-import P from "../components/utilitise/P";
-import { color } from "../components/utilitise/colors";
-import useStore from "../context/useStore";
-import { commonStyles } from "../css/common";
-import { styles } from "../css/manageProduct";
-import { Fetch, openNumber } from "../services/common";
+import { Common } from "../../components/Common";
+import Drawar from "../../components/Drawar";
+import { socket } from "../../components/Layout";
+import SubMenu from "../../components/footer/SubMenu";
+import Commission from "../../components/manageUser/Commission";
+import { alert } from "../../components/utilitise/Alert";
+import Avater from "../../components/utilitise/Avater";
+import Button from "../../components/utilitise/Button";
+import P from "../../components/utilitise/P";
+import { color } from "../../components/utilitise/colors";
+import useStore from "../../context/useStore";
+import { commonStyles } from "../../css/common";
+import { styles } from "../../css/manageProduct";
+import { Fetch, openNumber, role } from "../../services/common";
 
 const ManageUsers = ({ navigation }) => {
+  const [targetForm, setTargetForm] = useState(null);
   const [showForm, setShowFrom] = useState(null);
   const [users, setUsers] = useState(null);
-  const [targetForm, setTargetForm] = useState(null);
 
   const store = useStore();
   const [data, setData] = useState({
     targetedAmount: 0,
-    end_date: null,
-    start_date: null,
+    end_date: new Date(),
+    start_date: new Date(),
     commission: 0,
   });
 
@@ -104,6 +104,7 @@ const ManageUsers = ({ navigation }) => {
         data.status = "pending";
       }
       data.remainingAmount = data.targetedAmount;
+
       const { message } = await Fetch(`/user/target`, "POST", data);
       setTargetForm(null);
       store.setMessage({ msg: message, type: "success" });
@@ -129,13 +130,15 @@ const ManageUsers = ({ navigation }) => {
 
   return (
     <Common>
-      <View style={styles.addBtn}>
-        <Button
-          onPress={() => navigation.navigate("addUser")}
-          style={{ width: 40, height: 40, borderRadius: 100 }}
-          title={<AntDesign name='pluscircle' size={22} color='#fff' />}
-        />
-      </View>
+      {store.user.designation === role.admin ? (
+        <View style={styles.addBtn}>
+          <Button
+            onPress={() => navigation.navigate("addUser")}
+            style={{ width: 40, height: 40, borderRadius: 100 }}
+            title={<AntDesign name='pluscircle' size={22} color='#fff' />}
+          />
+        </View>
+      ) : null}
 
       <FlatList
         style={{ marginBottom: 57 }}
@@ -144,7 +147,11 @@ const ManageUsers = ({ navigation }) => {
         contentContainerStyle={styles.contentContainer}
         ItemSeparatorComponent={() => <View style={{ marginBottom: 6 }} />}
         ListEmptyComponent={() => <P align='center'>No user</P>}
-        ListHeaderComponent={() => <Commission store={store} />}
+        ListHeaderComponent={() =>
+          store.user.designation === role.admin ? (
+            <Commission store={store} />
+          ) : null
+        }
         renderItem={({ item: user }) => {
           const targets = {
             pending: 0,
@@ -185,15 +192,19 @@ const ManageUsers = ({ navigation }) => {
                   </Pressable>
                 </View>
               </View>
-              <View>
-                <P align='center' bold={500}>
-                  Targets Report
-                </P>
-                <P style={{ color: "#946f09" }}>Pending: {targets.pending}</P>
-                <P style={{ color: "#75850c" }}>Running: {targets.running}</P>
-                <P style={{ color: "#038a0a" }}>Achieved: {targets.achieved}</P>
-                <P style={{ color: "#946f09" }}>Failed: {targets.failed}</P>
-              </View>
+              {store.user.designation === role.admin ? (
+                <View>
+                  <P align='center' bold={500}>
+                    Targets Report
+                  </P>
+                  <P style={{ color: "#946f09" }}>Pending: {targets.pending}</P>
+                  <P style={{ color: "#75850c" }}>Running: {targets.running}</P>
+                  <P style={{ color: "#038a0a" }}>
+                    Achieved: {targets.achieved}
+                  </P>
+                  <P style={{ color: "#946f09" }}>Failed: {targets.failed}</P>
+                </View>
+              ) : null}
             </Pressable>
           );
         }}
@@ -202,54 +213,61 @@ const ManageUsers = ({ navigation }) => {
         setShowModal={() => setShowFrom(null)}
         show={showForm ? true : false}
       >
-        <SubMenu
-          name='Edit'
-          navigate={false}
-          onPress={() =>
-            navigation.navigate("addUser", { edit: true, data: showForm })
-          }
-          bgColor='#f7d5f6'
-          showModal={setShowFrom}
-          icon={<Feather name='edit' size={16} color='#d638d2' />}
-        />
-        <SubMenu
-          name='Remove'
-          bgColor={color.lightOrange}
-          navigate={false}
-          showModal={setShowFrom}
-          onPress={() => removeUser(showForm.id, showForm.profile)}
-          icon={
-            <MaterialCommunityIcons
-              name='archive-remove'
-              size={18}
-              color={color.orange}
+        {store.user.designation === role.admin ? (
+          <>
+            <SubMenu
+              name='Edit'
+              navigate={false}
+              onPress={() =>
+                navigation.navigate("addUser", { edit: true, data: showForm })
+              }
+              bgColor='#f7d5f6'
+              showModal={setShowFrom}
+              icon={<Feather name='edit' size={16} color='#d638d2' />}
             />
-          }
-        />
+            <SubMenu
+              name='Remove'
+              bgColor={color.lightOrange}
+              navigate={false}
+              showModal={setShowFrom}
+              onPress={() => removeUser(showForm.id, showForm.profile)}
+              icon={
+                <MaterialCommunityIcons
+                  name='archive-remove'
+                  size={18}
+                  color={color.orange}
+                />
+              }
+            />
 
+            <SubMenu
+              name='Give Target'
+              navigate={false}
+              onPress={() => setTargetForm(showForm)}
+              bgColor='#d3b0e8'
+              showModal={setShowFrom}
+              icon={
+                <MaterialCommunityIcons
+                  name='target-account'
+                  size={24}
+                  color='#970ced'
+                />
+              }
+            />
+          </>
+        ) : null}
         <SubMenu
           name='Report'
           navigate={false}
           onPress={() =>
-            navigation.navigate("profile", { userId: showForm.id, edit: false })
+            navigation.navigate("profile", {
+              userId: showForm.id,
+              edit: false,
+            })
           }
           bgColor='#d7e5f5'
           showModal={setShowFrom}
           icon={<Octicons name='report' size={16} color='#3b83db' />}
-        />
-        <SubMenu
-          name='Give Target'
-          navigate={false}
-          onPress={() => setTargetForm(showForm)}
-          bgColor='#d3b0e8'
-          showModal={setShowFrom}
-          icon={
-            <MaterialCommunityIcons
-              name='target-account'
-              size={24}
-              color='#970ced'
-            />
-          }
         />
       </Drawar>
 

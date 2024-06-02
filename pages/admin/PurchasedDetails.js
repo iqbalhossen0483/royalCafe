@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";
 
-import { Common } from "../components/Common";
-import Drawar from "../components/Drawar";
-import SeeCollectionList from "../components/order/SeeCollectionList";
-import CollectionForm from "../components/purchase/Collection";
-import BDT from "../components/utilitise/BDT";
-import Button from "../components/utilitise/Button";
-import P from "../components/utilitise/P";
-import useStore from "../context/useStore";
-import { commonStyles } from "../css/common";
-import { styles } from "../css/orderDetails";
-import { Fetch, dateFormatter, serverUrl } from "../services/common";
+import { Common } from "../../components/Common";
+import Drawar from "../../components/Drawar";
+import SeeCollectionList from "../../components/order/SeeCollectionList";
+import CollectionForm from "../../components/purchase/Collection";
+import BDT from "../../components/utilitise/BDT";
+import Button from "../../components/utilitise/Button";
+import P from "../../components/utilitise/P";
+import useStore from "../../context/useStore";
+import { commonStyles } from "../../css/common";
+import { styles } from "../../css/orderDetails";
+import { Fetch, dateFormatter, serverUrl } from "../../services/common";
 
 const PurchasedDetails = ({ route }) => {
   const [showCollnForm, setShowCollForm] = useState(false);

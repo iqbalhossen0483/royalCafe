@@ -1,13 +1,14 @@
 import React from "react";
-import { Text, View } from "react-native";
-import BDT from "../utilitise/BDT";
+import { View } from "react-native";
+
 import { commonStyles } from "../../css/common";
 import { styles } from "../../css/profile";
+import BDT from "../utilitise/BDT";
 import P from "../utilitise/P";
 
 const Summery = ({ user }) => {
   return (
-    <>
+    <View style={{ zIndex: 0 }}>
       <P bold={500} style={commonStyles.heading}>
         Summery
       </P>
@@ -42,7 +43,7 @@ const Summery = ({ user }) => {
           </P>
         </View>
       </View>
-    </>
+    </View>
   );
 };
 

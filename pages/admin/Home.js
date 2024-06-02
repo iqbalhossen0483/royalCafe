@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { ScrollView } from "react-native";
 
-import { Common } from "../components/Common";
-import StockReport from "../components/StockReport";
-import Account from "../components/home/Account";
-import CashReport from "../components/home/CashReport";
-import { LoadingOnComponent } from "../components/utilitise/Loading";
-import useStore from "../context/useStore";
-import { Fetch } from "../services/common";
-import { modifyCashReport } from "../services/report";
+import { Common } from "../../components/Common";
+import StockReport from "../../components/StockReport";
+import Account from "../../components/home/Account";
+import CashReport from "../../components/home/CashReport";
+import { LoadingOnComponent } from "../../components/utilitise/Loading";
+import useStore from "../../context/useStore";
+import { Fetch, role } from "../../services/common";
+import { modifyCashReport } from "../../services/report";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -33,8 +33,12 @@ const Home = () => {
   return (
     <Common>
       <ScrollView style={{ marginBottom: 57 }}>
-        <CashReport data={modifyCashReport(data.cashReport)} />
-        <Account users={data.users} />
+        {store.user.designation === role.admin ? (
+          <>
+            <CashReport data={modifyCashReport(data.cashReport)} />
+            <Account users={data.users} />
+          </>
+        ) : null}
         <StockReport
           data={{ products: data.products, stockReport: data.stockReport }}
         />

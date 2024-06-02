@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Image, Keyboard, TextInput, View } from "react-native";
 
-import { Common } from "../components/Common";
-import Button from "../components/utilitise/Button";
-import FileInput from "../components/utilitise/FileInput";
-import P from "../components/utilitise/P";
-import useStore from "../context/useStore";
-import { commonStyles } from "../css/common";
-import { Fetch, serverUrl } from "../services/common";
+import { Common } from "../../components/Common";
+import Button from "../../components/utilitise/Button";
+import FileInput from "../../components/utilitise/FileInput";
+import P from "../../components/utilitise/P";
+import useStore from "../../context/useStore";
+import { commonStyles } from "../../css/common";
+import { Fetch, serverUrl } from "../../services/common";
 
 const AddProduct = ({ route, navigation }) => {
   const [image, setImage] = useState(null);

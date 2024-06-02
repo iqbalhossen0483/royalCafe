@@ -1,11 +1,11 @@
+import { View } from "react-native";
 import React from "react";
-import { Text, View } from "react-native";
+
 import { commonStyles } from "../../css/common";
-import { styles } from "../../css/profile";
 import TimerComponent from "./TimerComponent";
-import { color } from "../utilitise/colors";
-import BDT from "../utilitise/BDT";
+import { styles } from "../../css/profile";
 import Button from "../utilitise/Button";
+import BDT from "../utilitise/BDT";
 import P from "../utilitise/P";
 
 const Target = ({ commision, activeUser, user }) => {

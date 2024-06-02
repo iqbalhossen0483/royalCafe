@@ -9,7 +9,7 @@ import BDT from "../utilitise/BDT";
 import P from "../utilitise/P";
 import { color } from "../utilitise/colors";
 
-const RecentActivity = ({ navigation }) => {
+const RecentActivity = ({ navigation, id }) => {
   const [data, setData] = useState(null);
   const store = useStore();
 
@@ -17,7 +17,7 @@ const RecentActivity = ({ navigation }) => {
     (async () => {
       try {
         const result = await Fetch(
-          `/user/recentactivity?user_id=${store.user.id}&today=true`,
+          `/user/recentactivity?user_id=${id}&today=true`,
           "GET"
         );
         setData(result);
@@ -25,7 +25,7 @@ const RecentActivity = ({ navigation }) => {
         store.setMessage({ msg: error.message, type: "error" });
       }
     })();
-  }, []);
+  }, [id]);
 
   return (
     <View style={{ marginBottom: 20 }}>

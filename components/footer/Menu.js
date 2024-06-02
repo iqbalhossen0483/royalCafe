@@ -1,9 +1,8 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { color } from "../utilitise/colors";
-import { styles } from "../../css/footer";
-import { Pressable } from "react-native";
-import { Text } from "react-native";
 import React from "react";
+import { Pressable } from "react-native";
+
+import { styles } from "../../css/footer";
 import P from "../utilitise/P";
 
 const Menu = ({ name, Icon, showModal, navigate = "" }) => {

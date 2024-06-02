@@ -3,18 +3,18 @@ import React, { useEffect, useState } from "react";
 import { Image, Pressable, View } from "react-native";
 import { IOScrollView, InView } from "react-native-intersection-observer";
 
-import { Common } from "../components/Common";
-import BDT from "../components/utilitise/BDT";
-import P from "../components/utilitise/P";
-import { color } from "../components/utilitise/colors";
-import useStore from "../context/useStore";
-import { styles } from "../css/profile";
+import { Common } from "../../components/Common";
+import BDT from "../../components/utilitise/BDT";
+import P from "../../components/utilitise/P";
+import { color } from "../../components/utilitise/colors";
+import useStore from "../../context/useStore";
+import { styles } from "../../css/profile";
 import {
   Fetch,
   dateFormatter,
   openNumber,
   serverUrl,
-} from "../services/common";
+} from "../../services/common";
 
 const Supplyer = ({ route, navigation }) => {
   const [suplier, setSuplier] = useState(null);
