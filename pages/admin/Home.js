@@ -2,34 +2,35 @@ import { useEffect, useState } from "react";
 import { ScrollView } from "react-native";
 
 import { Common } from "../../components/Common";
-import StockReport from "../../components/StockReport";
 import Account from "../../components/home/Account";
 import CashReport from "../../components/home/CashReport";
-import { LoadingOnComponent } from "../../components/utilitise/Loading";
+import StockReport from "../../components/StockReport";
+import Splash from "../../components/utilitise/Splash";
 import useStore from "../../context/useStore";
 import { Fetch, role } from "../../services/common";
 import { modifyCashReport } from "../../services/report";
 
-const Home = () => {
-  const [loading, setLoading] = useState(true);
+const Home = ({ navigation }) => {
   const [data, setData] = useState(null);
   const store = useStore();
 
   useEffect(() => {
     (async () => {
       try {
-        setLoading(true);
-        const data = await Fetch("/admin", "GET");
+        store.setShowSplash(true);
+        const data = await Fetch(store.database.name, "/admin", "GET");
         setData(data);
       } catch (error) {
-        store.setMessage({ msg: error.message, type: "error" });
+        navigation.navigate("error");
       } finally {
-        setLoading(false);
+        store.setShowSplash(false);
       }
     })();
   }, [store.updateReport]);
 
-  if (loading) return <LoadingOnComponent />;
+  if (store.showSplash) return <Splash />;
+
+  if (!data) return null;
   return (
     <Common>
       <ScrollView style={{ marginBottom: 57 }}>

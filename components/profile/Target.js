@@ -1,14 +1,13 @@
-import React from "react";
 import { View } from "react-native";
+import React from "react";
 
 import { commonStyles } from "../../css/common";
+import TimerComponent from "./TimerComponent";
 import { styles } from "../../css/profile";
 import BDT from "../utilitise/BDT";
-import Button from "../utilitise/Button";
 import P from "../utilitise/P";
-import TimerComponent from "./TimerComponent";
 
-const Target = ({ commision, activeUser, user }) => {
+const Target = ({ commision, user }) => {
   const targets = {
     pending: 0,
     running: 0,
@@ -27,7 +26,7 @@ const Target = ({ commision, activeUser, user }) => {
 
   return (
     <>
-      <P bold={500} style={commonStyles.heading}>
+      <P bold style={commonStyles.heading}>
         Targets
       </P>
       <View style={styles.workContainer}>
@@ -43,7 +42,7 @@ const Target = ({ commision, activeUser, user }) => {
 
         {commision ? (
           <View>
-            <P bold={500}>Pending Commission</P>
+            <P bold>Pending Commission</P>
             <P>
               Targeted Amount: <BDT amount={commision.targetedAmount} />
             </P>
@@ -53,11 +52,11 @@ const Target = ({ commision, activeUser, user }) => {
             <P>
               Status: <P color='green'>Achieve</P>
             </P>
-            {activeUser.designation === "Admin" ? (
-              <Button style={{ paddingVertical: 3 }} title='Give Commission' />
-            ) : (
-              <P color='orange'>Waiting to achieve</P>
-            )}
+            <P color='orange'>
+              {commision.achieve
+                ? "Achieve & waiting \n for confirming"
+                : "Waiting to achieve"}
+            </P>
           </View>
         ) : null}
       </View>

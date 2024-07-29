@@ -1,30 +1,20 @@
-import React, { useEffect, useState } from "react";
 import { Image, Keyboard, ScrollView, TextInput, View } from "react-native";
+import React, { useEffect, useState } from "react";
 
+import FileInput from "../../components/utilitise/FileInput";
+import { Fetch, serverUrl } from "../../services/common";
+import Button from "../../components/utilitise/Button";
+import Select from "../../components/utilitise/Select";
 import { Common } from "../../components/Common";
 import { socket } from "../../components/Layout";
-import Button from "../../components/utilitise/Button";
-import FileInput from "../../components/utilitise/FileInput";
-import P from "../../components/utilitise/P";
-import Select from "../../components/utilitise/Select";
-import useStore from "../../context/useStore";
 import { commonStyles } from "../../css/common";
-import { Fetch } from "../../services/common";
+import useStore from "../../context/useStore";
+import P from "../../components/utilitise/P";
 
-const AddShop = ({ navigation }) => {
+const EditShop = ({ route, navigation }) => {
   const [profile, setProfile] = useState(null);
   const [margin, setMargin] = useState(0);
-  const [form, setForm] = useState({
-    owner: "",
-    shopName: "",
-    address: "",
-    phone: "",
-    commission: 100,
-    machine_model: "",
-    machine_type: "",
-    product_info: "",
-    profile: "",
-  });
+  const [form, setForm] = useState(route.params?.data);
   const store = useStore();
 
   function handleChange(name, value) {
@@ -51,12 +41,10 @@ const AddShop = ({ navigation }) => {
     try {
       store.setLoading(true);
 
-      if (store.database.max_customer <= store.database.current_customer) {
-        alert("Customer limit exceeded. Please contact your administrator");
-        return;
+      if (profile) {
+        form.existedImg = form.profile;
+        form.profile = profile;
       }
-
-      if (profile) form.profile = profile;
       const formData = new FormData();
       Object.entries(form).forEach(([key, value]) => {
         formData.append(key, value);
@@ -64,14 +52,13 @@ const AddShop = ({ navigation }) => {
       formData.append("added_by", store.user.id);
       const { message } = await Fetch(
         store.database.name,
-        "/customer",
-        "POST",
+        `/customer?id=${form.id}`,
+        "PUT",
         formData,
         true
       );
       if (message) store.setMessage({ msg: message, type: "success" });
       store.setUpdateCustomer((prev) => !prev);
-      store.setUpdateUser((prev) => !prev);
       if (socket) {
         socket.send(
           JSON.stringify({
@@ -83,21 +70,26 @@ const AddShop = ({ navigation }) => {
       }
       navigation.goBack();
     } catch (error) {
-      store.setMessage({ msg: error.message, type: error.type || "error" });
+      store.setMessage({ msg: error.message, type: "error" });
     } finally {
       store.setLoading(false);
     }
   }
 
   const disabled =
-    !form.owner || !form.address || !form.shopName || !form.phone;
+    !form.owner ||
+    !form.address ||
+    !form.shopName ||
+    !form.phone ||
+    !form.machine_model ||
+    !form.machine_type;
 
   return (
     <Common>
       <ScrollView style={{ marginBottom: margin }}>
         <View style={commonStyles.formContainer}>
           <P bold style={commonStyles.formHeader}>
-            Add Shop
+            Edit Shop
           </P>
           <View style={{ rowGap: 9 }}>
             <TextInput
@@ -127,43 +119,40 @@ const AddShop = ({ navigation }) => {
               keyboardType='phone-pad'
               maxLength={11}
             />
-            {!store.database.production ? (
-              <>
-                <TextInput
-                  defaultValue={form.machine_model}
-                  onChangeText={(value) => handleChange("machine_model", value)}
-                  style={commonStyles.input}
-                  placeholder='Machine Model'
-                />
-                <Select
-                  name='machine_type'
-                  defaultValue={form.machine_type}
-                  placeholder='Machine Type'
-                  header='type'
-                  height='auto'
-                  options={[
-                    { id: 1, type: "switchCafe" },
-                    { id: 2, type: "others" },
-                  ]}
-                  handler={(_, info) => handleChange("machine_type", info.type)}
-                />
-                <TextInput
-                  defaultValue={form.product_info}
-                  onChangeText={(value) => handleChange("product_info", value)}
-                  style={commonStyles.input}
-                  placeholder='Product info'
-                  multiline
-                />
-                {store.user.designation === "Admin" ? (
-                  <TextInput
-                    defaultValue={form.commission?.toString()}
-                    onChangeText={(value) => handleChange("commission", value)}
-                    style={commonStyles.input}
-                    placeholder='How much commission you want to pay %'
-                    keyboardType='phone-pad'
-                  />
-                ) : null}
-              </>
+            <TextInput
+              defaultValue={form.machine_model}
+              onChangeText={(value) => handleChange("machine_model", value)}
+              style={commonStyles.input}
+              placeholder='Machine Model'
+            />
+            <Select
+              name='machine_type'
+              defaultValue={form.machine_type}
+              placeholder='Machine Type'
+              header='type'
+              height='auto'
+              options={[
+                { id: 1, type: "switchCafe" },
+                { id: 2, type: "others" },
+              ]}
+              handler={(_, info) => handleChange("machine_type", info.type)}
+            />
+
+            <TextInput
+              defaultValue={form.product_info}
+              onChangeText={(value) => handleChange("product_info", value)}
+              style={commonStyles.input}
+              placeholder='Product info'
+              multiline
+            />
+            {store.user.designation === "Admin" ? (
+              <TextInput
+                defaultValue={form.commission?.toString()}
+                onChangeText={(value) => handleChange("commission", value)}
+                style={commonStyles.input}
+                placeholder='How much commission you want to pay %'
+                keyboardType='phone-pad'
+              />
             ) : null}
             <View
               style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
@@ -171,17 +160,17 @@ const AddShop = ({ navigation }) => {
               <View>
                 <FileInput setImage={setProfile} />
               </View>
-              {profile ? (
-                <Image
-                  source={{ uri: profile.uri }}
-                  style={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: 100,
-                    resizeMode: "center",
-                  }}
-                />
-              ) : null}
+              <Image
+                source={{
+                  uri: profile ? profile.uri : serverUrl + form.profile,
+                }}
+                style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 100,
+                  resizeMode: "center",
+                }}
+              />
             </View>
             <Button
               disabled={store.loading || disabled}
@@ -195,4 +184,4 @@ const AddShop = ({ navigation }) => {
   );
 };
 
-export default AddShop;
+export default EditShop;

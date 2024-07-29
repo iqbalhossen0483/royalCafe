@@ -5,6 +5,7 @@ export const style = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    flexWrap: "wrap",
   },
   detailsContainer: {
     marginTop: 10,

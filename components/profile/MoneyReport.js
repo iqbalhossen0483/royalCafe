@@ -8,8 +8,8 @@ import { Fetch } from "../../services/common";
 import { socket } from "../Layout";
 import BDT from "../utilitise/BDT";
 import Button from "../utilitise/Button";
-import P from "../utilitise/P";
 import { color } from "../utilitise/colors";
+import P from "../utilitise/P";
 
 const MoneyReport = ({ transactions, user }) => {
   const [showDate, setShowDate] = useState(-1);
@@ -18,7 +18,12 @@ const MoneyReport = ({ transactions, user }) => {
   async function achieveBalance(data) {
     try {
       store.setLoading(true);
-      const result = await Fetch("/user/receive_balance", "POST", data);
+      const result = await Fetch(
+        store.database.name,
+        "/user/receive_balance",
+        "POST",
+        data
+      );
       store.setMessage({ msg: result.message, type: "success" });
       if (socket) {
         socket.send(
@@ -42,7 +47,11 @@ const MoneyReport = ({ transactions, user }) => {
   async function declineRequest(id, fromUser) {
     try {
       store.setLoading(true);
-      const result = await Fetch(`/user/decline_balance?id=${id}`, "DELETE");
+      const result = await Fetch(
+        store.database.name,
+        `/user/decline_balance?id=${id}`,
+        "DELETE"
+      );
       store.setMessage({ msg: result.message, type: "success" });
       if (socket) {
         socket.send(
@@ -64,7 +73,7 @@ const MoneyReport = ({ transactions, user }) => {
 
   return (
     <View>
-      <P bold={500} style={commonStyles.heading}>
+      <P bold style={commonStyles.heading}>
         Money Report
       </P>
       <View style={{ ...styles.workContainer }}>
@@ -75,10 +84,10 @@ const MoneyReport = ({ transactions, user }) => {
               justifyContent: "space-between",
             }}
           >
-            <P bold={500}>From User</P>
-            <P bold={500}>To User</P>
-            <P bold={500}>Purpose</P>
-            <P bold={500}>Amount</P>
+            <P bold>From User</P>
+            <P bold>To User</P>
+            <P bold>Purpose</P>
+            <P bold>Amount</P>
           </View>
           {!transactions.length ? (
             <P align='center'>No money transition pending </P>
@@ -107,15 +116,20 @@ const MoneyReport = ({ transactions, user }) => {
                       backgroundColor: "#e3ac07",
                     }}
                   >
-                    <P>{trs.fromUsername}</P>
-                    <P>{trs.toUsername}</P>
+                    <P>{trs.fromUsername.split(" ")[0]}</P>
+                    <P>{trs.toUsername.split(" ")[0]}</P>
                     <P>{trs.purpose}</P>
                     <BDT amount={trs.amount} />
                   </View>
                   {showDate === i ? (
-                    <P align='center' color='darkGray'>
-                      Req Time: {new Date(trs.transfer_time).toLocaleString()}
-                    </P>
+                    <>
+                      <P align='center' color='darkGray'>
+                        Req Time: {new Date(trs.transfer_time).toLocaleString()}
+                      </P>
+                      <P>
+                        <P bold>Notes:</P> {trs.notes || "N/A"}
+                      </P>
+                    </>
                   ) : null}
                   {trs.toUser === user.id ? (
                     <View
@@ -132,16 +146,18 @@ const MoneyReport = ({ transactions, user }) => {
                         style={{ paddingVertical: 3, width: "45%" }}
                         title='Achieve'
                       />
-                      <Button
-                        disabled={store.loading}
-                        onPress={() => declineRequest(trs.id, trs.fromUser)}
-                        style={{
-                          paddingVertical: 3,
-                          width: "45%",
-                          backgroundColor: color.orange,
-                        }}
-                        title='Decline'
-                      />
+                      {!trs.commision ? (
+                        <Button
+                          disabled={store.loading}
+                          onPress={() => declineRequest(trs.id, trs.fromUser)}
+                          style={{
+                            paddingVertical: 3,
+                            width: "45%",
+                            backgroundColor: color.orange,
+                          }}
+                          title='Decline'
+                        />
+                      ) : null}
                     </View>
                   ) : null}
                 </Pressable>

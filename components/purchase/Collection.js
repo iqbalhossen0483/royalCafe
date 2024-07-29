@@ -7,15 +7,17 @@ import { commonStyles } from "../../css/common";
 import { styles } from "../../css/orderDetails";
 import { Fetch } from "../../services/common";
 import Button from "../utilitise/Button";
+import { color } from "../utilitise/colors";
 import FileInput from "../utilitise/FileInput";
 import P from "../utilitise/P";
-import { color } from "../utilitise/colors";
 
 const CollectionForm = ({ setShow, data }) => {
   const [payment, setPayment] = useState(0);
   const [files, setFiles] = useState([]);
+  const [paymentInfo, setPaymentInfo] = useState(data.payment_info);
   const store = useStore();
-
+  console.log(paymentInfo);
+  console.log(data.payment_info);
   async function getCollection(discount, due) {
     try {
       store.setLoading(true);
@@ -27,6 +29,7 @@ const CollectionForm = ({ setShow, data }) => {
         supplierId: data.supplier_id,
         sent_by: store.user.id,
         files: data.files,
+        payment_info: paymentInfo,
         collection: JSON.stringify({
           senderId: store.user.id,
           amount: payment,
@@ -43,7 +46,13 @@ const CollectionForm = ({ setShow, data }) => {
           formData.append("files", file);
         });
       }
-      const { message } = await Fetch(url, "PUT", formData, true);
+      const { message } = await Fetch(
+        store.database.name,
+        url,
+        "PUT",
+        formData,
+        true
+      );
       store.setMessage({ msg: message, type: "success" });
       store.setUpdatePurchase((prev) => !prev);
       store.setUpdateUser((prev) => !prev);
@@ -95,15 +104,29 @@ const CollectionForm = ({ setShow, data }) => {
             alignItems: "center",
           }}
         >
-          <P size={17} bold={500} style={{ color: "#dc2626" }}>
+          <P size={17} bold style={{ color: "#dc2626" }}>
             Due: {data.due - payment}৳
           </P>
         </View>
         <TextInput
-          style={{ ...commonStyles.input, marginVertical: 20 }}
+          style={{ ...commonStyles.input, marginTop: 20 }}
           placeholder='Collection ৳'
           keyboardType='numeric'
           onChangeText={(value) => setPayment(parseInt(value || 0))}
+        />
+
+        <TextInput
+          onChangeText={(value) => setPaymentInfo(value)}
+          style={{
+            ...commonStyles.input,
+            textAlignVertical: "top",
+            paddingTop: 5,
+            height: 100,
+          }}
+          editable={payment ? true : false}
+          placeholder='Payment Information'
+          defaultValue={paymentInfo}
+          multiline
         />
         <View style={{ gap: 10 }}>
           {files.length ? (

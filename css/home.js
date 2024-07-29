@@ -8,7 +8,7 @@ export const style = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     margin: 10,
-    padding: 20,
+    padding: "2%",
     paddingTop: 0,
     borderRadius: 10,
     justifyContent: "space-between",

@@ -17,7 +17,7 @@ const Menu = ({ name, Icon, showModal, navigate = "" }) => {
       }
     >
       {Icon}
-      <P bold={500} color={navigate === route.name ? "green" : "darkGray"}>
+      <P bold color={navigate === route.name ? "green" : "darkGray"}>
         {name}
       </P>
     </Pressable>

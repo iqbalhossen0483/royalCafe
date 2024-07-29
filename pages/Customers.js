@@ -6,8 +6,8 @@ import { Common } from "../components/Common";
 import SearchFilter from "../components/SearchFilter";
 import Avater from "../components/utilitise/Avater";
 import BDT from "../components/utilitise/BDT";
-import P from "../components/utilitise/P";
 import { color } from "../components/utilitise/colors";
+import P from "../components/utilitise/P";
 import useStore from "../context/useStore";
 import { styles } from "../css/customer";
 import { Fetch, dateFormatter, openNumber } from "../services/common";
@@ -21,7 +21,11 @@ const Customers = ({ navigation }) => {
     (async () => {
       try {
         store.setLoading(true);
-        const data = await Fetch(`/customer?page=${page}`, "GET");
+        const data = await Fetch(
+          store.database.name,
+          `/customer?page=${page}`,
+          "GET"
+        );
         if (page === 0) setCustomers(data);
         else
           setCustomers({
@@ -29,7 +33,7 @@ const Customers = ({ navigation }) => {
             data: [...customers.data, ...data.data],
           });
       } catch (error) {
-        store.setMessage({ msg: error.message, type: "error" });
+        navigation.navigate("error");
       } finally {
         store.setLoading(false);
       }
@@ -42,7 +46,11 @@ const Customers = ({ navigation }) => {
       store.setLoading(true);
       setPage(0);
       const value = query.split("=")[1];
-      const result = await Fetch(`/customer?${query}`, "GET");
+      const result = await Fetch(
+        store.database.name,
+        `/customer?${query}`,
+        "GET"
+      );
       if (value) setCustomers({ data: result });
       else setCustomers(result);
     } catch (error) {
@@ -75,7 +83,7 @@ const Customers = ({ navigation }) => {
               onChange={() => {
                 if (
                   customers?.count &&
-                  customers?.count !== customers?.data?.length + 1 &&
+                  customers?.count !== customers?.data?.length &&
                   i === arr.length - 1
                 ) {
                   setPage((prev) => prev + 1);
@@ -100,7 +108,7 @@ const Customers = ({ navigation }) => {
                     style={{ marginLeft: 6, flexDirection: "row", gap: 10 }}
                   >
                     <View style={{ width: "50%" }}>
-                      <P size={15} bold={500}>
+                      <P size={15} bold>
                         {item.shopName}
                       </P>
                       <P size={13} color='darkGray'>
@@ -126,7 +134,7 @@ const Customers = ({ navigation }) => {
                       ) : null}
                       <P size={13}>Added By: {item.added_by_name}</P>
                       {item.due ? (
-                        <P color='orange' size={13} bold={500}>
+                        <P color='orange' size={13} bold>
                           Due:
                           <BDT
                             style={{ color: color.orange }}

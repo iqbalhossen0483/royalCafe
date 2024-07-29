@@ -31,6 +31,7 @@ const CustomerDetails = ({ route, navigation }) => {
       try {
         store.setLoading(true);
         const data = await Fetch(
+          store.database.name,
           `/customer?id=${route.params.id}&page=${page}`,
           "GET"
         );
@@ -46,16 +47,22 @@ const CustomerDetails = ({ route, navigation }) => {
         store.setLoading(false);
       } catch (error) {
         store.setLoading(false);
-        store.setMessage({ msg: error.message, type: "error" });
+        navigation.navigate("error");
       }
     })();
+
+    return () => store.setLoading(false);
   }, [page, store.updateCustomer]);
 
-  async function deleteCustomer(id) {
+  async function deleteCustomer(id, profile) {
     alert("Are you sure you want to delete?", async () => {
       try {
         store.setLoading(true);
-        const result = await Fetch(`/customer?id=${id}`, "DELETE");
+        const result = await Fetch(
+          store.database.name,
+          `/customer?id=${id}&profile=${profile}`,
+          "DELETE"
+        );
         store.setMessage({ msg: result.message, type: "success" });
         store.setUpdateCustomer((prev) => !prev);
         navigation.goBack();
@@ -73,31 +80,24 @@ const CustomerDetails = ({ route, navigation }) => {
       <IOScrollView style={{ marginBottom: 50 }}>
         <View style={styles.detailsContentContainer}>
           <View style={styles.customerProfile}>
-            {customers.data.profile ? (
-              <Image
-                source={{ uri: serverUrl + customers.data.profile }}
-                alt=''
-                style={{ width: 50, height: 50, borderRadius: 50 }}
-              />
-            ) : (
-              <Image
-                source={require("../assets/no-photo.png")}
-                alt=''
-                style={{ width: 50, height: 50, borderRadius: 50 }}
-              />
-            )}
+            <Image
+              source={
+                customers.data.profile
+                  ? { uri: serverUrl + customers.data.profile }
+                  : require("../assets/no-photo.png")
+              }
+              alt=''
+              style={{ width: 50, height: 50, borderRadius: 50 }}
+            />
             <View>
               <View style={styles.nameWrapper}>
-                <P align='center' size={18} bold={500}>
+                <P align='center' size={18} bold>
                   {customers.data.shopName}
                 </P>
                 <Pressable
                   style={{ height: 20, width: 27 }}
                   onPress={() =>
-                    navigation.navigate("addshop", {
-                      edit: true,
-                      data: shopData,
-                    })
+                    navigation.navigate("editshop", { data: shopData })
                   }
                 >
                   <Feather name='edit' size={18} color={color.darkGray} />
@@ -106,41 +106,51 @@ const CustomerDetails = ({ route, navigation }) => {
                   <Pressable
                     disabled={store.loading}
                     style={{ height: 20, width: 27 }}
-                    onPress={() => deleteCustomer(customers.data.id)}
+                    onPress={() =>
+                      deleteCustomer(customers.data.id, customers.data.profile)
+                    }
                   >
                     <AntDesign name='delete' size={18} color={color.darkGray} />
                   </Pressable>
                 ) : null}
               </View>
 
-              <P color='darkGray' align='center'>
-                {customers.data.address}
-              </P>
-              <Pressable onPress={() => openNumber(customers.data.phone)}>
-                <P align='center' color='green'>
-                  {customers.data.phone}
+              <View>
+                <P color='darkGray'>
+                  <P bold>Address: </P>
+                  {customers.data.address}
                 </P>
-              </Pressable>
+                <Pressable
+                  style={{ alignItems: "center", flexDirection: "row" }}
+                  onPress={() => openNumber(customers.data.phone)}
+                >
+                  <P bold>Phone: </P>
+                  <P align='center' color='green'>
+                    {customers.data.phone}
+                  </P>
+                </Pressable>
+              </View>
             </View>
-            <View
-              style={{
-                flexDirection: "row",
-                columnGap: 10,
-                flexWrap: "wrap",
-              }}
-            >
-              <P>
-                <P bold={500}>Model:</P> {customers.data.machine_model || "N/A"}
-                ,
-              </P>
-              <P>
-                <P bold={500}>Type:</P> {customers.data.machine_type || "N/A"},
-              </P>
-              <P>
-                <P bold={500}>Product info:</P>{" "}
-                {customers.data.product_info || "N/A"},
-              </P>
-            </View>
+            {!store.database.production ? (
+              <View
+                style={{
+                  flexDirection: "row",
+                  columnGap: 10,
+                  flexWrap: "wrap",
+                }}
+              >
+                <P>
+                  <P bold>Model:</P> {customers.data.machine_model || "N/A"},
+                </P>
+                <P>
+                  <P bold>Type:</P> {customers.data.machine_type || "N/A"},
+                </P>
+                <P>
+                  <P bold>Product info:</P>{" "}
+                  {customers.data.product_info || "N/A"}
+                </P>
+              </View>
+            ) : null}
           </View>
           <View style={styles.amountContainer}>
             <Amount
@@ -199,7 +209,7 @@ const CustomerDetails = ({ route, navigation }) => {
                 >
                   <View>
                     <View style={{ marginLeft: 6 }}>
-                      <P bold={500} size={15}>
+                      <P bold size={15}>
                         {item.shopName}
                       </P>
                       <P color='darkGray'>{item.address}</P>
@@ -211,7 +221,7 @@ const CustomerDetails = ({ route, navigation }) => {
                   <View>
                     <View style={{ flexDirection: "row" }}>
                       <P>Bill no: </P>
-                      <P bold={500}>{item.billno}</P>
+                      <P bold>{item.billno}</P>
                     </View>
                     <P>
                       Sale: <BDT amount={item.totalSale} />
@@ -252,7 +262,7 @@ export default CustomerDetails;
 function Amount({ name, amount, colors }) {
   return (
     <View style={{ ...styles.amountWrapper, backgroundColor: colors }}>
-      <P bold={500} align='center' color='light'>
+      <P bold align='center' color='light'>
         {name}
       </P>
       <BDT style={styles.amount} amount={amount} />

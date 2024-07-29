@@ -25,7 +25,12 @@ const AddExpense = ({ navigation }) => {
       data.amount = parseInt(data.amount);
       data.created_by = store.user.id;
       data.userDesignation = store.user.designation;
-      const { message } = await Fetch("/expense", "POST", data);
+      const { message } = await Fetch(
+        store.database.name,
+        "/expense",
+        "POST",
+        data
+      );
       store.setMessage({ msg: message, type: "success" });
       navigation.goBack();
       store.setUpdateUser((prev) => !prev);
@@ -52,7 +57,7 @@ const AddExpense = ({ navigation }) => {
   return (
     <Common>
       <View style={commonStyles.formContainer}>
-        <P bold={500} style={commonStyles.formHeader}>
+        <P bold style={commonStyles.formHeader}>
           Add Expense
         </P>
 

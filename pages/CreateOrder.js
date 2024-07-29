@@ -1,19 +1,19 @@
+import { ScrollView, TextInput, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { ScrollView, TextInput, View } from "react-native";
 
+import PreviousOrder from "../components/createorder/PreviousOrder";
+import AddProduct from "../components/createorder/AddProduct";
+import Product from "../components/createorder/Product";
+import Button from "../components/utilitise/Button";
+import Select from "../components/utilitise/Select";
 import { Common } from "../components/Common";
 import { socket } from "../components/Layout";
-import AddProduct from "../components/createorder/AddProduct";
-import PreviousOrder from "../components/createorder/PreviousOrder";
-import Product from "../components/createorder/Product";
 import BDT from "../components/utilitise/BDT";
-import Button from "../components/utilitise/Button";
-import P from "../components/utilitise/P";
-import Select from "../components/utilitise/Select";
-import useStore from "../context/useStore";
 import { commonStyles } from "../css/common";
+import useStore from "../context/useStore";
 import { Fetch } from "../services/common";
+import P from "../components/utilitise/P";
 
 const CreateOrder = ({ route, navigation }) => {
   const [show, setShow] = useState(false);
@@ -72,7 +72,7 @@ const CreateOrder = ({ route, navigation }) => {
       const url = edit
         ? `/order?id=${route.params?.order.id}&editOrder=true`
         : "/order";
-      const { message } = await Fetch(url, method, data);
+      const { message } = await Fetch(store.database.name, url, method, data);
       store.setMessage({ msg: message, type: "success" });
       navigation.goBack();
       if (socket) {
@@ -103,7 +103,7 @@ const CreateOrder = ({ route, navigation }) => {
     <Common>
       <ScrollView>
         <View style={commonStyles.formContainer}>
-          <P bold={500} style={commonStyles.formHeader}>
+          <P bold style={commonStyles.formHeader}>
             {route.params?.edit ? "Edit" : "Create"} Order
           </P>
           <View style={{ rowGap: 5, overflow: "visible" }}>

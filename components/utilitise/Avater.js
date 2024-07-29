@@ -8,7 +8,14 @@ const Avater = ({ url }) => {
   return (
     <View>
       {url !== "null" && url ? (
-        <Image style={styles.profile} source={{ uri: serverUrl + url }} />
+        <Image
+          style={styles.profile}
+          source={
+            url !== null && url
+              ? { uri: serverUrl + url }
+              : require("../../assets/no-photo.png")
+          }
+        />
       ) : (
         <Image
           style={styles.profile}

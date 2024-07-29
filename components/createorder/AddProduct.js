@@ -8,7 +8,7 @@ import P from "../utilitise/P";
 import Select from "../utilitise/Select";
 import FreeProduct from "./FreeProduct";
 
-const AddProduct = ({ show, setForm, setShow, products, options }) => {
+const AddProduct = ({ show, setForm, setShow, products }) => {
   const [product, setProduct] = useState({ isFree: "false" });
 
   function addToListProduct() {
@@ -25,7 +25,7 @@ const AddProduct = ({ show, setForm, setShow, products, options }) => {
       prev.products.push(product);
       return { ...prev };
     });
-    setProduct({});
+    setProduct({ isFree: "false" });
     setShow(false);
   }
 
@@ -36,7 +36,7 @@ const AddProduct = ({ show, setForm, setShow, products, options }) => {
       coverScreen={true}
       bottom={20}
     >
-      <P align='center' bold={500} style={{ marginBottom: 4 }}>
+      <P align='center' bold style={{ marginBottom: 4 }}>
         Add a product
       </P>
       <Select

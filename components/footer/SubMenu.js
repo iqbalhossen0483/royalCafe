@@ -1,10 +1,8 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, TouchableHighlight } from "react-native";
-import { View } from "react-native";
-import { Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import React from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+
 import { commonStyles } from "../../css/common";
-import { color } from "../utilitise/colors";
 import P from "../utilitise/P";
 
 const SubMenu = ({
@@ -32,7 +30,7 @@ const SubMenu = ({
   return (
     <Pressable onPress={handler} style={style.container}>
       <View style={iconStyle}>{icon}</View>
-      <P color='darkGray' bold={500} style={style.name}>
+      <P color='darkGray' bold style={style.name}>
         {name}
       </P>
     </Pressable>

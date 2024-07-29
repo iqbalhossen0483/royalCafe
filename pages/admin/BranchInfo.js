@@ -11,37 +11,54 @@ const BranchInfo = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({});
   const store = useStore();
+  const database = store.database;
 
   async function onSubmit() {
     try {
       setLoading(true);
       Keyboard.dismiss();
-      const result = await Fetch("/admin/siteInfo", "PUT", data);
+      const result = await Fetch(
+        store.database.name,
+        `/admin/updateinfo?id=${database.id}`,
+        "PUT",
+        data
+      );
       store.setMessage({ msg: result.message, type: "success" });
-      store.setUpdateReport((prev) => !prev);
+      store.setUpdateUser((prev) => !prev);
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {
       setLoading(false);
     }
   }
-  const siteInfo = store.siteInfo;
+
   return (
     <SettingHeader>
       <View style={commonStyles.formContainer}>
         <View style={{ rowGap: 10 }}>
-          <Text>Branch Name:</Text>
+          <Text>Organisation Name:</Text>
           <TextInput
             onChangeText={(value) =>
               setData((prev) => {
-                return { ...prev, name: value };
+                return { ...prev, title: value };
               })
             }
             style={commonStyles.input}
             placeholder='Name'
-            defaultValue={siteInfo.name || ""}
+            defaultValue={database.title || ""}
           />
-          <Text>Branch Address:</Text>
+          <Text>Organisation Owner:</Text>
+          <TextInput
+            onChangeText={(value) =>
+              setData((prev) => {
+                return { ...prev, owner_name: value };
+              })
+            }
+            style={commonStyles.input}
+            placeholder='Owner Name'
+            defaultValue={database.owner_name || ""}
+          />
+          <Text>Organisation Address:</Text>
           <TextInput
             onChangeText={(value) =>
               setData((prev) => {
@@ -50,19 +67,40 @@ const BranchInfo = () => {
             }
             style={commonStyles.input}
             placeholder='Address'
-            defaultValue={siteInfo.address || ""}
+            defaultValue={database.address || ""}
           />
           <Text>Phone Number:</Text>
           <TextInput
             onChangeText={(value) =>
               setData((prev) => {
-                return { ...prev, numbers: value };
+                return { ...prev, phone: value };
               })
             }
             style={commonStyles.input}
-            placeholder='Numbers'
-            defaultValue={siteInfo.numbers || ""}
+            placeholder='Number'
+            defaultValue={database.phone || ""}
           />
+          <Text>Another Number:</Text>
+          <TextInput
+            onChangeText={(value) =>
+              setData((prev) => {
+                return { ...prev, alt_phone: value };
+              })
+            }
+            style={commonStyles.input}
+            placeholder='another number'
+            defaultValue={database.alt_phone || ""}
+          />
+
+          <Text>
+            1. You can add {database.max_user} users. Your primary user is{" "}
+            {database.primary_user_name}.
+          </Text>
+          <Text>2. You can add {database.max_product} products.</Text>
+          <Text>3. You can add {database.max_customer} customers.</Text>
+          {database.production ? (
+            <Text>4. This Organisation is a manufacturer.</Text>
+          ) : null}
           <Button
             title={loading ? "Saving..." : "Save"}
             disabled={loading}

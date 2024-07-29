@@ -11,9 +11,8 @@ import Target from "../components/profile/Target";
 import { alert } from "../components/utilitise/Alert";
 import Avater from "../components/utilitise/Avater";
 import Button from "../components/utilitise/Button";
-import { LoadingOnComponent } from "../components/utilitise/Loading";
 import P from "../components/utilitise/P";
-import Select from "../components/utilitise/Select";
+import Splash from "../components/utilitise/Splash";
 import useStore from "../context/useStore";
 import { styles } from "../css/profile";
 import { Fetch, openNumber, role } from "../services/common";
@@ -33,13 +32,12 @@ const Profile = ({ route, navigation }) => {
   useEffect(() => {
     (async () => {
       try {
-        const user = await Fetch(
-          `/user?id=${route.params?.userId || store.user.id}`,
-          "GET"
-        );
+        const url = `/user?id=${route.params?.userId || store.user.id}`;
+        const user = await Fetch(store.database.name, url, "GET");
         setUser(user[0]);
+        store.setShowSplash(false);
       } catch (error) {
-        store.setMessage({ msg: error.message, type: "error" });
+        navigation.navigate("error");
       }
     })();
   }, [store.updateUser, route.params?.userId]);
@@ -51,7 +49,7 @@ const Profile = ({ route, navigation }) => {
     });
   }
 
-  if (!user) return <LoadingOnComponent />;
+  if (!user) return <Splash />;
 
   const money_transactions = user?.money_transactions;
 
@@ -62,10 +60,10 @@ const Profile = ({ route, navigation }) => {
           <View style={styles.profileWrapper}>
             <Avater url={user.profile} />
             <View>
-              <P bold={500} size={16} color='green'>
+              <P bold size={16} color='green'>
                 {user.name}
               </P>
-              <P bold={500} size={13} color='darkGray'>
+              <P bold size={13} color='darkGray'>
                 {user.designation}
               </P>
               <Pressable onPress={() => openNumber(user.phone)}>
@@ -75,43 +73,24 @@ const Profile = ({ route, navigation }) => {
           </View>
           {user?.id === store?.user?.id ||
           store.user.designation === role.admin ? (
-            <>
-              <View
-                style={{ marginTop: 8, flexDirection: "row", columnGap: 10 }}
-              >
-                <Button
-                  onPress={() =>
-                    navigation.navigate("balanceTransfer", { user: user })
-                  }
-                  title='Money Transfer'
-                />
-                {user?.id === store?.user?.id ? (
-                  <>
-                    <Button onPress={goForEdit} title='Edit Profile' />
-                    <Button
-                      style={{ backgroundColor: "#e8a72e" }}
-                      onPress={logOut}
-                      title='LogOut'
-                    />
-                  </>
-                ) : null}
-              </View>
-              {user.db_list.length ? (
-                <View style={{ marginTop: 8 }}>
-                  <Select
-                    placeholder={`You're now in ‟Your Database” AC     `}
-                    header='name'
-                    height='auto'
-                    editable={false}
-                    options={user.db_list}
-                    zIndex={50}
-                    handler={(_, info) => {
-                      console.log(info);
-                    }}
+            <View style={{ marginTop: 8, flexDirection: "row", columnGap: 10 }}>
+              <Button
+                onPress={() =>
+                  navigation.navigate("balanceTransfer", { user: user })
+                }
+                title='Money Transfer'
+              />
+              {user?.id === store?.user?.id ? (
+                <>
+                  <Button onPress={goForEdit} title='Edit Profile' />
+                  <Button
+                    style={{ backgroundColor: "#e8a72e" }}
+                    onPress={logOut}
+                    title='LogOut'
                   />
-                </View>
+                </>
               ) : null}
-            </>
+            </View>
           ) : null}
         </View>
 

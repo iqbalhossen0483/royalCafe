@@ -15,37 +15,3 @@ export default function App() {
     </StoreProvider>
   );
 }
-
-// //for notification;
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowAlert: true,
-//     shouldPlaySound: true,
-//     shouldSetBadge: true,
-//   }),
-// }); //till;
-
-// //background notification;
-// const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
-
-// Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
-
-// TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, () => {
-
-// });
-
-// const [notificationPermissions, setNotificationPermissions] = useState(
-//   PermissionStatus.UNDETERMINED
-// );
-
-// useEffect(() => {
-//   (async () => {
-//     const { status } = await Notifications.requestPermissionsAsync();
-//     setNotificationPermissions(status);
-//   })();
-// }, []);
-
-// useEffect(() => {
-//   if (notificationPermissions !== PermissionStatus.GRANTED) return;
-//   Notifications.addNotificationReceivedListener(() => {});
-// }, [notificationPermissions]);

@@ -11,7 +11,7 @@ const Account = ({ users }) => {
   return (
     <View style={style.accountContainer}>
       <P
-        bold={500}
+        bold
         style={{
           ...commonStyles.heading,
           marginTop: 0,
@@ -21,25 +21,38 @@ const Account = ({ users }) => {
       >
         Account of Money
       </P>
-      <View style={commonStyles.tableRow}>
+      <View
+        style={{
+          ...commonStyles.tableRow,
+          paddingVertical: 5,
+          paddingLeft: 10,
+        }}
+      >
         <P
           style={{
             width: "40%",
           }}
-          bold={500}
+          bold
         >
           Name
         </P>
-        <P style={styles} bold={500}>
+        <P style={styles} bold>
           Debt
         </P>
-        <P style={styles} bold={500}>
+        <P style={styles} bold>
           Balance
         </P>
       </View>
       {users && users.length ? (
         users.map((item) => (
-          <View style={commonStyles.tableRow} key={item.id}>
+          <View
+            style={{
+              ...commonStyles.tableRow,
+              borderTopWidth: 0,
+              paddingLeft: 10,
+            }}
+            key={item.id}
+          >
             <P style={{ width: "40%" }}>{item.name}</P>
             <BDT style={styles} amount={item.debt} />
             <BDT style={styles} amount={item.haveMoney} />

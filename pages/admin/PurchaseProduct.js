@@ -10,59 +10,32 @@ import {
 } from "react-native";
 
 import { Common } from "../../components/Common";
+import AddProduct from "../../components/createorder/AddProduct";
+import Product from "../../components/createorder/Product";
 import { alert } from "../../components/utilitise/Alert";
+import BDT from "../../components/utilitise/BDT";
 import Button from "../../components/utilitise/Button";
+import { color } from "../../components/utilitise/colors";
 import FileInput from "../../components/utilitise/FileInput";
 import P from "../../components/utilitise/P";
 import Select from "../../components/utilitise/Select";
-import { color } from "../../components/utilitise/colors";
 import useStore from "../../context/useStore";
 import { commonStyles } from "../../css/common";
 import { Fetch } from "../../services/common";
 
 const PurchaseProduct = ({ navigation }) => {
-  const [data, setData] = useState({ supplier: null, products: null });
-  const [numOfShow, setNumOfShow] = useState(1);
-  const [bottomMargin, setBottomMargin] = useState(57);
-  const [supplier, setSupplier] = useState({
+  const [data, setData] = useState({
     supplierId: 0,
-    totalPurchased: 0,
+    products: [],
+    totalSale: 0,
     giveAmount: 0,
     payment_info: "",
     files: [],
   });
-  const [form, setForm] = useState([]);
+  const [show, setShow] = useState(false);
+  const [bottomMargin, setBottomMargin] = useState(57);
+
   const store = useStore();
-
-  useEffect(() => {
-    (async () => {
-      try {
-        store.setLoading(true);
-        const supplier = await Fetch("/supplier?opt=id,name", "GET");
-        const products = await Fetch("/product?opt=id,name,stock", "GET");
-        setData({ supplier, products });
-      } catch (error) {
-        store.setMessage({ msg: error.message, type: "error" });
-      } finally {
-        store.setLoading(false);
-      }
-      return () => store.setLoading(false);
-    })();
-  }, []);
-
-  useEffect(() => {
-    const show = Keyboard.addListener("keyboardDidShow", (event) => {
-      setBottomMargin(event.endCoordinates.height);
-    });
-    const hide = Keyboard.addListener("keyboardDidHide", () => {
-      setBottomMargin(57);
-    });
-
-    return () => {
-      show.remove();
-      hide.remove();
-    };
-  }, []);
 
   function onSubmit() {
     const txtMessage =
@@ -70,22 +43,24 @@ const PurchaseProduct = ({ navigation }) => {
     alert(txtMessage, async () => {
       try {
         store.setLoading(true);
-        const data = {
-          ...supplier,
-          debtAmount: supplier.totalPurchased - supplier.giveAmount,
-          product: form,
-          userId: store.user.id,
-        };
+        data.userId = store.user.id;
+
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
           if (key === "files") {
             value.forEach((file) => formData.append("files", file));
-          } else if (key === "product") {
-            formData.append("product", JSON.stringify(value));
+          } else if (key === "products") {
+            formData.append("products", JSON.stringify(value));
           } else formData.append(key, value);
         });
 
-        const { message } = await Fetch("/purchase", "POST", formData, true);
+        const { message } = await Fetch(
+          store.database.name,
+          "/purchase",
+          "POST",
+          formData,
+          true
+        );
         store.setMessage({ msg: message, type: "success" });
         store.setUpdateReport((prev) => !prev);
         store.setUpdateUser((prev) => !prev);
@@ -99,7 +74,7 @@ const PurchaseProduct = ({ navigation }) => {
   }
 
   function addfile(file) {
-    setSupplier((prev) => {
+    setData((prev) => {
       file.id = prev.files.length;
       prev.files.push(file);
       return { ...prev };
@@ -107,96 +82,138 @@ const PurchaseProduct = ({ navigation }) => {
   }
 
   function removeFile(id) {
-    setSupplier((prev) => {
+    setData((prev) => {
       const rest = prev.files.filter((file) => file.id !== id);
       prev.files = rest;
       return { ...prev };
     });
   }
 
-  if (!data.products || !data.supplier) return null;
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", (event) => {
+      setBottomMargin(event.endCoordinates.height);
+    });
+    const hide = Keyboard.addListener("keyboardDidHide", () => {
+      setBottomMargin(0);
+    });
+
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+  console.log(data);
   return (
     <Common>
       <ScrollView style={{ marginBottom: bottomMargin }}>
         <View style={commonStyles.formContainer}>
-          <P bold={500} style={commonStyles.formHeader}>
+          <P bold style={commonStyles.formHeader}>
             Purchase Product
           </P>
-          <View style={{ rowGap: 10 }}>
+          <View style={{ rowGap: 10, zIndex: 0 }}>
             <Select
               header='name'
-              zIndex={20000}
+              zIndex={200}
               name='supplier'
-              placeholder='Select supplier'
-              options={data.supplier}
+              placeholder='Type supplier name'
+              url={"/supplier?opt=id,name"}
+              search={true}
               height='auto'
               handler={(_, info) =>
-                setSupplier((prev) => {
+                setData((prev) => {
                   return { ...prev, supplierId: info.id };
                 })
               }
             />
-            {data.products &&
-              data.products
-                .slice(0, numOfShow)
-                .map((product, i, arr) => (
-                  <PurchaseInput
-                    key={product.id}
-                    arr={arr}
-                    i={i}
-                    products={data.products}
-                    setForm={setForm}
-                    form={form}
-                  />
-                ))}
 
-            <Button
-              disabled={!data.products || data.products.length <= numOfShow}
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: 100,
-                paddingHorizontal: 3,
-                paddingVertical: 5,
-                alignSelf: "flex-end",
-              }}
-              title={
-                <AntDesign
-                  onPress={() => setNumOfShow((prev) => prev + 1)}
-                  name='pluscircle'
-                  size={18}
-                  color='#fff'
+            {data.supplierId ? (
+              <>
+                <P
+                  bold
+                  align='center'
+                  style={{
+                    borderBottomWidth: 1,
+                    borderBottomColor: color.gray,
+                  }}
+                >
+                  Product List
+                </P>
+                {data.products.length ? (
+                  <View style={{ marginTop: -14 }}>
+                    <Product products={data.products} setForm={setData} />
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <P>Total: </P>
+                      <P bold>
+                        <BDT amount={data.totalSale} />
+                      </P>
+                    </View>
+                  </View>
+                ) : (
+                  <P align='center'>No product</P>
+                )}
+
+                <Button
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 100,
+                    paddingHorizontal: 3,
+                    paddingVertical: 5,
+                    alignSelf: "flex-end",
+                  }}
+                  onPress={() => setShow((prev) => !prev)}
+                  title={<AntDesign name='pluscircle' size={18} color='#fff' />}
                 />
-              }
-            />
-            <TextInput
-              onChangeText={(value) =>
-                setSupplier((prev) => {
-                  return { ...prev, totalPurchased: parseInt(value) };
-                })
-              }
-              style={commonStyles.input}
-              placeholder='Total purchase $'
-              keyboardType='phone-pad'
-            />
-            <TextInput
-              onChangeText={(value) =>
-                setSupplier((prev) => {
-                  return { ...prev, giveAmount: parseInt(value) };
-                })
-              }
-              style={commonStyles.input}
-              placeholder='Give amount'
-              keyboardType='phone-pad'
-            />
+              </>
+            ) : null}
+
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <P
+                bold
+                style={{
+                  borderWidth: 1,
+                  borderColor: color.gray,
+                  paddingLeft: 6,
+                  paddingVertical: 9,
+                  borderTopLeftRadius: 5,
+                  borderBottomLeftRadius: 5,
+                  backgroundColor: color.lightGray,
+                  width: "30%",
+                }}
+              >
+                Give Amount
+              </P>
+              <TextInput
+                style={{
+                  ...commonStyles.input,
+                  width: "70%",
+                  borderBottomEndRadius: 5,
+                  borderTopEndRadius: 5,
+                  borderBottomLeftRadius: 0,
+                  borderTopLeftRadius: 0,
+                }}
+                onChangeText={(value) =>
+                  setData((prev) => {
+                    return { ...prev, giveAmount: parseInt(value) };
+                  })
+                }
+                placeholder='Give amount ৳'
+                keyboardType='phone-pad'
+              />
+            </View>
 
             <TextInput
               onChangeText={(value) =>
-                setSupplier((prev) => {
+                setData((prev) => {
                   return { ...prev, payment_info: value };
                 })
               }
-              editable={supplier.giveAmount ? true : false}
+              editable={data.giveAmount ? true : false}
               style={{
                 textAlignVertical: "top",
                 ...commonStyles.input,
@@ -206,9 +223,9 @@ const PurchaseProduct = ({ navigation }) => {
               placeholder='Payment Information'
               multiline
             />
-            {supplier.files.length ? (
+            {data.files.length ? (
               <View style={{ flexDirection: "row", gap: 5, flexWrap: "wrap" }}>
-                {supplier.files.map((file) => (
+                {data.files.map((file) => (
                   <Pressable key={file.id} onPress={() => removeFile(file.id)}>
                     <Image
                       source={{ uri: file.uri }}
@@ -234,7 +251,7 @@ const PurchaseProduct = ({ navigation }) => {
               </View>
             ) : null}
             <FileInput
-              disable={!supplier.payment_info}
+              disable={!data.payment_info}
               setImage={(file) => addfile(file)}
               title='Add file +'
             />
@@ -242,15 +259,16 @@ const PurchaseProduct = ({ navigation }) => {
             <Button
               title='Submit'
               onPress={onSubmit}
-              disabled={
-                store.loading ||
-                !supplier.supplierId ||
-                !supplier.totalPurchased ||
-                !form.length
-              }
+              disabled={store.loading}
             />
           </View>
         </View>
+        <AddProduct
+          setForm={setData}
+          products={data.products}
+          setShow={setShow}
+          show={show}
+        />
       </ScrollView>
     </Common>
   );
@@ -258,41 +276,82 @@ const PurchaseProduct = ({ navigation }) => {
 
 export default PurchaseProduct;
 
-function PurchaseInput({ arr, i, setForm, products, form }) {
-  const [product, setProduct] = useState(null);
+// function AddProduct({ show, setShow, setData, products }) {
+//   const [product, setProduct] = useState({ isFree: "false" });
 
-  function handleChange(value) {
-    const rest = form.filter((info) => info.productId !== product.id);
-    const data = {
-      productId: product.id,
-      product_name: product.name,
-      purchased: parseInt(value),
-      stock: product.stock,
-    };
-    setForm(() => [...rest, data]);
-  }
+//   function addtolist() {
+//     if (product.isFree === "false") {
+//       const exist = products.find((p) => p.id === product.id);
+//       if (exist) return Alert.alert("Alrady added");
+//     }
+//     setData((prev) => {
+//       if (product.isFree === "false") {
+//         product.total = Math.floor(product.qty * product.price);
+//         prev.totalSale += product.total;
+//       }
+//       prev.products.push(product);
+//       return { ...prev };
+//     });
+//     setProduct({ isFree: "false" });
+//     setShow(false);
+//   }
 
-  return (
-    <React.Fragment>
-      <Select
-        zIndex={150 * (arr.length - 1 || 1) - i * 100}
-        header='name'
-        name='product'
-        placeholder='Select product'
-        height={200}
-        options={products}
-        handler={(_, info) =>
-          setProduct({ id: info.id, name: info.name, stock: info.stock })
-        }
-      />
+//   return (
+//     <Drawar
+//       show={show}
+//       setShowModal={() => setShow(false)}
+//       coverScreen={true}
+//       bottom={20}
+//     >
+//       <P align='center' bold style={{ marginBottom: 4 }}>
+//         Add Product
+//       </P>
+//       <Select
+//         placeholder='Select Product'
+//         url='/product?opt=id,name'
+//         header='name'
+//         search={true}
+//         height='auto'
+//         handler={(_, info) =>
+//           setProduct((prev) => {
+//             return { ...prev, ...info };
+//           })
+//         }
+//       />
 
-      <TextInput
-        onChangeText={(value) => handleChange(value)}
-        editable={product ? true : false}
-        style={commonStyles.input}
-        placeholder='Quantity'
-        keyboardType='phone-pad'
-      />
-    </React.Fragment>
-  );
-}
+//       <TextInput
+//         style={commonStyles.input}
+//         placeholder='Qty'
+//         keyboardType='phone-pad'
+//         onChangeText={(value) =>
+//           setProduct((prev) => {
+//             return {
+//               ...prev,
+//               qty: parseInt(value),
+//             };
+//           })
+//         }
+//       />
+//       <TextInput
+//         style={commonStyles.input}
+//         placeholder='Price'
+//         keyboardType='phone-pad'
+//         onChangeText={(value) =>
+//           setProduct((prev) => {
+//             return {
+//               ...prev,
+//               price: parseFloat(value),
+//             };
+//           })
+//         }
+//       />
+
+//       <Button
+//         style={{ marginTop: 5 }}
+//         disabled={!product?.qty || !product?.price}
+//         title='Add'
+//         onPress={addtolist}
+//       />
+//     </Drawar>
+//   );
+// }

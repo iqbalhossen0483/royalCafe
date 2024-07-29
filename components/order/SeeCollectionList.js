@@ -1,11 +1,12 @@
-import React from "react";
-import { styles } from "../../css/orderDetails";
-import { commonStyles } from "../../css/common";
 import { Ionicons } from "@expo/vector-icons";
+import React from "react";
 import { View } from "react-native";
-import { Text } from "react-native";
+
+import { commonStyles } from "../../css/common";
+import { styles } from "../../css/orderDetails";
 import { dateFormatter } from "../../services/common";
-import { FlatList } from "react-native";
+import BDT from "../utilitise/BDT";
+import P from "../utilitise/P";
 
 const SeeCollectionList = ({ setShow, data }) => {
   const tablerowStyle = { width: "30%", textAlign: "center" };
@@ -24,24 +25,28 @@ const SeeCollectionList = ({ setShow, data }) => {
       </View>
 
       <View style={commonStyles.tableRow}>
-        <Text style={tablerowStyle}>Receiver</Text>
-        <Text style={tablerowStyle}>Amount</Text>
-        <Text style={tablerowStyle}>Date</Text>
+        <P bold style={tablerowStyle}>
+          Received
+        </P>
+        <P bold style={tablerowStyle}>
+          Amount
+        </P>
+        <P bold style={tablerowStyle}>
+          Date
+        </P>
       </View>
-      <FlatList
-        data={data}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View
-            style={{ ...commonStyles.tableRow, paddingVertical: 7 }}
-            key={item.id}
-          >
-            <Text style={tablerowStyle}>{item.name}</Text>
-            <Text style={tablerowStyle}>{item.amount}</Text>
-            <Text style={tablerowStyle}>{dateFormatter(item.date)}</Text>
-          </View>
-        )}
-      />
+      {data.map((item) => (
+        <View
+          style={{ ...commonStyles.tableRow, borderTopWidth: 0 }}
+          key={item.id}
+        >
+          <P style={tablerowStyle}>{item.name}</P>
+          <P style={tablerowStyle}>
+            <BDT amount={item.amount} />
+          </P>
+          <P style={tablerowStyle}>{dateFormatter(item.date)}</P>
+        </View>
+      ))}
     </View>
   );
 };

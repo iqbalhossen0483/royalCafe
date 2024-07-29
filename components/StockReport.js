@@ -9,10 +9,10 @@ import { Fetch } from "../services/common";
 import { modifyStockReport } from "../services/report";
 import BDT from "./utilitise/BDT";
 import Button from "./utilitise/Button";
+import { color } from "./utilitise/colors";
 import { LoadingOnComponent } from "./utilitise/Loading";
 import P from "./utilitise/P";
 import Select from "./utilitise/Select";
-import { color } from "./utilitise/colors";
 
 const StockReport = ({ data }) => {
   const [date, setDate] = useState(null);
@@ -55,7 +55,7 @@ const StockReport = ({ data }) => {
               })}&year=${date.getFullYear()}`)
             : (base += `method=year&date=${date.getFullYear()}`);
 
-        const report = await Fetch(url, "GET");
+        const report = await Fetch(store.database.name, url, "GET");
         setReport(report);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
@@ -74,18 +74,29 @@ const StockReport = ({ data }) => {
     }
   }, [methods.name]);
 
-  const styles = { width: "20%", textAlign: "center" };
-  const rowStyles = {
-    ...styles,
+  const rowStyles = (type) => {
+    return {
+      width: "20%",
+      textAlign: "center",
+      borderRightWidth: 1,
+      borderRightColor: color.gray,
+      color: /Normal|Main/.test(type)
+        ? color.lightBlue
+        : type === "raw"
+        ? color.green
+        : color.black,
+    };
+  };
+  const row = {
+    width: "20%",
+    textAlign: "center",
     borderRightWidth: 1,
     borderRightColor: color.gray,
+    paddingVertical: 5,
   };
   return (
     <View style={{ ...style.totalReportContainer, marginBottom: 10 }}>
-      <P
-        bold={500}
-        style={{ ...commonStyles.heading, width: "100%", marginTop: 0 }}
-      >
+      <P bold style={{ ...commonStyles.heading, width: "100%", marginTop: 0 }}>
         Stock Report Of {"\n"}
         <P size={15} style={{ color: "#8f1391" }}>
           {date ? prittyDate(date, methods) : prittyDate(new Date(), methods)}
@@ -93,33 +104,72 @@ const StockReport = ({ data }) => {
       </P>
 
       <View style={{ width: "100%" }}>
-        <View style={commonStyles.tableRow}>
-          <P style={styles}>Name</P>
-          <P style={styles}>Previous</P>
-          <P style={styles}>Purchase</P>
-          <P style={styles}>Sale</P>
-          <P style={styles}>Remain</P>
+        <View
+          style={{
+            ...commonStyles.tableRow,
+            paddingHorizontal: 0,
+            paddingVertical: 0,
+          }}
+        >
+          <P style={row}>Name</P>
+          <P style={row}>Previous</P>
+          <View style={row}>
+            {store.database.production ? (
+              <View>
+                <P align='center' color='lightBlue'>
+                  Purchase
+                </P>
+                <P align='center' color='green' size={13}>
+                  Production
+                </P>
+              </View>
+            ) : (
+              <P align='center'>Purchase</P>
+            )}
+          </View>
+          <View style={row}>
+            {store.database.production ? (
+              <View>
+                <P align='center' color='lightBlue'>
+                  Sales
+                </P>
+                <P align='center' color='green' size={13}>
+                  Production
+                </P>
+              </View>
+            ) : (
+              <P align='center'>Sales</P>
+            )}
+          </View>
+          <P style={{ ...row, borderRightWidth: 0 }}>Remain</P>
         </View>
         {report && report.length ? (
-          report.map((item, i) => (
-            <View style={commonStyles.tableRow} key={i}>
-              <P style={rowStyles}>{item.name}</P>
-              <BDT
-                bdtSign={false}
-                style={rowStyles}
-                amount={item.previousStock}
-              />
-              <BDT bdtSign={false} style={rowStyles} amount={item.purchased} />
-              <BDT bdtSign={false} style={rowStyles} amount={item.totalSold} />
-              <BDT
-                bdtSign={false}
-                style={styles}
-                amount={item.remainingStock}
-              />
-            </View>
-          ))
+          report.map((item, i) => {
+            const styl = rowStyles(item.type);
+            return (
+              <View
+                style={{
+                  ...commonStyles.tableRow,
+                  borderTopWidth: 0,
+                  paddingHorizontal: 0,
+                  paddingVertical: 0,
+                }}
+                key={i}
+              >
+                <P style={row}>{item.name}</P>
+                <BDT bdtSign={false} style={row} amount={item.previousStock} />
+                <BDT bdtSign={false} style={styl} amount={item.purchased} />
+                <BDT bdtSign={false} style={styl} amount={item.totalSold} />
+                <BDT
+                  bdtSign={false}
+                  style={{ ...row, borderRightWidth: 0 }}
+                  amount={item.remainingStock}
+                />
+              </View>
+            );
+          })
         ) : (
-          <P>No sales</P>
+          <P align='center'>No sales</P>
         )}
       </View>
 

@@ -7,8 +7,8 @@ import Drawar from "../../components/Drawar";
 import SubMenu from "../../components/footer/SubMenu";
 import { alert } from "../../components/utilitise/Alert";
 import Button from "../../components/utilitise/Button";
-import P from "../../components/utilitise/P";
 import { color } from "../../components/utilitise/colors";
+import P from "../../components/utilitise/P";
 import useStore from "../../context/useStore";
 import { styles } from "../../css/manageProduct";
 import { Fetch, serverUrl } from "../../services/common";
@@ -16,13 +16,13 @@ import { Fetch, serverUrl } from "../../services/common";
 const ManageProduct = ({ navigation }) => {
   const [showForm, setShowFrom] = useState(null);
   const [products, setProducts] = useState(null);
-  const { setMessage, setLoading, updateProduct } = useStore();
+  const { setMessage, setLoading, updateProduct, database } = useStore();
 
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        const products = await Fetch("/product", "GET");
+        const products = await Fetch(database.name, "/product", "GET");
         setProducts(products);
       } catch (error) {
         setMessage({ msg: error.message, type: "error" });
@@ -38,6 +38,7 @@ const ManageProduct = ({ navigation }) => {
       try {
         setLoading(true);
         const { message } = await Fetch(
+          database.name,
           `/product?id=${id}&profile=${profile}`,
           "DELETE"
         );
@@ -80,28 +81,32 @@ const ManageProduct = ({ navigation }) => {
             style={styles.itemContainer}
             onPress={() => setShowFrom(item)}
           >
-            <View style={{ flexDirection: "row", gap: 7 }}>
-              {item.profile !== "null" ? (
+            <View
+              style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
+            >
+              {item.profile ? (
                 <Image
-                  style={{ width: 40, height: 65, borderRadius: 5 }}
+                  style={{ width: 100, height: 100, borderRadius: 5 }}
                   source={{ uri: serverUrl + item.profile }}
                   alt=''
                 />
               ) : (
                 <Image
-                  style={{ width: 40, height: 55, borderRadius: 5 }}
+                  style={{ width: 100, height: 100, borderRadius: 5 }}
                   source={require("../../assets/no-photo.png")}
                   alt=''
                 />
               )}
               <View>
-                <P size={15} bold={500}>
+                <P size={15} bold>
                   {item.name}
                 </P>
                 <P>Price: {item.price}</P>
                 <P>Total Purchased: {item.purchased}</P>
                 <P>Total Sold: {item.sold}</P>
                 <P>Remain Stock: {item.stock}</P>
+                <P>Type: {item.type}</P>
+                <P>SL: {item.sl || "N/A"}</P>
               </View>
             </View>
           </Pressable>
@@ -116,7 +121,7 @@ const ManageProduct = ({ navigation }) => {
           name='Edit'
           navigate={false}
           onPress={() =>
-            navigation.navigate("addProduct", { edit: true, data: showForm })
+            navigation.navigate("editProduct", { edit: true, data: showForm })
           }
           bgColor='#f7d5f6'
           showModal={setShowFrom}

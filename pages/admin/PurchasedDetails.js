@@ -7,6 +7,7 @@ import SeeCollectionList from "../../components/order/SeeCollectionList";
 import CollectionForm from "../../components/purchase/Collection";
 import BDT from "../../components/utilitise/BDT";
 import Button from "../../components/utilitise/Button";
+import { color } from "../../components/utilitise/colors";
 import P from "../../components/utilitise/P";
 import useStore from "../../context/useStore";
 import { commonStyles } from "../../css/common";
@@ -24,7 +25,11 @@ const PurchasedDetails = ({ route }) => {
     (async () => {
       try {
         store.setLoading(true);
-        const result = await Fetch(`/purchase?id=${route.params?.id}`, "GET");
+        const result = await Fetch(
+          store.database.name,
+          `/purchase?id=${route.params?.id}`,
+          "GET"
+        );
         setData(result);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
@@ -35,32 +40,31 @@ const PurchasedDetails = ({ route }) => {
   }, [route.params?.id, store.updatePurchase]);
 
   if (!data) return null;
-
   return (
     <Common>
       <View style={styles.container}>
         <View style={styles.headerWrapper}>
-          <P align='center' bold={500} size={18} style={{ color: "#4b5cbf" }}>
-            {store.siteInfo?.name}
+          <P align='center' bold size={18} style={{ color: "#4b5cbf" }}>
+            {store.database?.title}
           </P>
           <P align='center' style={{ color: "#4b5cbf" }}>
-            {store.siteInfo?.address}
+            {store.database?.address}
           </P>
         </View>
         <View style={{ paddingHorizontal: 15, paddingVertical: 10 }}>
           <View style={styles.dateNbill}>
             <P>
-              <P bold={500}>Date: </P>
+              <P bold>Date: </P>
               {dateFormatter(data.date)}
             </P>
           </View>
 
           <View style={{ flexDirection: "row", columnGap: 5, marginTop: 5 }}>
-            <P bold={500}>Name:</P>
+            <P bold>Name:</P>
             <Text style={styles.shopNameNaddress}>{data.name}</Text>
           </View>
           <View style={{ flexDirection: "row", columnGap: 5 }}>
-            <P bold={500}>Address:</P>
+            <P bold>Address:</P>
             <Text style={styles.shopNameNaddress}>{data.address}</Text>
           </View>
 
@@ -72,11 +76,17 @@ const PurchasedDetails = ({ route }) => {
                 justifyContent: "space-between",
               }}
             >
-              <P bold={500} style={{ width: "70%" }}>
+              <P bold style={{ width: "40%" }}>
                 Product
               </P>
-              <P bold={500} style={{ width: "30%" }}>
+              <P bold style={{ width: "20%" }}>
                 Qty
+              </P>
+              <P bold style={{ width: "20%" }}>
+                Price
+              </P>
+              <P bold style={{ width: "20%" }}>
+                Total
               </P>
             </View>
             {data.products.length ? (
@@ -85,11 +95,17 @@ const PurchasedDetails = ({ route }) => {
                   key={item.id}
                   style={{
                     ...commonStyles.tableRow,
-                    justifyContent: "space-between",
+                    borderTopWidth: 0,
                   }}
                 >
-                  <P style={{ width: "70%" }}>{item.full_name}</P>
-                  <P style={{ width: "30%" }}>{item.qty}</P>
+                  <P style={{ width: "40%" }}>{item.full_name}</P>
+                  <P style={{ width: "20%" }}>{item.qty}</P>
+                  <P style={{ width: "20%" }}>
+                    <BDT amount={item.price} />
+                  </P>
+                  <P style={{ width: "20%" }}>
+                    <BDT amount={item.total} />
+                  </P>
                 </View>
               ))
             ) : (
@@ -101,13 +117,58 @@ const PurchasedDetails = ({ route }) => {
                 alignItems: "flex-end",
               }}
             >
-              <Account name='Total' amount={data.total_amount} />
-              <Account name='Payment' amount={data.payment} />
-              <Account
-                style={{ color: data.due ? "#dc2626" : "#000" }}
-                name='Due'
-                amount={data.due}
-              />
+              <View style={{ flexDirection: "row" }}>
+                <View style={{ gap: 5 }}>
+                  <P
+                    bold
+                    style={{
+                      borderBottomWidth: 1,
+                      borderColor: color.gray,
+                      paddingEnd: 5,
+                    }}
+                  >
+                    Total:
+                  </P>
+                  <P
+                    bold
+                    style={{
+                      borderBottomWidth: 1,
+                      borderColor: color.gray,
+                      paddingEnd: 5,
+                    }}
+                  >
+                    Payment:
+                  </P>
+                  <P
+                    bold
+                    style={{
+                      borderBottomWidth: 1,
+                      borderColor: color.gray,
+                      paddingEnd: 5,
+                    }}
+                  >
+                    Due:
+                  </P>
+                </View>
+                <View style={{ gap: 5 }}>
+                  <BDT
+                    style={{ borderBottomWidth: 1, borderColor: color.gray }}
+                    amount={data.total_amount}
+                  />
+                  <BDT
+                    style={{ borderBottomWidth: 1, borderColor: color.gray }}
+                    amount={data.payment}
+                  />
+                  <BDT
+                    style={{
+                      borderBottomWidth: 1,
+                      borderColor: color.gray,
+                      color: data.due ? color.orange : color.black,
+                    }}
+                    amount={data.due}
+                  />
+                </View>
+              </View>
 
               {data.due !== 0 && (
                 <Button
@@ -125,7 +186,10 @@ const PurchasedDetails = ({ route }) => {
             </View>
           </View>
         </View>
-
+        <P style={{ marginVertical: 5 }}>
+          <P bold>Notes: </P>
+          {data.payment_info}
+        </P>
         <View style={{ flexDirection: "row", gap: 5, flexWrap: "wrap" }}>
           {data.files
             ? data.files.split(",").map((img, i) => {
@@ -183,29 +247,3 @@ const PurchasedDetails = ({ route }) => {
 };
 
 export default PurchasedDetails;
-
-function Account({ name, amount, width, style }) {
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "flex-end",
-        paddingLeft: 10,
-        paddingTop: 3,
-        width: width || 110,
-        paddingBottom: 4,
-      }}
-    >
-      <P
-        style={{
-          fontWeight: 500,
-          marginRight: 4,
-          ...style,
-        }}
-      >
-        {name}:
-      </P>
-      <BDT style={style} amount={amount} />
-    </View>
-  );
-}

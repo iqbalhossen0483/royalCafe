@@ -75,6 +75,7 @@ export function modifyStockReport(products, report) {
         totalSold: 0,
         remainingStock: product.stock,
         sl: product.sl,
+        type: product.type,
       });
     }
   });

@@ -7,8 +7,8 @@ import { socket } from "../components/Layout";
 import SearchFilter from "../components/SearchFilter";
 import BDT from "../components/utilitise/BDT";
 import Button from "../components/utilitise/Button";
-import P from "../components/utilitise/P";
 import { color } from "../components/utilitise/colors";
+import P from "../components/utilitise/P";
 import useStore from "../context/useStore";
 import { styles } from "../css/customer";
 import { Fetch, dateFormatter } from "../services/common";
@@ -36,7 +36,7 @@ const ExpenseReport = () => {
       store.setLoading(true);
       setSearchvalue("");
 
-      const res = await Fetch(url, "GET");
+      const res = await Fetch(store.database.name, url, "GET");
       if (page) {
         setExpense({
           count: res.count || 0,
@@ -63,7 +63,12 @@ const ExpenseReport = () => {
   async function achievedReq(data) {
     try {
       store.setLoading(true);
-      const result = await Fetch("/expense/achieve", "POST", data);
+      const result = await Fetch(
+        store.database.name,
+        "/expense/achieve",
+        "POST",
+        data
+      );
       store.setMessage({ msg: result.message, type: "success" });
       store.setUpdateUser((prev) => !prev);
       store.setUpdateReport((prev) => !prev);
@@ -87,7 +92,11 @@ const ExpenseReport = () => {
   async function decline(id, created_by) {
     try {
       store.setLoading(true);
-      const result = await Fetch(`/expense?id=${id}`, "DELETE");
+      const result = await Fetch(
+        store.database.name,
+        `/expense?id=${id}`,
+        "DELETE"
+      );
       store.setMessage({ msg: result.message, type: "success" });
       store.setUpdateExpense((prev) => !prev);
 
@@ -112,6 +121,7 @@ const ExpenseReport = () => {
       store.setLoading(true);
 
       const res = await Fetch(
+        store.database.name,
         `/expense?${value}&page=${initPage ? 0 : page}`,
         "GET"
       );
@@ -148,13 +158,13 @@ const ExpenseReport = () => {
           <View>
             {expense?.type === "pending" ? (
               <Pressable onPress={() => fetchData("/expense?page=0")}>
-                <P size={15} bold={500}>
+                <P size={15} bold>
                   See all expense reports
                 </P>
               </Pressable>
             ) : (
               <Pressable onPress={() => fetchData(`/expense?pending=true`)}>
-                <P size={15} bold={500}>
+                <P size={15} bold>
                   Pending Request: {expense.pendingExpense || 0}
                   <P color='orange'> Check it</P>
                 </P>
@@ -196,7 +206,7 @@ const ExpenseReport = () => {
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <View style={{ marginLeft: 6 }}>
                     <P>
-                      Expense For: <P bold={500}>{item.type}</P>
+                      Expense For: <P bold>{item.type}</P>
                     </P>
                     <P>
                       Expense Amount: <BDT amount={item.amount} />
@@ -205,7 +215,7 @@ const ExpenseReport = () => {
                 </View>
                 <View>
                   <P>
-                    Expense By: <P bold={500}>{item.userName}</P>
+                    Expense By: <P bold>{item.userName}</P>
                   </P>
                   <P color='darkGray' size={13} style={{ marginTop: 3 }}>
                     Date:

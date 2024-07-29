@@ -24,13 +24,13 @@ function Footer() {
   const store = useStore();
 
   return store?.user?.designation === role.admin ? (
-    <AdminFooter />
+    <AdminFooter database={store.database} />
   ) : (
-    <UserFooter />
+    <UserFooter database={store.database} user={store.user} />
   );
 }
 
-function AdminFooter() {
+function AdminFooter({ database }) {
   const [createModal, setCreateModal] = useState(false);
   const [moreOption, setMoreOption] = useState(false);
   const route = useRoute();
@@ -127,7 +127,7 @@ function AdminFooter() {
       {/* add menu modals */}
       <Drawar setShowModal={() => setCreateModal(false)} show={createModal}>
         <SubMenu
-          name='Add Shop'
+          name={database.production ? "Add Customer" : "Add Shop"}
           url='addshop'
           bgColor='#d1fae5'
           showModal={setCreateModal}
@@ -143,6 +143,16 @@ function AdminFooter() {
             <FontAwesome name='shopping-basket' size={18} color='#06b6d4' />
           }
         />
+
+        {database.production ? (
+          <SubMenu
+            name='Production'
+            url='production'
+            bgColor='#e8bcf5'
+            showModal={setCreateModal}
+            icon={<AntDesign name='shoppingcart' size={20} color='#cc21fc' />}
+          />
+        ) : null}
 
         <SubMenu
           name='Purchase Product'
@@ -170,34 +180,32 @@ function AdminFooter() {
 
       {/* more modal */}
       <Drawar setShowModal={() => setMoreOption(false)} show={moreOption}>
-        <>
-          <SubMenu
-            name='Manage Product'
-            url='manageProduct'
-            bgColor='#ecfccb'
-            border
-            showModal={setMoreOption}
-            icon={<Fontisto name='shopping-store' size={16} color='#84cc16' />}
-          />
+        <SubMenu
+          name='Manage Product'
+          url='manageProduct'
+          bgColor='#ecfccb'
+          border
+          showModal={setMoreOption}
+          icon={<Fontisto name='shopping-store' size={16} color='#84cc16' />}
+        />
 
-          <SubMenu
-            name='Manage Users'
-            url='manageUsers'
-            bgColor='#e0f2fe'
-            border
-            showModal={setMoreOption}
-            icon={<FontAwesome5 name='users' size={16} color='#0284c7' />}
-          />
+        <SubMenu
+          name='Manage Users'
+          url='manageUsers'
+          bgColor='#e0f2fe'
+          border
+          showModal={setMoreOption}
+          icon={<FontAwesome5 name='users' size={16} color='#0284c7' />}
+        />
 
-          <SubMenu
-            name='Manage Supplyer'
-            url='manageSupplyer'
-            bgColor='#f0d8ef'
-            border
-            showModal={setMoreOption}
-            icon={<Entypo name='users' size={18} color='#d620cd' />}
-          />
-        </>
+        <SubMenu
+          name='Manage Supplyer'
+          url='manageSupplyer'
+          bgColor='#f0d8ef'
+          border
+          showModal={setMoreOption}
+          icon={<Entypo name='users' size={18} color='#d620cd' />}
+        />
 
         <SubMenu
           name='Expense Report'
@@ -213,11 +221,23 @@ function AdminFooter() {
           bgColor='#faeeca'
           border
           showModal={setMoreOption}
-          icon={<Octicons name='history' size={16} color='#806003' />}
+          icon={
+            <MaterialIcons name='manage-history' size={22} color='#806003' />
+          }
         />
+
+        <SubMenu
+          name='Production History'
+          url='production-history'
+          bgColor='#f0d8ef'
+          border
+          showModal={setMoreOption}
+          icon={<FontAwesome name='product-hunt' size={18} color='#d620cd' />}
+        />
+
         <SubMenu
           name='Settings'
-          url='branchinfo'
+          url='info'
           bgColor='#afc8f0'
           border
           showModal={setMoreOption}
@@ -228,10 +248,9 @@ function AdminFooter() {
   );
 }
 
-function UserFooter() {
+function UserFooter({ database, user }) {
   const [moreOption, setMoreOption] = useState(false);
   const route = useRoute();
-  const store = useStore();
 
   return (
     <View style={styles.container}>
@@ -337,7 +356,7 @@ function UserFooter() {
         />
 
         <SubMenu
-          name='Add Shop'
+          name={database.production ? "Add Customer" : "Add Shop"}
           url='addshop'
           bgColor='#d1fae5'
           showModal={setMoreOption}
@@ -360,7 +379,7 @@ function UserFooter() {
           showModal={setMoreOption}
           icon={<Octicons name='history' size={16} color='#806003' />}
         />
-        {store.user.designation === role.store_manager ? (
+        {user.designation === role.store_manager ? (
           <>
             <SubMenu
               name='Manage Users'
@@ -384,6 +403,33 @@ function UserFooter() {
                 />
               }
             />
+            {database.production ? (
+              <>
+                <SubMenu
+                  name='Production'
+                  url='production'
+                  bgColor='#e8bcf5'
+                  showModal={setMoreOption}
+                  icon={
+                    <AntDesign name='shoppingcart' size={20} color='#cc21fc' />
+                  }
+                />
+                <SubMenu
+                  name='Production History'
+                  url='production-history'
+                  bgColor='#f0d8ef'
+                  border
+                  showModal={setMoreOption}
+                  icon={
+                    <FontAwesome
+                      name='product-hunt'
+                      size={18}
+                      color='#d620cd'
+                    />
+                  }
+                />
+              </>
+            ) : null}
           </>
         ) : null}
       </Drawar>

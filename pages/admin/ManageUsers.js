@@ -17,14 +17,13 @@ import {
 
 import { Common } from "../../components/Common";
 import Drawar from "../../components/Drawar";
-import { socket } from "../../components/Layout";
 import SubMenu from "../../components/footer/SubMenu";
-import Commission from "../../components/manageUser/Commission";
-import { alert } from "../../components/utilitise/Alert";
+import { socket } from "../../components/Layout";
+import { alert as Alert } from "../../components/utilitise/Alert";
 import Avater from "../../components/utilitise/Avater";
 import Button from "../../components/utilitise/Button";
-import P from "../../components/utilitise/P";
 import { color } from "../../components/utilitise/colors";
+import P from "../../components/utilitise/P";
 import useStore from "../../context/useStore";
 import { commonStyles } from "../../css/common";
 import { styles } from "../../css/manageProduct";
@@ -37,7 +36,7 @@ const ManageUsers = ({ navigation }) => {
 
   const store = useStore();
   const [data, setData] = useState({
-    targetedAmount: 0,
+    targetedAmnt: 0,
     end_date: new Date(),
     start_date: new Date(),
     commission: 0,
@@ -47,7 +46,7 @@ const ManageUsers = ({ navigation }) => {
     (async () => {
       try {
         store.setLoading(true);
-        const users = await Fetch("/user", "GET");
+        const users = await Fetch(store.database.name, "/user", "GET");
         const rest = users.filter((item) => item.id !== store.user.id);
         setUsers(rest);
       } catch (error) {
@@ -60,16 +59,22 @@ const ManageUsers = ({ navigation }) => {
   }, [store.updateUser]);
 
   function removeUser(id, profile) {
-    alert("Are you sure to remove?", async () => {
+    Alert("Are you sure to remove?", async () => {
       try {
         store.setLoading(true);
+
+        if (store.database.primary_user === id) {
+          alert("This is the primary user. You cannot remove it.");
+          return;
+        }
+
         const { message } = await Fetch(
+          store.database.name,
           `/user?id=${id}&profile=${profile}`,
           "DELETE"
         );
         store.setMessage({ msg: message, type: "success" });
-        const rest = users.filter((user) => user.id !== id);
-        setUsers(rest);
+        store.setUpdateUser((prev) => !prev);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
       } finally {
@@ -103,9 +108,13 @@ const ManageUsers = ({ navigation }) => {
       } else {
         data.status = "pending";
       }
-      data.remainingAmount = data.targetedAmount;
 
-      const { message } = await Fetch(`/user/target`, "POST", data);
+      const { message } = await Fetch(
+        store.database.name,
+        `/user/target`,
+        "POST",
+        data
+      );
       setTargetForm(null);
       store.setMessage({ msg: message, type: "success" });
       if (socket) {
@@ -147,11 +156,13 @@ const ManageUsers = ({ navigation }) => {
         contentContainerStyle={styles.contentContainer}
         ItemSeparatorComponent={() => <View style={{ marginBottom: 6 }} />}
         ListEmptyComponent={() => <P align='center'>No user</P>}
-        ListHeaderComponent={() =>
-          store.user.designation === role.admin ? (
-            <Commission store={store} />
-          ) : null
-        }
+        ListHeaderComponent={() => (
+          <Button
+            onPress={() => navigation.navigate("commission")}
+            style={{ marginBottom: 15 }}
+            title='Manage Cmmission'
+          />
+        )}
         renderItem={({ item: user }) => {
           const targets = {
             pending: 0,
@@ -174,7 +185,7 @@ const ManageUsers = ({ navigation }) => {
                 <Avater url={user.profile} />
 
                 <View>
-                  <P size={15} bold={500}>
+                  <P size={15} bold>
                     {user.name}
                   </P>
                   <P color='darkGray' size={13}>
@@ -194,7 +205,7 @@ const ManageUsers = ({ navigation }) => {
               </View>
               {store.user.designation === role.admin ? (
                 <View>
-                  <P align='center' bold={500}>
+                  <P align='center' bold>
                     Targets Report
                   </P>
                   <P style={{ color: "#946f09" }}>Pending: {targets.pending}</P>
@@ -293,23 +304,21 @@ const ManageUsers = ({ navigation }) => {
               setData((prev) => {
                 return {
                   ...prev,
-                  targetedAmount: value,
+                  targetedAmnt: value,
                 };
               })
             }
           />
-          <Pressable onPress={() => showDatepicker("start_date")}>
-            <TextInput
-              style={commonStyles.input}
-              placeholder='Start Date'
-              editable={false}
-              value={
-                data.start_date
-                  ? data.start_date.toLocaleDateString("en-GB")
-                  : "Start Date"
-              }
-            />
-          </Pressable>
+          <TextInput
+            style={commonStyles.input}
+            placeholder='Start Date'
+            editable={false}
+            value={
+              data.start_date
+                ? data.start_date.toLocaleDateString("en-GB")
+                : "Start Date"
+            }
+          />
           <Pressable onPress={() => showDatepicker("end_date")}>
             <TextInput
               style={commonStyles.input}
@@ -337,7 +346,7 @@ const ManageUsers = ({ navigation }) => {
           />
           <Button
             disabled={
-              !data.targetedAmount ||
+              !data.targetedAmnt ||
               !data.commission ||
               !data.end_date ||
               !data.start_date ||

@@ -7,8 +7,8 @@ import { Common } from "../components/Common";
 import SearchFilter from "../components/SearchFilter";
 import Avater from "../components/utilitise/Avater";
 import BDT from "../components/utilitise/BDT";
-import P from "../components/utilitise/P";
 import { color } from "../components/utilitise/colors";
+import P from "../components/utilitise/P";
 import useStore from "../context/useStore";
 import { styles } from "../css/customer";
 import { Fetch, dateFormatter } from "../services/common";
@@ -34,7 +34,7 @@ const Orders = ({ navigation }) => {
       setColl(false);
       setSearchText("");
 
-      const data = await Fetch(url, "GET");
+      const data = await Fetch(store.database.name, url, "GET");
       if (page) {
         setOrders({ count: data.count, data: [...orders.data, ...data.data] });
       } else {
@@ -42,6 +42,7 @@ const Orders = ({ navigation }) => {
       }
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
+      navigation.navigate("error");
     } finally {
       store.setLoading(false);
     }
@@ -51,7 +52,11 @@ const Orders = ({ navigation }) => {
     try {
       store.setLoading(true);
 
-      const data = await Fetch(`${url}&page=${initPage ? 0 : page}`, "GET");
+      const data = await Fetch(
+        store.database.name,
+        `${url}&page=${initPage ? 0 : page}`,
+        "GET"
+      );
       if (!initPage && page) {
         setOrders({ count: data.count, data: [...orders.data, ...data.data] });
       } else setOrders({ count: data.count, data: data.data });
@@ -68,6 +73,7 @@ const Orders = ({ navigation }) => {
       store.setLoading(true);
 
       const res = await Fetch(
+        store.database.name,
         `/order?${query}&page=${initPage ? 0 : page}`,
         "GET"
       );
@@ -126,7 +132,7 @@ const Orders = ({ navigation }) => {
         {orders?.data?.length ? (
           orders.data.map((item, i, arr) => (
             <InView
-              key={item.id}
+              key={i}
               onChange={() => {
                 if (
                   orders?.count &&
@@ -159,7 +165,7 @@ const Orders = ({ navigation }) => {
                     <Avater url={item.profile} />
 
                     <View style={{ marginLeft: 6 }}>
-                      <P size={15} bold={500}>
+                      <P size={15} bold>
                         {item.shopName}
                       </P>
                       <P color='darkGray' size={13}>

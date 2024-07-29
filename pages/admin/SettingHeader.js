@@ -1,4 +1,4 @@
-import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
+import { AntDesign, Feather } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { View } from "react-native";
 
@@ -22,17 +22,15 @@ const SettingHeader = ({ children }) => {
       >
         <Button
           style={{
-            backgroundColor: `${
-              url.name === "branchinfo" ? "#16a34a" : "#fff"
-            }`,
+            backgroundColor: `${url.name === "info" ? "#16a34a" : "#fff"}`,
           }}
-          onPress={() => navigation.navigate("branchinfo")}
+          onPress={() => navigation.navigate("info")}
           title={
             <View>
               <P
                 size={15}
                 style={{
-                  color: url.name === "branchinfo" ? "#fff" : "#333",
+                  color: url.name === "info" ? "#fff" : "#333",
                 }}
               >
                 <Feather name='edit' size={18} /> Info
@@ -55,23 +53,6 @@ const SettingHeader = ({ children }) => {
                 style={{ color: url.name === "expenseType" ? "#fff" : "#333" }}
               >
                 <AntDesign name='pay-circle-o1' size={18} /> Exp type
-              </P>
-            </View>
-          }
-        />
-
-        <Button
-          style={{
-            backgroundColor: `${url.name === "braches" ? "#16a34a" : "#fff"}`,
-          }}
-          onPress={() => navigation.navigate("braches")}
-          title={
-            <View>
-              <P
-                size={15}
-                style={{ color: url.name === "braches" ? "#fff" : "#333" }}
-              >
-                <FontAwesome name='user' size={18} /> branch
               </P>
             </View>
           }

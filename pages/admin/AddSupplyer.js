@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
 import { Image, Keyboard, TextInput, View } from "react-native";
+import React, { useEffect, useState } from "react";
 
-import { Common } from "../../components/Common";
-import Button from "../../components/utilitise/Button";
 import FileInput from "../../components/utilitise/FileInput";
-import P from "../../components/utilitise/P";
-import useStore from "../../context/useStore";
-import { commonStyles } from "../../css/common";
 import { Fetch, serverUrl } from "../../services/common";
+import Button from "../../components/utilitise/Button";
+import { Common } from "../../components/Common";
+import { commonStyles } from "../../css/common";
+import useStore from "../../context/useStore";
+import P from "../../components/utilitise/P";
 
 const AddSupplyer = ({ route, navigation }) => {
   const [profile, setProfile] = useState(null);
-  const { setMessage, setLoading, setUpdateSupplier, loading } = useStore();
+  const { setMessage, setLoading, setUpdateSupplier, loading, database } =
+    useStore();
   const [form, setForm] = useState({
     name: "",
     address: "",
@@ -44,7 +45,13 @@ const AddSupplyer = ({ route, navigation }) => {
         formData.append(key, value)
       );
       const method = route.params?.edit ? "PUT" : "POST";
-      const { message } = await Fetch("/supplier", method, formData, true);
+      const { message } = await Fetch(
+        database.name,
+        "/supplier",
+        method,
+        formData,
+        true
+      );
       setMessage({ msg: message, type: "success" });
       setUpdateSupplier((prev) => !prev);
       navigation.goBack();
@@ -59,7 +66,7 @@ const AddSupplyer = ({ route, navigation }) => {
   return (
     <Common>
       <View style={commonStyles.formContainer}>
-        <P bold={500} style={commonStyles.formHeader}>
+        <P bold style={commonStyles.formHeader}>
           {route.params?.edit ? "Edit" : "Add"} Supplyer
         </P>
 

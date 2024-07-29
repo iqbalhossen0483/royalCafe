@@ -4,7 +4,7 @@ import { moderateScale } from "../../services/theme";
 import { color as colors } from "./colors";
 
 const P = ({
-  bold = 400,
+  bold,
   color = "black",
   size = 14,
   align = "left",
@@ -14,7 +14,7 @@ const P = ({
   return (
     <Text
       style={{
-        fontWeight: bold,
+        fontWeight: bold ? 500 : 400,
         color: colors[color],
         fontSize: moderateScale(size),
         textAlign: align,

@@ -6,8 +6,8 @@ import { commonStyles } from "../../css/common";
 import { styles } from "../../css/customer";
 import { Fetch, dateFormatter, openNumber } from "../../services/common";
 import BDT from "../utilitise/BDT";
-import P from "../utilitise/P";
 import { color } from "../utilitise/colors";
+import P from "../utilitise/P";
 
 const RecentActivity = ({ navigation, id }) => {
   const [data, setData] = useState(null);
@@ -16,20 +16,18 @@ const RecentActivity = ({ navigation, id }) => {
   useEffect(() => {
     (async () => {
       try {
-        const result = await Fetch(
-          `/user/recentactivity?user_id=${id}&today=true`,
-          "GET"
-        );
+        const url = `/user/recentactivity?user_id=${id}&today=true`;
+        const result = await Fetch(store.database.name, url, "GET");
         setData(result);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
       }
     })();
-  }, [id]);
+  }, [id, store.updateReport]);
 
   return (
     <View style={{ marginBottom: 20 }}>
-      <P bold={500} style={commonStyles.heading}>
+      <P bold style={commonStyles.heading}>
         Today's Activities
       </P>
 
@@ -44,7 +42,7 @@ const RecentActivity = ({ navigation, id }) => {
         <>
           {data && data.orders.length ? (
             <>
-              <P bold={500} size={16} style={{ marginVertical: 10 }}>
+              <P bold size={16} style={{ marginVertical: 10 }}>
                 Orders:
               </P>
               <View style={{ backgroundColor: "#fff", borderRadius: 10 }}>
@@ -70,7 +68,7 @@ const RecentActivity = ({ navigation, id }) => {
                         }}
                       >
                         <View style={{ marginLeft: 6 }}>
-                          <P size={15} bold={500}>
+                          <P size={15} bold>
                             {order.shopName}
                           </P>
                           <P color='darkGray' size={13}>
@@ -116,13 +114,13 @@ const RecentActivity = ({ navigation, id }) => {
 
           {data && data.collections.length ? (
             <>
-              <P bold={500} size={16} style={{ marginVertical: 10 }}>
+              <P bold size={16} style={{ marginVertical: 10 }}>
                 Collections:
               </P>
               <View style={{ backgroundColor: "#fff", borderRadius: 10 }}>
-                {data.collections.map((coll) => (
+                {data.collections.map((coll, i) => (
                   <Pressable
-                    key={coll.id}
+                    key={i}
                     style={styles.container}
                     onPress={() =>
                       navigation.navigate("orderDetails", { id: coll.order_id })
@@ -142,7 +140,7 @@ const RecentActivity = ({ navigation, id }) => {
                         }}
                       >
                         <View style={{ marginLeft: 6 }}>
-                          <P size={15} bold={500}>
+                          <P size={15} bold>
                             {coll.shopName}
                           </P>
                           <P color='darkGray' size={13}>
@@ -193,7 +191,7 @@ const RecentActivity = ({ navigation, id }) => {
 
           {data && data.expenseReq.length ? (
             <>
-              <P bold={500} size={16} style={{ marginVertical: 10 }}>
+              <P bold size={16} style={{ marginVertical: 10 }}>
                 Expense Request:
               </P>
               <View style={{ backgroundColor: "#e6c6b3", borderRadius: 10 }}>
@@ -220,14 +218,14 @@ const RecentActivity = ({ navigation, id }) => {
                         }}
                       >
                         <View style={{ marginLeft: 6 }}>
-                          <P bold={500}>
+                          <P bold>
                             Expense type: <P bold={400}>{exp.type}</P>
                           </P>
-                          <P color='darkGray' bold={500}>
+                          <P color='darkGray' bold>
                             Amount: <P bold={400}>{exp.amount}</P>
                           </P>
 
-                          <P color='darkGray' bold={500}>
+                          <P color='darkGray' bold>
                             Req. Date:{" "}
                             <P bold={400}>{dateFormatter(exp.date)}</P>
                           </P>

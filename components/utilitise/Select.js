@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
+import useStore from "../../context/useStore";
 import { commonStyles } from "../../css/common";
 import { Fetch } from "../../services/common";
 import { color } from "./colors";
@@ -34,13 +35,14 @@ const Select = ({
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(options);
   const [value, setValue] = useState("");
+  const store = useStore();
 
   useEffect(() => {
     async function fethData() {
       try {
         setLoading(true);
         if (search) url += `&search=${value}`;
-        const result = await Fetch(url, "GET");
+        const result = await Fetch(store.database.name, url, "GET");
         setData(result);
       } catch (error) {
         setData(null);

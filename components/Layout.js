@@ -1,6 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as Notifications from "expo-notifications";
+import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import React, { Suspense, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -9,10 +10,15 @@ import { color } from "../components/utilitise/colors";
 import useStore from "../context/useStore";
 import { commonStyles } from "../css/common";
 import BranchInfo from "../pages/admin/BranchInfo";
-import Branches from "../pages/admin/Branches";
+import Commission from "../pages/admin/Commission";
+import EditProduct from "../pages/admin/EditProduct";
+import EditShop from "../pages/admin/EditShop";
+import Production from "../pages/admin/Production";
+import ProductionHistory from "../pages/admin/ProductionHistory";
 import PurchasedDetails from "../pages/admin/PurchasedDetails";
+import Error from "../pages/Error";
 import { role } from "../services/common";
-import { LoadingOnComponent } from "./utilitise/Loading";
+import Splash from "./utilitise/Splash";
 
 const Home = React.lazy(() => import("../pages/admin/Home"));
 const Login = React.lazy(() => import("../pages/Login"));
@@ -46,6 +52,9 @@ const ExpenseType = React.lazy(() => import("../pages/admin/ExpenseType"));
 const AddExpense = React.lazy(() => import("../pages/admin/AddExpense"));
 const ExpenseReport = React.lazy(() => import("../pages/ExpenseReport"));
 
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
+
 //for routing;
 const Stack = createNativeStackNavigator();
 //for socket;
@@ -65,78 +74,86 @@ export const pushNotification = (title, body) => {
 
 export function Layout() {
   const store = useStore();
-  const initialRoute = store?.userLoading
-    ? "loading"
+  const initialRoute = !store?.user
+    ? "login"
     : store?.user?.designation === "Admin"
     ? "home"
     : "profile";
 
   useEffect(() => {
-    if (!store.user) return;
-    socket = new WebSocket("wss://server.switchcafebd.com");
+    (async () => {
+      if (store.userLoading) await SplashScreen.hideAsync();
+    })();
+  }, [store.userLoading]);
 
-    socket.addEventListener("open", () => {
-      socket.send(
-        JSON.stringify({
-          type: "init",
-          user: store.user.id,
-          designation: store.user.designation,
-        })
-      );
-    });
+  useEffect(() => {
+    (async () => {
+      if (!store.user) return;
+      socket = new WebSocket("wss://server.switchcafebd.com");
 
-    socket.addEventListener("message", (item) => {
-      const data = JSON.parse(item.data);
+      socket.addEventListener("open", () => {
+        socket.send(
+          JSON.stringify({
+            type: "init",
+            user: store.user.id,
+            designation: store.user.designation,
+          })
+        );
+      });
 
-      if (data.type === "receivedOrder") {
-        if (data.id !== store.user.id) {
+      socket.addEventListener("message", (item) => {
+        const data = JSON.parse(item.data);
+
+        if (data.type === "receivedOrder") {
+          if (data.id !== store.user.id) {
+            pushNotification(data.title, data.body);
+            store.setUpdateOrder((prev) => !prev);
+            store.setUpNotification((prev) => !prev);
+          }
+        } else if (data.type === "completeOderNotify") {
+          if (data.id !== store.user.id) {
+            pushNotification(data.title, data.body);
+            store.setUpdateOrder((prev) => !prev);
+            store.setUpdateReport((prev) => !prev);
+            store.setUpNotification((prev) => !prev);
+          }
+        } else if (data.type === "balance_request_received") {
           pushNotification(data.title, data.body);
-          store.setUpdateOrder((prev) => !prev);
-          store.setUpNotification((prev) => !prev);
-        }
-      } else if (data.type === "completeOderNotify") {
-        if (data.id !== store.user.id) {
+          store.setUpdateUser((prev) => !prev);
+        } else if (data.type === "balance_accepted_notify") {
           pushNotification(data.title, data.body);
-          store.setUpdateOrder((prev) => !prev);
+          store.setUpdateUser((prev) => !prev);
           store.setUpdateReport((prev) => !prev);
-          store.setUpNotification((prev) => !prev);
-        }
-      } else if (data.type === "balance_request_received") {
-        pushNotification(data.title, data.body);
-        store.setUpdateUser((prev) => !prev);
-      } else if (data.type === "balance_accepted_notify") {
-        pushNotification(data.title, data.body);
-        store.setUpdateUser((prev) => !prev);
-        store.setUpdateReport((prev) => !prev);
-      } else if (data.type === "balance_decline_notify") {
-        pushNotification(data.title, data.body);
-        store.setUpdateUser((prev) => !prev);
-      } else if (data.type === "target_received_notify") {
-        pushNotification(data.title, data.body);
-        store.setUpdateUser((prev) => !prev);
-      } else if (data.type === "expense_req_got") {
-        pushNotification(data.title, data.body);
-      } else if (data.type === "expense_req_accepted") {
-        pushNotification(data.title, data.body);
-        store.setUpdateUser((prev) => !prev);
-      } else if (data.type === "added_custoemer_notify") {
-        if (data.id !== store.user.id) {
+        } else if (data.type === "balance_decline_notify") {
           pushNotification(data.title, data.body);
-          store.setUpdateCustomer((prev) => !prev);
+          store.setUpdateUser((prev) => !prev);
+        } else if (data.type === "target_received_notify") {
+          pushNotification(data.title, data.body);
+          store.setUpdateUser((prev) => !prev);
+        } else if (data.type === "expense_req_got") {
+          pushNotification(data.title, data.body);
+        } else if (data.type === "expense_req_accepted") {
+          pushNotification(data.title, data.body);
+          store.setUpdateUser((prev) => !prev);
+        } else if (data.type === "added_custoemer_notify") {
+          if (data.id !== store.user.id) {
+            pushNotification(data.title, data.body);
+            store.setUpdateCustomer((prev) => !prev);
+          }
+        } else if (data.type === "expense_req_decline_notify") {
+          pushNotification(data.title, data.body);
         }
-      } else if (data.type === "expense_req_decline_notify") {
-        pushNotification(data.title, data.body);
-      }
-    });
+      });
 
-    socket.onerror = (e) => {
-      console.log(e);
-    };
+      socket.onerror = (e) => {
+        console.log(e);
+      };
+    })();
   }, [store?.user]);
 
   return (
     <SafeAreaView style={commonStyles.body}>
-      <Suspense fallback={<LoadingOnComponent />}>
+      <Suspense>
         <NavigationContainer>
           <StatusBar style='light' backgroundColor={color.green} />
           <Stack.Navigator
@@ -144,13 +161,14 @@ export function Layout() {
             screenOptions={{ headerShown: false }}
           >
             {store.userLoading ? (
-              <Stack.Screen name='loading' component={LoadingOnComponent} />
+              <Stack.Screen name='loading' component={Splash} />
             ) : store.user ? (
               <>
                 {store.user.designation === role.admin ? (
                   <>
                     <Stack.Screen name='home' component={Home} />
                     <Stack.Screen name='addProduct' component={AddProduct} />
+                    <Stack.Screen name='editProduct' component={EditProduct} />
 
                     <Stack.Screen
                       name='manageProduct'
@@ -165,13 +183,12 @@ export function Layout() {
 
                     <Stack.Screen name='purchase' component={PurchaseProduct} />
                     <Stack.Screen name='expenseType' component={ExpenseType} />
+                    <Stack.Screen name='info' component={BranchInfo} />
+                    <Stack.Screen name='commission' component={Commission} />
                     <Stack.Screen
                       name='purchasedDetails'
                       component={PurchasedDetails}
                     />
-                    <Stack.Screen name='branchinfo' component={BranchInfo} />
-
-                    <Stack.Screen name='braches' component={Branches} />
                   </>
                 ) : null}
                 {store.user.designation === role.admin ||
@@ -179,6 +196,11 @@ export function Layout() {
                   <>
                     <Stack.Screen name='stock' component={Home} />
                     <Stack.Screen name='manageUsers' component={ManageMan} />
+                    <Stack.Screen name='production' component={Production} />
+                    <Stack.Screen
+                      name='production-history'
+                      component={ProductionHistory}
+                    />
                   </>
                 ) : null}
                 <Stack.Screen name='profile' component={Profile} />
@@ -202,9 +224,11 @@ export function Layout() {
                 <Stack.Screen name='expenseReport' component={ExpenseReport} />
                 <Stack.Screen name='createOrder' component={CreateOrder} />
                 <Stack.Screen name='addshop' component={AddShop} />
+                <Stack.Screen name='editshop' component={EditShop} />
                 <Stack.Screen name='addUser' component={AddUser} />
                 <Stack.Screen name='customer' component={Customers} />
                 <Stack.Screen name='transitions' component={Transitions} />
+                <Stack.Screen name='error' component={Error} />
               </>
             ) : (
               <Stack.Screen name='login' component={Login} />

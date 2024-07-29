@@ -13,8 +13,8 @@ import SubMenu from "../../components/footer/SubMenu";
 import { alert } from "../../components/utilitise/Alert";
 import Avater from "../../components/utilitise/Avater";
 import Button from "../../components/utilitise/Button";
-import P from "../../components/utilitise/P";
 import { color } from "../../components/utilitise/colors";
+import P from "../../components/utilitise/P";
 import useStore from "../../context/useStore";
 import { styles } from "../../css/manageProduct";
 import { Fetch, openNumber } from "../../services/common";
@@ -29,7 +29,7 @@ const ManageSupplyer = ({ navigation }) => {
     (async () => {
       try {
         store.setLoading(true);
-        const supplier = await Fetch("/supplier", "GET");
+        const supplier = await Fetch(store.database.name, "/supplier", "GET");
         setSuppliers(supplier);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
@@ -45,7 +45,7 @@ const ManageSupplyer = ({ navigation }) => {
       try {
         store.setLoading(true);
         const url = `/supplier?id=${id}&profile=${profile}`;
-        const { message } = await Fetch(url, "DELETE");
+        const { message } = await Fetch(store.database.name, url, "DELETE");
         store.setMessage({ msg: message, type: "success" });
         store.setUpdateSupplier((prev) => !prev);
       } catch (error) {
@@ -87,7 +87,7 @@ const ManageSupplyer = ({ navigation }) => {
             <View style={{ flexDirection: "row", gap: 7 }}>
               <Avater url={item.profile} />
               <View>
-                <P size={15} bold={500}>
+                <P size={15} bold>
                   {item.name}
                 </P>
                 <P size={13} color='darkGray'>

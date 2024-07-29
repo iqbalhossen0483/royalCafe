@@ -47,7 +47,11 @@ const ExpenseType = () => {
     (async () => {
       try {
         store.setLoading(true);
-        const expense = await Fetch("/expense/type", "GET");
+        const expense = await Fetch(
+          store.database.name,
+          "/expense/type",
+          "GET"
+        );
         setExpenses(expense);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
@@ -75,7 +79,12 @@ const ExpenseType = () => {
     try {
       setLoading(true);
       const payload = { title: data.title, id };
-      const { message } = await Fetch("/expense/type", method, payload);
+      const { message } = await Fetch(
+        store.database.name,
+        "/expense/type",
+        method,
+        payload
+      );
       store.setMessage({ msg: message, type: "success" });
       setShowFrom(false);
       setUpdate((prev) => !prev);
@@ -108,7 +117,7 @@ const ExpenseType = () => {
         )}
         renderItem={({ item, index }) => (
           <Pressable style={styles.itemContainer}>
-            <P bold={500}>
+            <P bold>
               {index + 1}: {item.title}
             </P>
             <View style={{ flexDirection: "row", gap: 6 }}>
@@ -128,7 +137,7 @@ const ExpenseType = () => {
         )}
       />
       <Drawar
-        setShowModal={() => setShowFrom(null)}
+        setShowModal={() => setShowFrom(false)}
         show={showForm}
         bottom={keyboard ? 350 : 300}
       >
@@ -136,7 +145,7 @@ const ExpenseType = () => {
           <P
             align='center'
             size={17}
-            bold={500}
+            bold
             style={{ textDecorationLine: "underline" }}
           >
             Add Expense Type

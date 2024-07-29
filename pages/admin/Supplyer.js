@@ -5,8 +5,8 @@ import { IOScrollView, InView } from "react-native-intersection-observer";
 
 import { Common } from "../../components/Common";
 import BDT from "../../components/utilitise/BDT";
-import P from "../../components/utilitise/P";
 import { color } from "../../components/utilitise/colors";
+import P from "../../components/utilitise/P";
 import useStore from "../../context/useStore";
 import { styles } from "../../css/profile";
 import {
@@ -26,7 +26,11 @@ const Supplyer = ({ route, navigation }) => {
     (async () => {
       try {
         store.setLoading(true);
-        const data = await Fetch(`/supplier?id=${id}&page=${page}`, "GET");
+        const data = await Fetch(
+          store.database.name,
+          `/supplier?id=${id}&page=${page}`,
+          "GET"
+        );
         if (page) {
           setSuplier((prev) => {
             prev.orders = [...prev.orders, data?.data.orders];
@@ -54,7 +58,7 @@ const Supplyer = ({ route, navigation }) => {
               source={{ uri: serverUrl + suplier.data.profile }}
             />
             <View>
-              <P size={15} bold={500}>
+              <P size={15} bold>
                 {suplier.data.name}
               </P>
               <P size={13}>{suplier.data.address}</P>
@@ -117,21 +121,25 @@ const Supplyer = ({ route, navigation }) => {
                   <View>
                     <View style={{ marginLeft: 6 }}>
                       <P>
-                        <P bold={500}> Purchased By:</P> {item.name}
+                        <P bold> Purchased By:</P> {item.name}
                       </P>
                       <P>
-                        <P bold={500}>Total Purchase:</P>{" "}
+                        <P bold>Total Purchase:</P>{" "}
                         <BDT amount={item.total_amount} />
                       </P>
                     </View>
                   </View>
                   <View>
                     <P>
-                      <P bold={500}>Payment:</P>
+                      <P bold>Payment:</P>
                       <BDT amount={item.payment} />
                     </P>
                     <P>
-                      <P bold={500}>Due:</P> <BDT amount={item.due} />
+                      <P bold>Due:</P>{" "}
+                      <BDT
+                        style={{ color: item.due ? color.orange : color.black }}
+                        amount={item.due}
+                      />
                     </P>
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>

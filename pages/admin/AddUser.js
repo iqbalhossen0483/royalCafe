@@ -1,14 +1,15 @@
+import { Image, Keyboard, Pressable, TextInput, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Image, Keyboard, TextInput, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
-import { Common } from "../../components/Common";
-import Button from "../../components/utilitise/Button";
-import FileInput from "../../components/utilitise/FileInput";
-import P from "../../components/utilitise/P";
-import Select from "../../components/utilitise/Select";
-import useStore from "../../context/useStore";
-import { commonStyles } from "../../css/common";
 import { Fetch, role, serverUrl } from "../../services/common";
+import FileInput from "../../components/utilitise/FileInput";
+import Button from "../../components/utilitise/Button";
+import Select from "../../components/utilitise/Select";
+import { Common } from "../../components/Common";
+import { commonStyles } from "../../css/common";
+import useStore from "../../context/useStore";
+import P from "../../components/utilitise/P";
 
 const initialState = {
   name: "",
@@ -20,6 +21,7 @@ const initialState = {
 };
 
 const AddUser = ({ route, navigation }) => {
+  const [showPass, setShowPass] = useState(false);
   const [form, setForm] = useState(initialState);
   const [profile, setProfile] = useState(null);
   const store = useStore();
@@ -43,6 +45,10 @@ const AddUser = ({ route, navigation }) => {
     try {
       Keyboard.dismiss();
       store.setLoading(true);
+      if (store.database.max_user <= store.database.current_user) {
+        alert("User limit exceeded. Please contact your administrator");
+        return;
+      }
       if (!route.params?.user && form.password.length < 6)
         throw {
           message: "Password should be at least 6 characters",
@@ -55,7 +61,12 @@ const AddUser = ({ route, navigation }) => {
         };
       //save user;
       if (!route.params?.edit) {
-        const { message } = await Fetch("/user", "POST", form);
+        const { message } = await Fetch(
+          store.database.name,
+          "/user",
+          "POST",
+          form
+        );
         if (message) store.setMessage({ msg: message, type: "success" });
         setForm(initialState);
       }
@@ -73,7 +84,13 @@ const AddUser = ({ route, navigation }) => {
         Object.entries(form).forEach(([key, value]) => {
           formData.append(key, value);
         });
-        const { message } = await Fetch(`/user`, "PUT", formData, true);
+        const { message } = await Fetch(
+          store.database.name,
+          `/user`,
+          "PUT",
+          formData,
+          true
+        );
         if (message) store.setMessage({ msg: message, type: "success" });
       }
       store.setUpdateUser((prev) => !prev);
@@ -96,7 +113,7 @@ const AddUser = ({ route, navigation }) => {
   return (
     <Common>
       <View style={commonStyles.formContainer}>
-        <P bold={500} style={commonStyles.formHeader}>
+        <P bold style={commonStyles.formHeader}>
           {route.params?.edit ? "Edit" : "Add"} User
         </P>
 
@@ -122,14 +139,28 @@ const AddUser = ({ route, navigation }) => {
             maxLength={11}
           />
 
-          <TextInput
-            defaultValue={form.password}
-            onChangeText={(value) => handleChange("password", value)}
-            style={commonStyles.input}
-            placeholder='Password'
-            secureTextEntry={true}
-            textContentType={"password"}
-          />
+          <View>
+            <TextInput
+              defaultValue={form.password}
+              onChangeText={(value) => handleChange("password", value)}
+              style={commonStyles.input}
+              placeholder='Password'
+              secureTextEntry={!showPass}
+              textContentType={"password"}
+            />
+            {store.user.id === form.id ? (
+              <Pressable
+                onPress={() => setShowPass((prev) => !prev)}
+                style={{ position: "absolute", top: 10, right: 10 }}
+              >
+                <Feather
+                  name={showPass ? "eye" : "eye-off"}
+                  size={20}
+                  color='green'
+                />
+              </Pressable>
+            ) : null}
+          </View>
 
           {!route.params?.user ? (
             <Select

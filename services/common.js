@@ -1,21 +1,33 @@
 import { Linking } from "react-native";
 
-const ngrok = "https://server.switchcafebd.com";
-// const ngrok = "https://87e0-113-11-98-228.ngrok-free.app";
+// const ngrok = "https://server.switchcafebd.com";
+const ngrok = "https://4741-113-11-98-229.ngrok-free.app";
 
-export async function Fetch(url, method, body, formData = false) {
+export async function Fetch(
+  database = "",
+  url,
+  method,
+  body,
+  formData = false
+) {
   try {
     const newUrl = ngrok + url;
     const option = /"GET"|"DELETE"/.test(method)
-      ? {}
+      ? {
+          headers: { database: database },
+        }
       : formData
       ? {
           method,
           body,
+          headers: { database: database },
         }
       : {
           method,
-          headers: { "content-type": "application/json" },
+          headers: {
+            "content-type": "application/json",
+            database: database,
+          },
           body: JSON.stringify(body),
         };
     const res = await fetch(newUrl, option);
@@ -47,4 +59,13 @@ export const role = {
   store_manager: "Store Manager",
   sales_man: "Sales Man",
   admin: "Admin",
+  controller: "Controller",
+};
+
+export const debounce = (fn, delay) => {
+  let timer;
+  return (() => {
+    if (timer) clearTimeout(timer);
+    else timer = setTimeout(() => fn(), delay);
+  })();
 };

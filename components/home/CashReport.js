@@ -2,16 +2,16 @@ import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 
-import useStore from "../../context/useStore";
-import { commonStyles } from "../../css/common";
-import { style } from "../../css/home";
-import { Fetch } from "../../services/common";
-import { modifyCashReport } from "../../services/report";
-import BDT from "../utilitise/BDT";
-import Button from "../utilitise/Button";
 import { LoadingOnComponent } from "../utilitise/Loading";
-import P from "../utilitise/P";
+import { modifyCashReport } from "../../services/report";
+import { commonStyles } from "../../css/common";
+import useStore from "../../context/useStore";
+import { Fetch } from "../../services/common";
+import Button from "../utilitise/Button";
 import Select from "../utilitise/Select";
+import { style } from "../../css/home";
+import BDT from "../utilitise/BDT";
+import P from "../utilitise/P";
 
 const CashReport = ({ data }) => {
   const [date, setDate] = useState(null);
@@ -48,7 +48,7 @@ const CashReport = ({ data }) => {
                 month: "long",
               })}&year=${date.getFullYear()}`)
             : (base += `method=year&date=${date.getFullYear()}`);
-        const report = await Fetch(url, "GET");
+        const report = await Fetch(store.database.name, url, "GET");
         const modified = modifyCashReport(report);
         setReport(modified);
       } catch (error) {
@@ -73,10 +73,7 @@ const CashReport = ({ data }) => {
 
   return (
     <View style={style.totalReportContainer}>
-      <P
-        bold={500}
-        style={{ ...commonStyles.heading, width: "100%", marginTop: 0 }}
-      >
+      <P bold style={{ ...commonStyles.heading, width: "100%", marginTop: 0 }}>
         At a glance your business Of {"\n"}
         <P size={15} style={{ color: "#8f1391" }}>
           {date ? prittyDate(date, methods) : prittyDate(new Date(), methods)}
@@ -88,7 +85,7 @@ const CashReport = ({ data }) => {
             style={{ ...style.totalReportItem, backgroundColor: item.bgColor }}
             key={item.id}
           >
-            <P bold={500} style={{ color: item.textColor }}>
+            <P bold style={{ color: item.textColor }}>
               {item.name}
             </P>
             <BDT

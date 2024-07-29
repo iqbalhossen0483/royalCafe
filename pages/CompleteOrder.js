@@ -1,17 +1,17 @@
+import { Keyboard, Pressable, TextInput, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { Keyboard, Pressable, TextInput, View } from "react-native";
 
+import { Fetch, dateFormatter } from "../services/common";
+import { color } from "../components/utilitise/colors";
+import Button from "../components/utilitise/Button";
 import { Common } from "../components/Common";
 import { socket } from "../components/Layout";
 import BDT from "../components/utilitise/BDT";
-import Button from "../components/utilitise/Button";
-import P from "../components/utilitise/P";
-import { color } from "../components/utilitise/colors";
-import useStore from "../context/useStore";
 import { commonStyles } from "../css/common";
 import { styles } from "../css/orderDetails";
-import { Fetch, dateFormatter } from "../services/common";
+import useStore from "../context/useStore";
+import P from "../components/utilitise/P";
 
 const CompleteOrder = ({ route, navigation }) => {
   const [payment, setPayment] = useState(0);
@@ -23,7 +23,7 @@ const CompleteOrder = ({ route, navigation }) => {
       try {
         store.setLoading(true);
         const url = `/order?id=${route.params?.id}`;
-        const result = await Fetch(url, "GET");
+        const result = await Fetch(store.database.name, url, "GET");
         setData(result);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
@@ -54,7 +54,7 @@ const CompleteOrder = ({ route, navigation }) => {
         },
       };
       const url = `/order?id=${route.params?.id}`;
-      const { message } = await Fetch(url, "PUT", peyload);
+      const { message } = await Fetch(store.database.name, url, "PUT", peyload);
       store.setMessage({ msg: message, type: "success" });
       navigation.goBack();
       if (socket) {
@@ -86,17 +86,17 @@ const CompleteOrder = ({ route, navigation }) => {
     <Common>
       <View style={styles.container}>
         <View style={styles.headerWrapper}>
-          <P align='center' bold={500} size={18} style={{ color: "#4b5cbf" }}>
-            {store.siteInfo.name}
+          <P align='center' bold size={18} style={{ color: "#4b5cbf" }}>
+            {store.database.name}
           </P>
           <P align='center' style={{ color: "#4b5cbf" }}>
-            {store.siteInfo.address}
+            {store.database.address}
           </P>
         </View>
         <View style={{ padding: 15 }}>
           <View style={styles.shopwrapper}>
             <View>
-              <P size={15} bold={500}>
+              <P size={15} bold>
                 {data.shopName}
               </P>
               <P color='darkGray'>{data.address}</P>

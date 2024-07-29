@@ -26,10 +26,18 @@ const BalanceTransfer = ({ route, navigation }) => {
     (async () => {
       try {
         store.setLoading(true);
-        const users = await Fetch("/user?type=true", "GET");
+        const users = await Fetch(
+          store.database.name,
+          "/user?type=true",
+          "GET"
+        );
         const rest = users.filter((item) => item.id !== user.id);
         if (store.user.designation === "Admin") {
-          const supplier = await Fetch("/supplier?type=true", "GET");
+          const supplier = await Fetch(
+            store.database.name,
+            "/supplier?type=true",
+            "GET"
+          );
           setUsers([...rest, ...supplier]);
         } else setUsers(rest);
       } catch (error) {
@@ -49,8 +57,16 @@ const BalanceTransfer = ({ route, navigation }) => {
       const body = { ...form };
       delete body.to;
       delete body.restAmount;
-      const res = await Fetch("/user/balance_transfer", "POST", body);
+      const res = await Fetch(
+        store.database.name,
+        "/user/balance_transfer",
+        "POST",
+        body
+      );
       store.setMessage({ msg: res.message, type: "success" });
+
+      store.setUpdateUser((prev) => !prev);
+      navigation.goBack();
       if (socket) {
         socket.send(
           JSON.stringify({
@@ -61,8 +77,6 @@ const BalanceTransfer = ({ route, navigation }) => {
           })
         );
       }
-      store.setUpdateUser((prev) => !prev);
-      navigation.goBack();
     } catch (error) {
       setForm((prev) => {
         return { ...prev, restAmount: user.haveMoney };
@@ -91,7 +105,7 @@ const BalanceTransfer = ({ route, navigation }) => {
   return (
     <Common>
       <View style={commonStyles.formContainer}>
-        <P bold={500} style={commonStyles.formHeader}>
+        <P bold style={commonStyles.formHeader}>
           Balance Transfer
         </P>
         {form.purpose && form.purpose !== "Debt Payment" ? (
@@ -148,6 +162,26 @@ const BalanceTransfer = ({ route, navigation }) => {
             }
             options={users}
           />
+
+          <TextInput
+            style={{
+              textAlignVertical: "top",
+              ...commonStyles.input,
+              paddingTop: 5,
+              height: 100,
+            }}
+            placeholder='Some notes'
+            multiline
+            onChangeText={(value) =>
+              setForm((prev) => {
+                return {
+                  ...prev,
+                  notes: value,
+                };
+              })
+            }
+          />
+
           <Button
             disabled={store.loading || disabled}
             onPress={onSubmit}

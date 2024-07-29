@@ -1,13 +1,13 @@
-import { FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-import React, { useState } from "react";
 import {
-  Pressable,
-  Text,
-  TextInput,
   TouchableHighlight,
+  Pressable,
+  TextInput,
+  Text,
   View,
 } from "react-native";
+import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import { FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
+import React, { useState } from "react";
 
 import { commonStyles } from "../css/common";
 import { color } from "./utilitise/colors";
@@ -106,7 +106,7 @@ const SearchFilter = ({
                 backgroundColor: highlight === 1 ? color.green : color.gray,
               }}
             >
-              <P bold={500} color={highlight === 1 ? "light" : "black"}>
+              <P bold color={highlight === 1 ? "light" : "black"}>
                 All
               </P>
             </Pressable>
@@ -139,7 +139,7 @@ const SearchFilter = ({
                     <FontAwesome name='filter' size={20} color='gray' />
                   </View>
                 ) : (
-                  <P size={13} align='center' bold={500} color='darkGray'>
+                  <P size={13} align='center' bold color='darkGray'>
                     Filter
                   </P>
                 )}
@@ -151,7 +151,7 @@ const SearchFilter = ({
                   search("");
                 }}
               >
-                <P size={13} align='center' bold={500} color='darkGray'>
+                <P size={13} align='center' bold color='darkGray'>
                   Reset
                 </P>
               </Pressable>
@@ -159,7 +159,7 @@ const SearchFilter = ({
             {dofilter ? (
               <View style={{ flexDirection: "row", gap: 10, marginTop: -5 }}>
                 <Pressable onPress={() => showDatepicker(setFromDate)}>
-                  <P bold={500} align='center'>
+                  <P bold align='center'>
                     From
                   </P>
                   <Text>{fromDate.toLocaleDateString("en-GB")}</Text>
@@ -169,7 +169,7 @@ const SearchFilter = ({
                     showDatepicker(setendDate, serchDate);
                   }}
                 >
-                  <P bold={500} align='center'>
+                  <P bold align='center'>
                     End
                   </P>
                   <P>{endDate.toLocaleDateString("en-GB")}</P>

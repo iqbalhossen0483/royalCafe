@@ -5,7 +5,7 @@ import { styles } from "../../css/createOrder";
 import BDT from "../utilitise/BDT";
 import P from "../utilitise/P";
 
-const Product = ({ products, setForm }) => {
+const Product = ({ products, setForm, production = false }) => {
   const [showDelete, setShowDelete] = useState(-1);
 
   function deleteProductFromList(item) {
@@ -17,44 +17,53 @@ const Product = ({ products, setForm }) => {
         if (prev.deleteProduct) prev.deleteProduct.push(item.id);
         else prev.deleteProduct = [item.id];
       }
-      prev.totalSale = parseInt(prev.totalSale) - parseInt(item.total);
+      prev.totalSale = parseFloat(prev.totalSale) - parseFloat(item.total);
+      console.log(prev);
       return { ...prev };
     });
     setShowDelete(-1);
   }
 
   return (
-    <>
+    <View>
       <View style={styles.productTableHeader}>
-        <P bold={500} style={{ width: "40%" }}>
+        <P bold style={{ width: "40%" }}>
           Name
         </P>
-        <P align='center' bold={500} style={{ width: "20%" }}>
+        <P align='center' bold style={{ width: "20%" }}>
           Qty
         </P>
-        <P align='center' bold={500} style={{ width: "20%" }}>
-          Price
-        </P>
-        <P align='center' bold={500} style={{ width: "20%" }}>
-          Total
-        </P>
+        {!production ? (
+          <>
+            <P align='center' bold style={{ width: "20%" }}>
+              Price
+            </P>
+            <P align='center' bold style={{ width: "20%" }}>
+              Total
+            </P>
+          </>
+        ) : null}
       </View>
       {products.map((item, index) => (
         <Pressable
           key={index}
           onLongPress={() => setShowDelete(index)}
           onPress={() => setShowDelete(-1)}
-          style={styles.productTableItem}
+          style={styles.productTableHeader}
         >
           <P style={{ width: "40%" }}>{item.name}</P>
           <P style={{ width: "20%", textAlign: "center" }}>{item.qty}</P>
-          <P style={{ width: "20%", textAlign: "center" }}>
-            {item.isFree === "false" ? item.price : "Free"}
-          </P>
-          <BDT
-            style={{ width: "20%", textAlign: "center" }}
-            amount={item.total}
-          />
+          {!production ? (
+            <>
+              <P style={{ width: "20%", textAlign: "center" }}>
+                {item.isFree === "false" ? parseFloat(item.price) : "Free"}
+              </P>
+              <BDT
+                style={{ width: "20%", textAlign: "center" }}
+                amount={item.total}
+              />
+            </>
+          ) : null}
 
           {showDelete === index ? (
             <View style={styles.deleteBtn}>
@@ -65,7 +74,7 @@ const Product = ({ products, setForm }) => {
           ) : null}
         </Pressable>
       ))}
-    </>
+    </View>
   );
 };
 

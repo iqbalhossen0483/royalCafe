@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
 import { Keyboard, TextInput, View } from "react-native";
+import React, { useEffect, useState } from "react";
 
-import { Common } from "../components/Common";
 import Button from "../components/utilitise/Button";
-import P from "../components/utilitise/P";
-import useStore from "../context/useStore";
+import { Common } from "../components/Common";
 import { commonStyles } from "../css/common";
+import useStore from "../context/useStore";
 import { Fetch } from "../services/common";
+import P from "../components/utilitise/P";
 
 const CreateNote = ({ route, navigation }) => {
   const store = useStore();
@@ -22,7 +22,7 @@ const CreateNote = ({ route, navigation }) => {
       notes.userId = store.user.id;
       const method = route.params?.edit ? "PUT" : "POST";
       const url = route.params?.edit ? `/notes?id=${notes.id}` : "/notes";
-      const { message } = await Fetch(url, method, notes);
+      const { message } = await Fetch(store.database.name, url, method, notes);
       store.setMessage({ msg: message, type: "success" });
       store.setUpdateNotes((prev) => !prev);
       navigation.goBack();
@@ -42,7 +42,7 @@ const CreateNote = ({ route, navigation }) => {
   return (
     <Common>
       <View style={commonStyles.formContainer}>
-        <P bold={500} style={commonStyles.formHeader}>
+        <P bold style={commonStyles.formHeader}>
           {route.params?.edit ? "Edit" : "Create"} Note
         </P>
         <View style={{ rowGap: 8 }}>

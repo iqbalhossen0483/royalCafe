@@ -4,7 +4,9 @@ import P from "./P";
 
 const BDT = ({ amount, style, bdtSign = true }) => {
   if (!amount) amount = 0;
-  const taka = amount.toString();
+  let taka = parseFloat(amount).toString();
+  const point = taka.split(".");
+  taka = point[0];
   const nagative = taka.startsWith("-");
   const actualMoaney = nagative ? taka.slice(1, taka.length) : taka;
   const length = actualMoaney.length;
@@ -36,8 +38,9 @@ const BDT = ({ amount, style, bdtSign = true }) => {
       : actualMoaney;
 
   return (
-    <P bold={500} style={style}>
+    <P bold style={style}>
       {nagative ? "-" + formated : formated}
+      {point[1] ? "." + point[1] : ""}
       {bdtSign && "৳"}
     </P>
   );

@@ -3,23 +3,17 @@ import React, { useReducer, useState } from "react";
 import Checkbox from "expo-checkbox";
 
 import FileInput from "../../components/utilitise/FileInput";
+import { Fetch, serverUrl } from "../../services/common";
 import Button from "../../components/utilitise/Button";
 import { Common } from "../../components/Common";
 import { commonStyles } from "../../css/common";
 import useStore from "../../context/useStore";
-import { Fetch } from "../../services/common";
 import P from "../../components/utilitise/P";
 
-const init = {
-  main: 1,
-  normal: 0,
-  raw: 0,
-  type: "Main",
-};
 function reducer(state, name) {
   switch (name) {
     case "Main":
-      return init;
+      return { main: 1, normal: 0, raw: 0, type: "Main" };
     case "Normal":
       return { main: 0, normal: 1, raw: 0, type: "Normal" };
     case "Raw":
@@ -28,24 +22,18 @@ function reducer(state, name) {
       return state;
   }
 }
-const AddProduct = ({ navigation }) => {
+
+const EditProduct = ({ route, navigation }) => {
   const [image, setImage] = useState(null);
-  const [state, dispatch] = useReducer(reducer, init);
-  const {
-    setMessage,
-    setLoading,
-    setUpdateProduct,
-    loading,
-    database,
-    setUpdateUser,
-  } = useStore();
-  const [form, setForm] = useState({
-    name: "",
-    price: "",
-    shortName: "",
-    stock: 0,
-    sl: 0,
+  const [state, dispatch] = useReducer(reducer, {
+    main: route.params.data.main,
+    normal: route.params.data.normal,
+    raw: route.params.data.raw,
+    type: route.params.data.type,
   });
+  const { setMessage, setLoading, setUpdateProduct, loading, database } =
+    useStore();
+  const [form, setForm] = useState(route.params.data);
 
   function handleChange(name, value) {
     setForm((prev) => {
@@ -57,29 +45,29 @@ const AddProduct = ({ navigation }) => {
     try {
       setLoading(true);
       Keyboard.dismiss();
-
-      if (database.max_product <= database.current_product) {
-        alert("Product limit exceeded. Please contact your administrator");
-        return;
+      if (image) {
+        form.existedImg = form.profile;
+        form.profile = image;
       }
 
-      if (image) form.profile = image;
-
+      form.main = state.main.toString();
+      form.normal = state.normal.toString();
+      form.raw = state.raw.toString();
+      form.type = state.type;
       const formData = new FormData();
-      Object.entries({ ...form, ...state }).forEach(([key, value]) => {
-        formData.append(key, value);
+      Object.entries(form).forEach(([key, value]) => {
+        if (value) formData.append(key, value);
       });
+
       const { message } = await Fetch(
         database.name,
-        "/product",
-        "POST",
+        `/product?id=${form.id}`,
+        "PUT",
         formData,
         true
       );
       setMessage({ msg: message, type: "success" });
       setUpdateProduct((prev) => !prev);
-      setUpdateUser((prev) => !prev);
-
       navigation.goBack();
     } catch (error) {
       setMessage({ msg: error.message, type: "error" });
@@ -93,7 +81,7 @@ const AddProduct = ({ navigation }) => {
     <Common>
       <View style={commonStyles.formContainer}>
         <P bold style={commonStyles.formHeader}>
-          Add Product
+          {route.params?.edit ? "Edit" : "Add"} Product
         </P>
 
         <View style={{ rowGap: 9 }}>
@@ -117,17 +105,17 @@ const AddProduct = ({ navigation }) => {
             keyboardType='phone-pad'
           />
           <TextInput
-            defaultValue={form.stock}
+            defaultValue={form.stock.toString()}
             onChangeText={(value) => handleChange("stock", value)}
             style={commonStyles.input}
             placeholder='Stock'
             keyboardType='phone-pad'
           />
           <TextInput
-            defaultValue={form.sl}
+            defaultValue={form.sl ? form.sl.toString() : "0"}
             onChangeText={(value) => handleChange("sl", value)}
             style={commonStyles.input}
-            placeholder='SL / Serial Number'
+            placeholder='Serial Number'
             keyboardType='phone-pad'
           />
 
@@ -161,9 +149,9 @@ const AddProduct = ({ navigation }) => {
             <View>
               <FileInput setImage={setImage} aspect={false} />
             </View>
-            {image && (
+            {(image || form.profile) && (
               <Image
-                source={{ uri: image.uri }}
+                source={{ uri: image ? image.uri : serverUrl + form.profile }}
                 style={{
                   width: 50,
                   height: 50,
@@ -173,6 +161,7 @@ const AddProduct = ({ navigation }) => {
               />
             )}
           </View>
+
           <Button
             disabled={loading || disabled}
             onPress={onSubmit}
@@ -205,4 +194,4 @@ function List({ state, controller, children }) {
   );
 }
 
-export default AddProduct;
+export default EditProduct;

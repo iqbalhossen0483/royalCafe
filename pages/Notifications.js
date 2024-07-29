@@ -6,8 +6,8 @@ import { Common } from "../components/Common";
 import { alert } from "../components/utilitise/Alert";
 import BDT from "../components/utilitise/BDT";
 import Button from "../components/utilitise/Button";
-import P from "../components/utilitise/P";
 import { color } from "../components/utilitise/colors";
+import P from "../components/utilitise/P";
 import useStore from "../context/useStore";
 import { styles } from "../css/customer";
 import { style } from "../css/notification";
@@ -23,7 +23,11 @@ const NotificationsPage = ({ navigation }) => {
     (async () => {
       try {
         store.setLoading(true);
-        const orders = await Fetch("/order?notification=true", "GET");
+        const orders = await Fetch(
+          store.database.name,
+          "/order?notification=true",
+          "GET"
+        );
         setOrders(orders);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
@@ -39,7 +43,11 @@ const NotificationsPage = ({ navigation }) => {
     alert("Are you sure to delete?", async () => {
       try {
         store.setLoading(true);
-        const { message } = await Fetch(`/order?id=${id}`, "DELETE");
+        const { message } = await Fetch(
+          store.database.name,
+          `/order?id=${id}`,
+          "DELETE"
+        );
         store.setMessage({ msg: message, type: "success" });
         setShowDeleteBtn(-1);
         if (!orders.length) store.setNotification((prev) => !prev);
@@ -75,7 +83,6 @@ const NotificationsPage = ({ navigation }) => {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  width: "52%",
                 }}
                 onPress={() => setShowDetails((prev) => (i === prev ? -1 : i))}
               >
@@ -92,7 +99,7 @@ const NotificationsPage = ({ navigation }) => {
                 )}
                 <View style={{ marginLeft: 6 }}>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <P bold={500} size={15}>
+                    <P bold size={15}>
                       {item.shopName}
                     </P>
                     <MaterialIcons
@@ -135,8 +142,10 @@ const NotificationsPage = ({ navigation }) => {
                 <P>Created By: {item.created_by?.split(" ")[0]}</P>
               </Pressable>
               <View>
-                <P color='orange'>{item.status}</P>
-                <P size={13}>{item.time}</P>
+                <View>
+                  <P color='orange'>{item.status}</P>
+                  <P size={13}>{item.time}</P>
+                </View>
               </View>
             </View>
 
@@ -157,7 +166,7 @@ const NotificationsPage = ({ navigation }) => {
                   {item.products.length ? (
                     <>
                       <View key={item.id} style={style.detailsTableHeader}>
-                        <P bold={500} style={{ width: "40%" }}>
+                        <P bold style={{ width: "40%" }}>
                           Name
                         </P>
                         <P style={tableheaderStyle}>Qty</P>
@@ -169,7 +178,9 @@ const NotificationsPage = ({ navigation }) => {
                           <P style={{ width: "40%" }}>{item.name}</P>
                           <P style={tablerowStyle}>{item.qty}</P>
                           <P style={tablerowStyle}>
-                            {item.isFree === "false" ? item.price : "Free"}
+                            {item.isFree === "false"
+                              ? parseFloat(item.price)
+                              : "Free"}
                           </P>
                           <BDT style={tablerowStyle} amount={item.total} />
                         </View>
@@ -182,7 +193,7 @@ const NotificationsPage = ({ navigation }) => {
                   <View style={style.bottomContainer}>
                     <View style={style.bottomItem}>
                       <View style={style.totalWrapper}>
-                        <P bold={500}>Total: </P>
+                        <P bold>Total: </P>
                         <BDT amount={item.totalSale} />
                       </View>
                       <View>

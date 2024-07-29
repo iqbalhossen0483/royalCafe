@@ -7,8 +7,8 @@ import { commonStyles } from "../../css/common";
 import { styles } from "../../css/profile";
 import { Fetch, dateFormatter } from "../../services/common";
 import { alert } from "../utilitise/Alert";
-import P from "../utilitise/P";
 import { color } from "../utilitise/colors";
+import P from "../utilitise/P";
 
 const Notes = ({ navigation, id }) => {
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,11 @@ const Notes = ({ navigation, id }) => {
   useEffect(() => {
     (async () => {
       try {
-        const notes = await Fetch(`/notes?userId=${id}`, "GET");
+        const notes = await Fetch(
+          store.database.name,
+          `/notes?userId=${id}`,
+          "GET"
+        );
         setNotes(notes);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
@@ -31,7 +35,11 @@ const Notes = ({ navigation, id }) => {
     alert("Are you sure to log Out?", async () => {
       try {
         setLoading(true);
-        const { message } = await Fetch(`/notes?id=${id}`, "DELETE");
+        const { message } = await Fetch(
+          store.database.name,
+          `/notes?id=${id}`,
+          "DELETE"
+        );
         setLoading(false);
         store.setMessage({ msg: message, type: "success" });
         const rest = notes.filter((item) => item.id !== id);
@@ -45,7 +53,7 @@ const Notes = ({ navigation, id }) => {
 
   return (
     <View>
-      <P bold={500} style={commonStyles.heading}>
+      <P bold style={commonStyles.heading}>
         Your Notes
       </P>
 
@@ -71,7 +79,7 @@ const Notes = ({ navigation, id }) => {
               <View style={styles.headingContainer}>
                 <View>
                   <P
-                    bold={500}
+                    bold
                     color='green'
                     style={{
                       borderBottomWidth: 1,

@@ -1,5 +1,5 @@
-import React from "react";
 import { View } from "react-native";
+import React from "react";
 
 import { commonStyles } from "../../css/common";
 import { styles } from "../../css/profile";
@@ -9,7 +9,7 @@ import P from "../utilitise/P";
 const Summery = ({ user }) => {
   return (
     <View style={{ zIndex: 0 }}>
-      <P bold={500} style={commonStyles.heading}>
+      <P bold style={commonStyles.heading}>
         Summery
       </P>
       <View style={styles.workContainer}>

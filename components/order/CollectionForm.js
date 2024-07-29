@@ -31,7 +31,7 @@ const CollectionForm = ({ setShow, data }) => {
         },
       };
       const url = `/order?id=${data.id}&collection=true`;
-      const { message } = await Fetch(url, "PUT", peyload);
+      const { message } = await Fetch(store.database.name, url, "PUT", peyload);
       store.setMessage({ msg: message, type: "success" });
       store.setUpdateOrder((prev) => !prev);
       store.setUpdateReport((prev) => !prev);
@@ -68,7 +68,7 @@ const CollectionForm = ({ setShow, data }) => {
             alignItems: "center",
           }}
         >
-          <P size={17} bold={500} style={{ color: "#dc2626" }}>
+          <P size={17} bold style={{ color: "#dc2626" }}>
             Due: {data.due - payment}৳
           </P>
         </View>

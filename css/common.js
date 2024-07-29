@@ -41,11 +41,12 @@ export const commonStyles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 9,
+    zIndex: 0,
   },
   formContainer: {
     backgroundColor: "#fff",
     paddingVertical: 20,
-    paddingHorizontal: 25,
+    paddingHorizontal: "3.5%",
     margin: 10,
     borderRadius: 7,
   },
@@ -89,10 +90,11 @@ export const commonStyles = StyleSheet.create({
   tableRow: {
     flexDirection: "row",
     justifyContent: "center",
-    borderBottomColor: color.gray,
-    borderBottomWidth: 1,
-    paddingVertical: 5,
+    borderColor: color.gray,
+    borderWidth: 1,
     width: "100%",
+    paddingHorizontal: 6,
+    paddingVertical: 4,
   },
 
   sip: {

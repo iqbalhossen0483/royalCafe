@@ -1,14 +1,18 @@
-import React, { useState } from "react";
-import { Keyboard, Text, TextInput, View } from "react-native";
-import Button from "../components/utilitise/Button";
-import { commonStyles } from "../css/common";
-import useStore from "../context/useStore";
-import { Fetch } from "../services/common";
+import { Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useState } from "react";
+import { Keyboard, Pressable, Text, TextInput, View } from "react-native";
+
+import Button from "../components/utilitise/Button";
+import useStore from "../context/useStore";
+import { commonStyles } from "../css/common";
+import { Fetch, role } from "../services/common";
 
 const Login = ({ navigation }) => {
+  const [showPass, setShowPass] = useState(false);
   const store = useStore();
   const [form, setForm] = useState({
+    db: null,
     phone: "",
     password: "",
   });
@@ -23,16 +27,31 @@ const Login = ({ navigation }) => {
     try {
       store.setLoading(true);
       Keyboard.dismiss();
-      const result = await Fetch("/login", "POST", form);
+      form.db = form.phone.split("-")[0];
+      form.phone = form.phone.split("-")[1];
+      const {
+        token,
+        data: { user, database },
+      } = await Fetch("login", "/login", "POST", form);
       store.setLoading(false);
-      await AsyncStorage.setItem("token", result.token);
-      store.setUser(result.user);
-      store.setMessage({ msg: result.message, type: "success" });
-      const url = result.user.designation === "Admin" ? "home" : "profile";
+
+      await AsyncStorage.setItem("token", token);
+      store.setDatabase(database);
+      store.setUser(user);
+      store.setShowSplash(true);
+      const designation = user.designation;
+      const url =
+        designation === role.admin
+          ? "home"
+          : designation === role.store_manager
+          ? "store"
+          : designation === role.controller
+          ? "dashboard"
+          : "profile";
       navigation.navigate(url);
     } catch (error) {
       store.setLoading(false);
-      store.setMessage({ msg: error.message, type: error.type || "error" });
+      store.setMessage({ msg: error.message, type: "error" });
     }
   }
 
@@ -44,20 +63,31 @@ const Login = ({ navigation }) => {
         <TextInput
           onChangeText={(value) => handleChange("phone", value)}
           style={commonStyles.input}
-          placeholder='Phone number'
+          placeholder="Access key '-' Phone number"
           keyboardType='phone-pad'
-          maxLength={11}
         />
-        <TextInput
-          onChangeText={(value) => handleChange("password", value)}
-          style={commonStyles.input}
-          placeholder='Password'
-          secureTextEntry={true}
-          textContentType={"password"}
-        />
+        <View>
+          <TextInput
+            onChangeText={(value) => handleChange("password", value)}
+            style={commonStyles.input}
+            placeholder='Password'
+            secureTextEntry={!showPass}
+            textContentType={"password"}
+          />
+          <Pressable
+            onPress={() => setShowPass((prev) => !prev)}
+            style={{ position: "absolute", top: 10, right: 10 }}
+          >
+            <Feather
+              name={showPass ? "eye" : "eye-off"}
+              size={20}
+              color='green'
+            />
+          </Pressable>
+        </View>
 
         <Button
-          disabled={!form.phone || !form.password}
+          disabled={!form.phone || !form.password || store.loading}
           onPress={onSubmit}
           title='Submit'
         />
