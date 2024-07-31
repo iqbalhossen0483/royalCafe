@@ -86,7 +86,7 @@ const NotificationsPage = ({ navigation }) => {
                 }}
                 onPress={() => setShowDetails((prev) => (i === prev ? -1 : i))}
               >
-                {item.profile && item.profile !== "null" ? (
+                {item.profile ? (
                   <Image
                     style={styles.profile}
                     source={{ uri: serverUrl + item.profile }}

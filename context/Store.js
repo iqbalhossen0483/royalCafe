@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { AppState } from "react-native";
 
 import { Fetch } from "../services/common";
 
@@ -18,7 +19,9 @@ const Store = () => {
   const [loading, setLoading] = useState(false);
   const [database, setDatabase] = useState(null);
   const [showSplash, setShowSplash] = useState(false);
+  const [socket, setSocket] = useState(null);
   const [user, setUser] = useState(null);
+  const appState = useRef(AppState.currentState);
   const [message, setMessage] = useState({
     msg: "",
     type: "",
@@ -41,6 +44,40 @@ const Store = () => {
       }
     })();
   }, [updateUser]);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     if (!user) return;
+  //     let wss = new WebSocket("wss://7dc0-113-11-98-229.ngrok-free.app");
+  //     setSocket(wss);
+  //     BackgroundTask.schedule();
+  //   })();
+  // }, [user]);
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      // setInterval(() => {
+      //   console.log(nextAppState);
+      // }, 1000);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.addEventListener("open", () => {
+  //       try {
+  //         setInterval(() => {
+  //           socket.send(JSON.stringify({ Message: "Hello" }));
+  //         }, 1000);
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     });
+  //   }
+  // }, [socket]);
 
   return {
     message,

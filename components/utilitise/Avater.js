@@ -7,7 +7,7 @@ import { serverUrl } from "../../services/common";
 const Avater = ({ url }) => {
   return (
     <View>
-      {url !== "null" && url ? (
+      {!url ? (
         <Image
           style={styles.profile}
           source={

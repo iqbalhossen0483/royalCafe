@@ -86,70 +86,72 @@ export function Layout() {
     })();
   }, [store.userLoading]);
 
-  useEffect(() => {
-    (async () => {
-      if (!store.user) return;
-      socket = new WebSocket("wss://server.switchcafebd.com");
+  // useEffect(() => {
+  //   (async () => {
+  //     if (!store.user) return;
+  //     socket = new WebSocket("wss://7dc0-113-11-98-229.ngrok-free.app");
 
-      socket.addEventListener("open", () => {
-        socket.send(
-          JSON.stringify({
-            type: "init",
-            user: store.user.id,
-            designation: store.user.designation,
-          })
-        );
-      });
+  //     socket.addEventListener("open", () => {
+  //       try {
+  //         setInterval(() => {
+  //           socket.send(JSON.stringify({ Message: "Hello" }));
+  //         }, 1000);
 
-      socket.addEventListener("message", (item) => {
-        const data = JSON.parse(item.data);
+  //         socket.send(
+  //           JSON.stringify({
+  //             type: "init",
+  //             user: store.user.id,
+  //             designation: store.user.designation,
+  //           })
+  //         );
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     });
 
-        if (data.type === "receivedOrder") {
-          if (data.id !== store.user.id) {
-            pushNotification(data.title, data.body);
-            store.setUpdateOrder((prev) => !prev);
-            store.setUpNotification((prev) => !prev);
-          }
-        } else if (data.type === "completeOderNotify") {
-          if (data.id !== store.user.id) {
-            pushNotification(data.title, data.body);
-            store.setUpdateOrder((prev) => !prev);
-            store.setUpdateReport((prev) => !prev);
-            store.setUpNotification((prev) => !prev);
-          }
-        } else if (data.type === "balance_request_received") {
-          pushNotification(data.title, data.body);
-          store.setUpdateUser((prev) => !prev);
-        } else if (data.type === "balance_accepted_notify") {
-          pushNotification(data.title, data.body);
-          store.setUpdateUser((prev) => !prev);
-          store.setUpdateReport((prev) => !prev);
-        } else if (data.type === "balance_decline_notify") {
-          pushNotification(data.title, data.body);
-          store.setUpdateUser((prev) => !prev);
-        } else if (data.type === "target_received_notify") {
-          pushNotification(data.title, data.body);
-          store.setUpdateUser((prev) => !prev);
-        } else if (data.type === "expense_req_got") {
-          pushNotification(data.title, data.body);
-        } else if (data.type === "expense_req_accepted") {
-          pushNotification(data.title, data.body);
-          store.setUpdateUser((prev) => !prev);
-        } else if (data.type === "added_custoemer_notify") {
-          if (data.id !== store.user.id) {
-            pushNotification(data.title, data.body);
-            store.setUpdateCustomer((prev) => !prev);
-          }
-        } else if (data.type === "expense_req_decline_notify") {
-          pushNotification(data.title, data.body);
-        }
-      });
+  //     socket.addEventListener("message", (item) => {
+  //       const data = JSON.parse(item.data);
 
-      socket.onerror = (e) => {
-        console.log(e);
-      };
-    })();
-  }, [store?.user]);
+  //       if (data.type === "receivedOrder") {
+  //         pushNotification(data.title, data.body);
+  //         store.setUpdateOrder((prev) => !prev);
+  //         store.setUpNotification((prev) => !prev);
+  //       } else if (data.type === "completeOderNotify") {
+  //         pushNotification(data.title, data.body);
+  //         store.setUpdateOrder((prev) => !prev);
+  //         store.setUpdateReport((prev) => !prev);
+  //         store.setUpNotification((prev) => !prev);
+  //       } else if (data.type === "balance_request_received") {
+  //         pushNotification(data.title, data.body);
+  //         store.setUpdateUser((prev) => !prev);
+  //       } else if (data.type === "balance_accepted_notify") {
+  //         pushNotification(data.title, data.body);
+  //         store.setUpdateUser((prev) => !prev);
+  //         store.setUpdateReport((prev) => !prev);
+  //       } else if (data.type === "balance_decline_notify") {
+  //         pushNotification(data.title, data.body);
+  //         store.setUpdateUser((prev) => !prev);
+  //       } else if (data.type === "target_received_notify") {
+  //         pushNotification(data.title, data.body);
+  //         store.setUpdateUser((prev) => !prev);
+  //       } else if (data.type === "expense_req_got") {
+  //         pushNotification(data.title, data.body);
+  //       } else if (data.type === "expense_req_accepted") {
+  //         pushNotification(data.title, data.body);
+  //         store.setUpdateUser((prev) => !prev);
+  //       } else if (data.type === "added_custoemer_notify") {
+  //         pushNotification(data.title, data.body);
+  //         store.setUpdateCustomer((prev) => !prev);
+  //       } else if (data.type === "expense_req_decline_notify") {
+  //         pushNotification(data.title, data.body);
+  //       }
+  //     });
+
+  //     socket.onerror = (e) => {
+  //       console.log(e);
+  //     };
+  //   })();
+  // }, [store?.user]);
 
   return (
     <SafeAreaView style={commonStyles.body}>
