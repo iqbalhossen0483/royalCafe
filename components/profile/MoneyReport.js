@@ -4,8 +4,7 @@ import { Pressable, View } from "react-native";
 import useStore from "../../context/useStore";
 import { commonStyles } from "../../css/common";
 import { styles } from "../../css/profile";
-import { Fetch } from "../../services/common";
-import { socket } from "../Layout";
+import { Fetch, notify } from "../../services/common";
 import BDT from "../utilitise/BDT";
 import Button from "../utilitise/Button";
 import { color } from "../utilitise/colors";
@@ -25,18 +24,14 @@ const MoneyReport = ({ transactions, user }) => {
         data
       );
       store.setMessage({ msg: result.message, type: "success" });
-      if (socket) {
-        socket.send(
-          JSON.stringify({
-            type: "balance_accepted",
-            fromUser: data.fromUser,
-            toUser: user.id,
-            toUserName: user.name,
-          })
-        );
-      }
       store.setUpdateUser((prev) => !prev);
       store.setUpdateReport((prev) => !prev);
+      await notify(
+        store.database.name,
+        "Balance Accepted",
+        `Your money transfer accepted by ${user.name}`,
+        { type: "balance_accepted", toUser: data.fromUser }
+      );
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {
@@ -44,7 +39,7 @@ const MoneyReport = ({ transactions, user }) => {
     }
   }
 
-  async function declineRequest(id, fromUser) {
+  async function declineRequest(id, toUser) {
     try {
       store.setLoading(true);
       const result = await Fetch(
@@ -53,17 +48,13 @@ const MoneyReport = ({ transactions, user }) => {
         "DELETE"
       );
       store.setMessage({ msg: result.message, type: "success" });
-      if (socket) {
-        socket.send(
-          JSON.stringify({
-            type: "balance_decline",
-            fromUser: fromUser,
-            toUser: user.id,
-            toUserName: user.name,
-          })
-        );
-      }
       store.setUpdateUser((prev) => !prev);
+      await notify(
+        store.database.name,
+        "Balance Declined",
+        `Your money transfer declined by ${user.name}`,
+        { type: "balance_decline", toUser }
+      );
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {

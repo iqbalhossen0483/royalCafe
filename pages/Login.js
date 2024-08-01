@@ -39,12 +39,13 @@ const Login = ({ navigation }) => {
       store.setDatabase(database);
       store.setUser(user);
       store.setShowSplash(true);
+      store.setUpdate((prev) => !prev);
       const designation = user.designation;
       const url =
         designation === role.admin
           ? "home"
           : designation === role.store_manager
-          ? "store"
+          ? "stock"
           : designation === role.controller
           ? "dashboard"
           : "profile";

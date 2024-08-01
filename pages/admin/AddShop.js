@@ -2,14 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Image, Keyboard, ScrollView, TextInput, View } from "react-native";
 
 import { Common } from "../../components/Common";
-import { socket } from "../../components/Layout";
 import Button from "../../components/utilitise/Button";
 import FileInput from "../../components/utilitise/FileInput";
 import P from "../../components/utilitise/P";
 import Select from "../../components/utilitise/Select";
 import useStore from "../../context/useStore";
 import { commonStyles } from "../../css/common";
-import { Fetch } from "../../services/common";
+import { Fetch, notify } from "../../services/common";
 
 const AddShop = ({ navigation }) => {
   const [profile, setProfile] = useState(null);
@@ -72,16 +71,13 @@ const AddShop = ({ navigation }) => {
       if (message) store.setMessage({ msg: message, type: "success" });
       store.setUpdateCustomer((prev) => !prev);
       store.setUpdateUser((prev) => !prev);
-      if (socket) {
-        socket.send(
-          JSON.stringify({
-            type: "shop_added",
-            id: store.user.id,
-            name: store.user?.name,
-          })
-        );
-      }
       navigation.goBack();
+      await notify(
+        store.database.name,
+        "New Shop Added",
+        `A new shop added by ${store.user.name}`,
+        { type: "shop_added", id: store.user.id }
+      );
     } catch (error) {
       store.setMessage({ msg: error.message, type: error.type || "error" });
     } finally {

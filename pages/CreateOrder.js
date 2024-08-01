@@ -1,19 +1,18 @@
-import { ScrollView, TextInput, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
+import { ScrollView, TextInput, View } from "react-native";
 
-import PreviousOrder from "../components/createorder/PreviousOrder";
-import AddProduct from "../components/createorder/AddProduct";
-import Product from "../components/createorder/Product";
-import Button from "../components/utilitise/Button";
-import Select from "../components/utilitise/Select";
 import { Common } from "../components/Common";
-import { socket } from "../components/Layout";
+import AddProduct from "../components/createorder/AddProduct";
+import PreviousOrder from "../components/createorder/PreviousOrder";
+import Product from "../components/createorder/Product";
 import BDT from "../components/utilitise/BDT";
-import { commonStyles } from "../css/common";
-import useStore from "../context/useStore";
-import { Fetch } from "../services/common";
+import Button from "../components/utilitise/Button";
 import P from "../components/utilitise/P";
+import Select from "../components/utilitise/Select";
+import useStore from "../context/useStore";
+import { commonStyles } from "../css/common";
+import { Fetch, notify } from "../services/common";
 
 const CreateOrder = ({ route, navigation }) => {
   const [show, setShow] = useState(false);
@@ -75,17 +74,14 @@ const CreateOrder = ({ route, navigation }) => {
       const { message } = await Fetch(store.database.name, url, method, data);
       store.setMessage({ msg: message, type: "success" });
       navigation.goBack();
-      if (socket) {
-        socket.send(
-          JSON.stringify({
-            type: "createdOrder",
-            id: store.user.id,
-            name: store.user.name,
-          })
-        );
-      }
       store.setUpdateOrder((prev) => !prev);
       store.setUpNotification((prev) => !prev);
+      await notify(
+        store.database.name,
+        "Order Created",
+        `An order has been created by ${store.user.name}`,
+        { type: "createdOrder", id: store.user.id }
+      );
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {

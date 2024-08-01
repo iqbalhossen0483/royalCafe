@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import { Keyboard, TextInput, View } from "react-native";
 
 import { Common } from "../../components/Common";
-import { socket } from "../../components/Layout";
 import Button from "../../components/utilitise/Button";
 import P from "../../components/utilitise/P";
 import Select from "../../components/utilitise/Select";
 import useStore from "../../context/useStore";
 import { commonStyles } from "../../css/common";
-import { Fetch } from "../../services/common";
+import { Fetch, notify } from "../../services/common";
 
 const AddExpense = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
@@ -38,14 +37,12 @@ const AddExpense = ({ navigation }) => {
         store.setUpdateReport((prev) => !prev);
         store.setUpdateExpense((prev) => !prev);
       } else {
-        if (socket) {
-          socket.send(
-            JSON.stringify({
-              type: "expense_req_sent",
-              name: store.user.name,
-            })
-          );
-        }
+        await notify(
+          store.database.name,
+          "Expense Request Sent",
+          `An expense request sent by ${store.user.name}`,
+          { type: "expense_req_sent", id: store.user.id, admin: true }
+        );
       }
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });

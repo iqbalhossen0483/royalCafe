@@ -1,17 +1,16 @@
-import { Keyboard, Pressable, TextInput, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
+import { Keyboard, Pressable, TextInput, View } from "react-native";
 
-import { Fetch, dateFormatter } from "../services/common";
-import { color } from "../components/utilitise/colors";
-import Button from "../components/utilitise/Button";
 import { Common } from "../components/Common";
-import { socket } from "../components/Layout";
 import BDT from "../components/utilitise/BDT";
+import Button from "../components/utilitise/Button";
+import { color } from "../components/utilitise/colors";
+import P from "../components/utilitise/P";
+import useStore from "../context/useStore";
 import { commonStyles } from "../css/common";
 import { styles } from "../css/orderDetails";
-import useStore from "../context/useStore";
-import P from "../components/utilitise/P";
+import { Fetch, dateFormatter, notify } from "../services/common";
 
 const CompleteOrder = ({ route, navigation }) => {
   const [payment, setPayment] = useState(0);
@@ -57,20 +56,17 @@ const CompleteOrder = ({ route, navigation }) => {
       const { message } = await Fetch(store.database.name, url, "PUT", peyload);
       store.setMessage({ msg: message, type: "success" });
       navigation.goBack();
-      if (socket) {
-        socket.send(
-          JSON.stringify({
-            type: "completeOrder",
-            id: store.user.id,
-            name: store.user?.name,
-            shopName: data.shopName,
-          })
-        );
-      }
+
       store.setUpdateOrder((prev) => !prev);
       store.setUpdateReport((prev) => !prev);
       store.setUpdateUser((prev) => !prev);
       store.setUpNotification((prev) => !prev);
+      await notify(
+        store.database.name,
+        "Complete Order",
+        `An order completed by ${store.user.name}`,
+        { type: "completeOrder", id: store.user.id }
+      );
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {

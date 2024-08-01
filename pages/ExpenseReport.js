@@ -3,7 +3,6 @@ import { Pressable, View } from "react-native";
 import { IOScrollView, InView } from "react-native-intersection-observer";
 
 import { Common } from "../components/Common";
-import { socket } from "../components/Layout";
 import SearchFilter from "../components/SearchFilter";
 import BDT from "../components/utilitise/BDT";
 import Button from "../components/utilitise/Button";
@@ -11,7 +10,7 @@ import { color } from "../components/utilitise/colors";
 import P from "../components/utilitise/P";
 import useStore from "../context/useStore";
 import { styles } from "../css/customer";
-import { Fetch, dateFormatter } from "../services/common";
+import { Fetch, dateFormatter, notify } from "../services/common";
 
 const ExpenseReport = () => {
   const [expense, setExpense] = useState({});
@@ -73,15 +72,12 @@ const ExpenseReport = () => {
       store.setUpdateUser((prev) => !prev);
       store.setUpdateReport((prev) => !prev);
       store.setUpdateExpense((prev) => !prev);
-      if (socket) {
-        socket.send(
-          JSON.stringify({
-            type: "expense_req_accepted",
-            to: data.created_by,
-            by: store.user.name,
-          })
-        );
-      }
+      await notify(
+        store.database.name,
+        "Expense Accepted",
+        `Your axpense request accepted by ${store.user.name}`,
+        { type: "expense_req_accepted", toUser: data.created_by }
+      );
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {
@@ -100,15 +96,12 @@ const ExpenseReport = () => {
       store.setMessage({ msg: result.message, type: "success" });
       store.setUpdateExpense((prev) => !prev);
 
-      if (socket) {
-        socket.send(
-          JSON.stringify({
-            type: "expense_req_decline",
-            to: created_by,
-            by: store.user.name,
-          })
-        );
-      }
+      await notify(
+        store.database.name,
+        "Expense Declined",
+        `Your expense request declined by ${store.user.name}`,
+        { type: "expense_req_decline", toUser: created_by }
+      );
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {

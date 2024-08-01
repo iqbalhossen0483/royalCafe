@@ -1,7 +1,6 @@
 import { Linking } from "react-native";
 
-// const ngrok = "https://server.switchcafebd.com";
-const ngrok = "https://7dc0-113-11-98-229.ngrok-free.app";
+const ngrok = "https://iqbal.switchcafebd.com";
 
 export async function Fetch(
   database = "",
@@ -37,6 +36,19 @@ export async function Fetch(
   } catch (error) {
     console.log(error);
     throw error;
+  }
+}
+
+export async function notify(database, title, body, data) {
+  try {
+    const res = await Fetch(database, "/message", "POST", {
+      title,
+      body,
+      data,
+    });
+    console.log(res);
+  } catch (error) {
+    console.log(error);
   }
 }
 

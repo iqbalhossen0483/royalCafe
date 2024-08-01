@@ -2,14 +2,13 @@ import React, { useEffect, useState } from "react";
 import { TextInput, View } from "react-native";
 
 import { Common } from "../components/Common";
-import { socket } from "../components/Layout";
 import BDT from "../components/utilitise/BDT";
 import Button from "../components/utilitise/Button";
 import P from "../components/utilitise/P";
 import Select from "../components/utilitise/Select";
 import useStore from "../context/useStore";
 import { commonStyles } from "../css/common";
-import { Fetch } from "../services/common";
+import { Fetch, notify } from "../services/common";
 
 const BalanceTransfer = ({ route, navigation }) => {
   const user = route.params.user;
@@ -32,14 +31,7 @@ const BalanceTransfer = ({ route, navigation }) => {
           "GET"
         );
         const rest = users.filter((item) => item.id !== user.id);
-        if (store.user.designation === "Admin") {
-          const supplier = await Fetch(
-            store.database.name,
-            "/supplier?type=true",
-            "GET"
-          );
-          setUsers([...rest, ...supplier]);
-        } else setUsers(rest);
+        setUsers(rest);
       } catch (error) {
         store.setMessage({ msg: error.message, type: "error" });
       } finally {
@@ -67,16 +59,13 @@ const BalanceTransfer = ({ route, navigation }) => {
 
       store.setUpdateUser((prev) => !prev);
       navigation.goBack();
-      if (socket) {
-        socket.send(
-          JSON.stringify({
-            type: "balance_transfer_request",
-            from: store.user.id,
-            to: form.to.userId,
-            formName: store.user.name,
-          })
-        );
-      }
+
+      await notify(
+        store.database.name,
+        "Transfer Request",
+        `You have a balance transfer request from ${form.to.name}`,
+        { type: "balance_transfer_request", toUser: form.to.userId }
+      );
     } catch (error) {
       setForm((prev) => {
         return { ...prev, restAmount: user.haveMoney };
@@ -94,10 +83,9 @@ const BalanceTransfer = ({ route, navigation }) => {
   ];
   if (store.user.designation === "Admin") {
     options.push(
-      { id: 3, name: "Purchase Product" },
-      { id: 4, name: "Salary" },
-      { id: 5, name: "Incentive" },
-      { id: 6, name: "Debt" }
+      { id: 3, name: "Salary" },
+      { id: 4, name: "Incentive" },
+      { id: 5, name: "Debt" }
     );
   }
 

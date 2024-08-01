@@ -1,8 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
 import { useEffect, useRef, useState } from "react";
-import { AppState } from "react-native";
 
 import { Fetch } from "../services/common";
+import { registerForPushNotificationsAsync } from "./pushNotification";
 
 const Store = () => {
   const [updatePurchase, setUpdatePurchase] = useState(false);
@@ -19,9 +20,9 @@ const Store = () => {
   const [loading, setLoading] = useState(false);
   const [database, setDatabase] = useState(null);
   const [showSplash, setShowSplash] = useState(false);
-  const [socket, setSocket] = useState(null);
   const [user, setUser] = useState(null);
-  const appState = useRef(AppState.currentState);
+  const notificationListener = useRef();
+  const [update, setUpdate] = useState(false);
   const [message, setMessage] = useState({
     msg: "",
     type: "",
@@ -33,8 +34,9 @@ const Store = () => {
         const token = await AsyncStorage.getItem("token");
         if (!token) throw { message: "Login faild" };
         const res = await Fetch("login", `/login?token=${token}`, "GET");
-        setUser(res.user);
         setDatabase(res.database);
+        setUpdate((prev) => !prev);
+        setUser(res.user);
       } catch (error) {
         setUser(null);
         await AsyncStorage.removeItem("token");
@@ -45,39 +47,71 @@ const Store = () => {
     })();
   }, [updateUser]);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     if (!user) return;
-  //     let wss = new WebSocket("wss://7dc0-113-11-98-229.ngrok-free.app");
-  //     setSocket(wss);
-  //     BackgroundTask.schedule();
-  //   })();
-  // }, [user]);
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
-      // setInterval(() => {
-      //   console.log(nextAppState);
-      // }, 1000);
-    });
+    if (user && database) {
+      (async () => {
+        try {
+          const token = await registerForPushNotificationsAsync();
+          console.log(token);
+          await Fetch(database.name, "/user", "PUT", {
+            pushToken: token.data,
+            id: user.id,
+          });
+          setUser((prev) => {
+            return { ...prev, pushToken: token };
+          });
+        } catch (error) {
+          setMessage({ msg: error.message, type: "error" });
+        }
+      })();
+    }
+  }, [update, database, user?.id]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        notificationListener.current =
+          Notifications.addNotificationReceivedListener((payload) => {
+            const data = payload.request.content.data;
+            console.log(data);
+            if (data.type === "receivedOrder") {
+              setUpdateOrder((prev) => !prev);
+              setUpNotification((prev) => !prev);
+            } else if (data.type === "completeOrder") {
+              setUpdateOrder((prev) => !prev);
+              setUpdateReport((prev) => !prev);
+              setUpNotification((prev) => !prev);
+            } else if (data.type === "balance_transfer_request") {
+              setUpdateUser((prev) => !prev);
+            } else if (data.type === "balance_accepted") {
+              setUpdateUser((prev) => !prev);
+              setUpdateReport((prev) => !prev);
+            } else if (data.type === "balance_decline") {
+              setUpdateUser((prev) => !prev);
+            } else if (data.type === "target_received") {
+              setUpdateUser((prev) => !prev);
+            } else if (data.type === "expense_req_sent") {
+              setUpdateExpense((prev) => !prev);
+            } else if (data.type === "expense_req_accepted") {
+              setUpdateUser((prev) => !prev);
+              setUpdateExpense((prev) => !prev);
+            } else if (data.type === "expense_req_decline") {
+              setUpdateExpense((prev) => !prev);
+            } else if (data.type === "shop_added") {
+              setUpdateCustomer((prev) => !prev);
+            }
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    })();
 
     return () => {
-      subscription.remove();
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
     };
   }, []);
-
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket.addEventListener("open", () => {
-  //       try {
-  //         setInterval(() => {
-  //           socket.send(JSON.stringify({ Message: "Hello" }));
-  //         }, 1000);
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     });
-  //   }
-  // }, [socket]);
 
   return {
     message,
@@ -111,6 +145,7 @@ const Store = () => {
     setDatabase,
     database,
     setShowSplash,
+    setUpdate,
   };
 };
 

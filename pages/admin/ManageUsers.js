@@ -18,7 +18,6 @@ import {
 import { Common } from "../../components/Common";
 import Drawar from "../../components/Drawar";
 import SubMenu from "../../components/footer/SubMenu";
-import { socket } from "../../components/Layout";
 import { alert as Alert } from "../../components/utilitise/Alert";
 import Avater from "../../components/utilitise/Avater";
 import Button from "../../components/utilitise/Button";
@@ -27,7 +26,7 @@ import P from "../../components/utilitise/P";
 import useStore from "../../context/useStore";
 import { commonStyles } from "../../css/common";
 import { styles } from "../../css/manageProduct";
-import { Fetch, openNumber, role } from "../../services/common";
+import { Fetch, notify, openNumber, role } from "../../services/common";
 
 const ManageUsers = ({ navigation }) => {
   const [targetForm, setTargetForm] = useState(null);
@@ -117,15 +116,13 @@ const ManageUsers = ({ navigation }) => {
       );
       setTargetForm(null);
       store.setMessage({ msg: message, type: "success" });
-      if (socket) {
-        socket.send(
-          JSON.stringify({
-            type: "target_received",
-            by: store.user.name,
-            to: data.user_id,
-          })
-        );
-      }
+
+      await notify(
+        store.database.name,
+        "Target Received",
+        `Dear ${store.user.name} your target received by ${store.user.name}`,
+        { type: "target_received", toUser: data.user_id }
+      );
     } catch (error) {
       store.setMessage({ msg: error.message, type: "error" });
     } finally {
