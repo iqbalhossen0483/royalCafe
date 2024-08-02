@@ -41,15 +41,12 @@ export async function Fetch(
 
 export async function notify(database, title, body, data) {
   try {
-    const res = await Fetch(database, "/message", "POST", {
+    await Fetch(database, "/message", "POST", {
       title,
       body,
       data,
     });
-    console.log(res);
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 }
 
 export const serverUrl = ngrok + "/";

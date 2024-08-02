@@ -21,7 +21,8 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": ["android.permission.RECORD_AUDIO"],
-      "package": "com.iqbal60483.switchcafe"
+      "package": "com.iqbal60483.switchcafe",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/logo.png"
